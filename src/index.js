@@ -63,6 +63,8 @@ function BaseApplicationWindow(props)
 
 	var initialInstruction = "Please click the GEN button to see initial content";
 	
+	var currentValueOfEditPane = "default";
+	
 	var initialMarkdownContent = '%23The First-Level Header\n\nThis is a regular paragraph, which starts '
 				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
 				+ '1. This is the first element\n'
@@ -130,21 +132,20 @@ class UpperApplicationWindow extends React.Component
 		};
 			
 		this.changeEditPaneValueOnClick = this.changeEditPaneValueOnClick.bind(this);
+		this.updateEditPaneValueFromServer 
+			= this.updateEditPaneValueFromServer.bind(this);
     }
     
     updateEditPaneValueFromServer()
     {
-    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "MyFileContent=" + this.state.value;
+    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "MyFileContent=" + currentValueOfEditPane;
     		alert("Here is the URL we are sending to: " + nodeJsTargetURL);
     		axios.get(nodeJsTargetURL)
       			.then(response => { 
         			alert("Returned from server: " + JSON.stringify(response.data));
         			
-        			this.state.value = JSON.stringify(response.data);
-        			
-					
-        			});
-        	
+        			this.setState ( { value: JSON.stringify(response.data) } );
+        			});   	
     }
     
     changeEditPaneValueOnClick()
@@ -551,6 +552,9 @@ class EditPane extends React.Component
     handleChange(event) 
     {
 		this.setState({value: event.target.value});
+		//alert("value is now" +this.state.value);
+		
+		currentValueOfEditPane = this.state.value;
     }
 
     handleSubmit(event) 
@@ -565,7 +569,12 @@ class EditPane extends React.Component
     
     render ()
     {
+    
+    	currentValueOfEditPane = this.state.value;
+    	
 		return (
+			
+			
 			<form onSubmit={this.handleSubmit}>
 					
 	  				<textarea
