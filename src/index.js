@@ -634,8 +634,8 @@ function RenderPane(props)
 							position: 'absolute', 
 							width: 240, 
 							height: 240,
-							top: 120, 
-							left: 120}}
+							top: 530, 
+							left: 210}}
 					/> 
 				</span>
 				
