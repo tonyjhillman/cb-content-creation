@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css'
+import axios from 'axios';
 
 {/*
   This initial function is called by the main render method, at the bottom.
@@ -60,6 +61,29 @@ function BaseApplicationWindow(props)
 	);
 }
 
+	var initialInstruction = "Please click the GEN button to see initial content";
+	
+	var initialMarkdownContent = '# The First-Level Header\n\nThis is a regular paragraph, which starts '
+				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
+				+ '1. This is the first element\n'
+				+ '2. This is the second element\n'
+				+ '3. This is the third element\n\n'
+				+ 'Now we are back to a paragraph again. Now, an **unordered** list:\n\n'
+				+ '* The first element\n'
+				+ '* The second\n'
+				+ '* The third\n\n'
+				+ 'Now, a *mixed* list:\n\n'
+				+ '1. The first element\n'
+				+ '2. The second element\n'
+				+ '  * The first element in an unordered sublist\n'
+				+ '  * The second\n'
+				+ '  * The third\n'
+				+ '3. The third element in the initial, ordered list\n\n'
+				+ '## The Second-Level Header\n\n'
+				+ 'Now, some links:\n\n'
+				+ '[I am an inline-style link](https://www.google.com)\n\n'
+				+ '[I am an inline-style link with title](https://www.google.com "Google\'s Homepage")';
+
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
   to say, inner) window, within which all elements except the save and render
@@ -69,6 +93,7 @@ function BaseApplicationWindow(props)
 */}
 class UpperApplicationWindow extends React.Component
 {
+
 
 	constructor(props) 
     {
@@ -101,26 +126,7 @@ class UpperApplicationWindow extends React.Component
 				+ 'Homepage">I&#39;m an inline-style link with title</a></p>',
 			nodeImageToggle: true,
 			editPaneToggle: true,
-			value: '# The First-Level Header\n\nThis is a regular paragraph, which starts '
-				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
-				+ '1. This is the first element\n'
-				+ '2. This is the second element\n'
-				+ '3. This is the third element\n\n'
-				+ 'Now we are back to a paragraph again. Now, an **unordered** list:\n\n'
-				+ '* The first element\n'
-				+ '* The second\n'
-				+ '* The third\n\n'
-				+ 'Now, a *mixed* list:\n\n'
-				+ '1. The first element\n'
-				+ '2. The second element\n'
-				+ '  * The first element in an unordered sublist\n'
-				+ '  * The second\n'
-				+ '  * The third\n'
-				+ '3. The third element in the initial, ordered list\n\n'
-				+ '## The Second-Level Header\n\n'
-				+ 'Now, some links:\n\n'
-				+ '[I am an inline-style link](https://www.google.com)\n\n'
-				+ '[I am an inline-style link with title](https://www.google.com "Google\'s Homepage")'
+			value: 'Please click the GEN button to see initial content'
 
 		};
 			
@@ -133,7 +139,7 @@ class UpperApplicationWindow extends React.Component
     		editPaneToggle: !prevState.editPaneToggle
     	}));
     	
-    	this.state.value = this.state.editPaneToggle ? 'hello' : 'goodbye' ;
+    	this.state.value = this.state.editPaneToggle ? initialMarkdownContent : initialInstruction  ;
     }
  
 	setNodeImageOnClick() 
@@ -539,6 +545,14 @@ class EditPane extends React.Component
 		event.preventDefault();
     }
     
+    componentDidMount() {
+    var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "MyFileContent=" + 'hellothere';
+    alert("componentDidMount = " + nodeJsTargetURL);
+    axios.get(nodeJsTargetURL)
+      .then(res => { 
+        console.log(res) });
+  }
+    
 	componentWillReceiveProps(nextProps)
 	{
 		this.setState( { value: nextProps.value } );
@@ -549,7 +563,7 @@ class EditPane extends React.Component
 		return (
 			<form onSubmit={this.handleSubmit}>
 					
-	  				<textarea 
+	  				<textarea
 	  					value={this.state.value} 
 	  					onChange={ (event) => { this.handleChange(event) }} 
 	  					
@@ -567,7 +581,9 @@ class EditPane extends React.Component
 							top: 170,
 							left: 40,
 						}}
-	  				/>
+					>
+
+	  				</textarea>
             	
             		<input 
             			type="image"
