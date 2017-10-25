@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css'
+import axios from 'axios';
 
 {/*
   This initial function is called by the main render method, at the bottom.
@@ -60,6 +61,31 @@ function BaseApplicationWindow(props)
 	);
 }
 
+	var initialInstruction = "Please click the GEN button to see initial content";
+	
+	var currentValueOfEditPane = "default";
+	
+	var initialMarkdownContent = '%23The First-Level Header\n\nThis is a regular paragraph, which starts '
+				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
+				+ '1. This is the first element\n'
+				+ '2. This is the second element\n'
+				+ '3. This is the third element\n\n'
+				+ 'Now we are back to a paragraph again. Now, an **unordered** list:\n\n'
+				+ '* The first element\n'
+				+ '* The second\n'
+				+ '* The third\n\n'
+				+ 'Now, a *mixed* list:\n\n'
+				+ '1. The first element\n'
+				+ '2. The second element\n'
+				+ '  * The first element in an unordered sublist\n'
+				+ '  * The second\n'
+				+ '  * The third\n'
+				+ '3. The third element in the initial, ordered list\n\n'
+				+ '%23%23 The Second-Level Header\n\n'
+				+ 'Now, some links:\n\n'
+				+ '[I am an inline-style link](https://www.google.com)\n\n'
+				+ '[I am an inline-style link with title](https://www.google.com "Google\'s Homepage")';
+
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
   to say, inner) window, within which all elements except the save and render
@@ -69,6 +95,7 @@ function BaseApplicationWindow(props)
 */}
 class UpperApplicationWindow extends React.Component
 {
+
 
 	constructor(props) 
     {
@@ -101,30 +128,24 @@ class UpperApplicationWindow extends React.Component
 				+ 'Homepage">I&#39;m an inline-style link with title</a></p>',
 			nodeImageToggle: true,
 			editPaneToggle: true,
-			value: '# The First-Level Header\n\nThis is a regular paragraph, which starts '
-				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
-				+ '1. This is the first element\n'
-				+ '2. This is the second element\n'
-				+ '3. This is the third element\n\n'
-				+ 'Now we are back to a paragraph again. Now, an **unordered** list:\n\n'
-				+ '* The first element\n'
-				+ '* The second\n'
-				+ '* The third\n\n'
-				+ 'Now, a *mixed* list:\n\n'
-				+ '1. The first element\n'
-				+ '2. The second element\n'
-				+ '  * The first element in an unordered sublist\n'
-				+ '  * The second\n'
-				+ '  * The third\n'
-				+ '3. The third element in the initial, ordered list\n\n'
-				+ '## The Second-Level Header\n\n'
-				+ 'Now, some links:\n\n'
-				+ '[I am an inline-style link](https://www.google.com)\n\n'
-				+ '[I am an inline-style link with title](https://www.google.com "Google\'s Homepage")'
-
+			value: 'Please click the GEN button to see initial content'
 		};
 			
 		this.changeEditPaneValueOnClick = this.changeEditPaneValueOnClick.bind(this);
+		this.updateEditPaneValueFromServer 
+			= this.updateEditPaneValueFromServer.bind(this);
+    }
+    
+    updateEditPaneValueFromServer()
+    {
+    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "MyFileContent=" + currentValueOfEditPane;
+    		alert("Here is the URL we are sending to: " + nodeJsTargetURL);
+    		axios.get(nodeJsTargetURL)
+      			.then(response => { 
+        			alert("Returned from server: " + JSON.stringify(response.data));
+        			
+        			this.setState ( { value: JSON.stringify(response.data) } );
+        			});   	
     }
     
     changeEditPaneValueOnClick()
@@ -133,7 +154,7 @@ class UpperApplicationWindow extends React.Component
     		editPaneToggle: !prevState.editPaneToggle
     	}));
     	
-    	this.state.value = this.state.editPaneToggle ? 'hello' : 'goodbye' ;
+    	this.state.value = this.state.editPaneToggle ? initialMarkdownContent : initialInstruction  ;
     }
  
 	setNodeImageOnClick() 
@@ -235,7 +256,7 @@ class UpperApplicationWindow extends React.Component
 				 { this.RenderHtmlPane() } 
 				</div>
 			
-				<FileButton />
+				<FileButton onClick={() => this.updateEditPaneValueFromServer() }/>
 			
 			</div>
 		);
@@ -531,12 +552,14 @@ class EditPane extends React.Component
     handleChange(event) 
     {
 		this.setState({value: event.target.value});
+		//alert("value is now" +this.state.value);
+		
+		currentValueOfEditPane = this.state.value;
     }
 
     handleSubmit(event) 
     {
-		alert(this.state.value);
-		event.preventDefault();
+
     }
     
 	componentWillReceiveProps(nextProps)
@@ -546,10 +569,15 @@ class EditPane extends React.Component
     
     render ()
     {
+    
+    	currentValueOfEditPane = this.state.value;
+    	
 		return (
+			
+			
 			<form onSubmit={this.handleSubmit}>
 					
-	  				<textarea 
+	  				<textarea
 	  					value={this.state.value} 
 	  					onChange={ (event) => { this.handleChange(event) }} 
 	  					
@@ -567,7 +595,9 @@ class EditPane extends React.Component
 							top: 170,
 							left: 40,
 						}}
-	  				/>
+					>
+
+	  				</textarea>
             	
             		<input 
             			type="image"
@@ -653,32 +683,36 @@ function RenderPane(props)
   The FileButton method returns the button for choosing the
   source-file to be edited.
 */}
-function FileButton(props)
+class FileButton extends React.Component
 {
-	return (
-		<button
-			className='fileButton'
-			id='fileButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 144,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 1020,
-				left: 140,
-			}}
-		><img src={require('./images/chooseButton.png')} 
-	               alt={require('./images/nodeJsButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 3, 
-	               		width:'80%',
-	               		height: '78%'
-	               }}
-	                 />
-		</button>	
-	);
+	render()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='fileButton'
+				id='fileButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 144,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 1020,
+					left: 140,
+				}}
+			><img src={require('./images/chooseButton.png')} 
+					   alt={require('./images/nodeJsButtonBasicAlt.png')} 
+					   style={{
+							padding: 3, 
+							width:'80%',
+							height: '78%'
+					   }}
+						 />
+			</button>	
+		);
+	}
 }
 
 
