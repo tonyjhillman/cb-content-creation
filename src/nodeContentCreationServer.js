@@ -15,7 +15,7 @@ http.createServer(function (request, response)
     
     response.writeHead(200, {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"});
     //response.end(JSON.stringify(hits));
-    response.end("done");
+    response.end(fileContentString);
     		    
 }).listen(8083);
 

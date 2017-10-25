@@ -63,7 +63,7 @@ function BaseApplicationWindow(props)
 
 	var initialInstruction = "Please click the GEN button to see initial content";
 	
-	var initialMarkdownContent = '# The First-Level Header\n\nThis is a regular paragraph, which starts '
+	var initialMarkdownContent = '%23The First-Level Header\n\nThis is a regular paragraph, which starts '
 				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
 				+ '1. This is the first element\n'
 				+ '2. This is the second element\n'
@@ -79,7 +79,7 @@ function BaseApplicationWindow(props)
 				+ '  * The second\n'
 				+ '  * The third\n'
 				+ '3. The third element in the initial, ordered list\n\n'
-				+ '## The Second-Level Header\n\n'
+				+ '%23%23 The Second-Level Header\n\n'
 				+ 'Now, some links:\n\n'
 				+ '[I am an inline-style link](https://www.google.com)\n\n'
 				+ '[I am an inline-style link with title](https://www.google.com "Google\'s Homepage")';
@@ -127,10 +127,24 @@ class UpperApplicationWindow extends React.Component
 			nodeImageToggle: true,
 			editPaneToggle: true,
 			value: 'Please click the GEN button to see initial content'
-
 		};
 			
 		this.changeEditPaneValueOnClick = this.changeEditPaneValueOnClick.bind(this);
+    }
+    
+    updateEditPaneValueFromServer()
+    {
+    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "MyFileContent=" + this.state.value;
+    		alert("Here is the URL we are sending to: " + nodeJsTargetURL);
+    		axios.get(nodeJsTargetURL)
+      			.then(response => { 
+        			alert("Returned from server: " + JSON.stringify(response.data));
+        			
+        			this.state.value = JSON.stringify(response.data);
+        			
+					
+        			});
+        	
     }
     
     changeEditPaneValueOnClick()
@@ -241,7 +255,7 @@ class UpperApplicationWindow extends React.Component
 				 { this.RenderHtmlPane() } 
 				</div>
 			
-				<FileButton />
+				<FileButton onClick={() => this.updateEditPaneValueFromServer() }/>
 			
 			</div>
 		);
@@ -541,17 +555,8 @@ class EditPane extends React.Component
 
     handleSubmit(event) 
     {
-		alert(this.state.value);
-		event.preventDefault();
+
     }
-    
-    componentDidMount() {
-    var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "MyFileContent=" + 'hellothere';
-    alert("componentDidMount = " + nodeJsTargetURL);
-    axios.get(nodeJsTargetURL)
-      .then(res => { 
-        console.log(res) });
-  }
     
 	componentWillReceiveProps(nextProps)
 	{
@@ -669,32 +674,36 @@ function RenderPane(props)
   The FileButton method returns the button for choosing the
   source-file to be edited.
 */}
-function FileButton(props)
+class FileButton extends React.Component
 {
-	return (
-		<button
-			className='fileButton'
-			id='fileButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 144,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 1020,
-				left: 140,
-			}}
-		><img src={require('./images/chooseButton.png')} 
-	               alt={require('./images/nodeJsButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 3, 
-	               		width:'80%',
-	               		height: '78%'
-	               }}
-	                 />
-		</button>	
-	);
+	render()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='fileButton'
+				id='fileButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 144,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 1020,
+					left: 140,
+				}}
+			><img src={require('./images/chooseButton.png')} 
+					   alt={require('./images/nodeJsButtonBasicAlt.png')} 
+					   style={{
+							padding: 3, 
+							width:'80%',
+							height: '78%'
+					   }}
+						 />
+			</button>	
+		);
+	}
 }
 
 
