@@ -1,3 +1,32 @@
+## Notes
+
+This repository provides a demonstration of how a Content Management tool, for the
+support of Couchbase documentation, might work. The idea is that users see the filtered
+version of a markdown file, showing only the content that applies to a specific 
+variant of the technology. They edit, and their work is reintegrated into the underlying
+composite markdown file, and optionally rendered as html.
+
+So far, the demo does merely the following:
+
+* Allows initial content in the edit pane to be toggled, by clicking the GEN button
+* Shows static content, html-based, in the right-hand render-window.
+* Sends the current edit content (in the left-hand pane) to a server (click SEND)
+* Returns the dispatched content from the server to the client, and repaints the edit
+  window.
+* Demonstrates how to toggle button-appearance (click the NODE.JS button)
+
+To run you must have installed the following:
+
+    $ npm install --save draft-js react react-dom
+    $ npm install axios
+
+Then, in the src directory:
+
+	npm start
+	node nodeContentCreationServer.js
+
+## React Information
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>

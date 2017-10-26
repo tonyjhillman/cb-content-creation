@@ -66,7 +66,7 @@ function BaseApplicationWindow(props)
 	var currentValueOfEditPane = "default";
 	
 	var initialMarkdownContent = '%23The First-Level Header\n\nThis is a regular paragraph, which starts '
-				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
+				+  'describing a topic. It introduces a *numbered* list, as follows:\\n\\n'
 				+ '1. This is the first element\n'
 				+ '2. This is the second element\n'
 				+ '3. This is the third element\n\n'
@@ -95,15 +95,14 @@ function BaseApplicationWindow(props)
 */}
 class UpperApplicationWindow extends React.Component
 {
-
-
 	constructor(props) 
     {
 		super(props);
 		this.state = {
 			image: 'nodeJsButtonBasic.png',
 			htmlPaneContent: '<h1 id="the-first-level-header">The First-Level Header</h1>'
-				+ '<p>This is a regular paragraph, which starts describing a topic.' 
+				+ '\n\n'
+				+ '\<p\>This is a regular paragraph, which starts describing a topic.' 
 				+ 'It introduces a <em>numbered</em> list, as follows:</p>'
 				+ '<ol>'
 				+ '<li>This is the first element</li>'
@@ -559,7 +558,7 @@ class EditPane extends React.Component
 
     handleSubmit(event) 
     {
-
+		// alert(currentValueOfEditPane);
     }
     
 	componentWillReceiveProps(nextProps)
@@ -569,12 +568,10 @@ class EditPane extends React.Component
     
     render ()
     {
-    
     	currentValueOfEditPane = this.state.value;
     	
 		return (
-			
-			
+	
 			<form onSubmit={this.handleSubmit}>
 					
 	  				<textarea
@@ -599,27 +596,9 @@ class EditPane extends React.Component
 
 	  				</textarea>
             	
-            		<input 
-            			type="image"
-            			
-            			src={require('./images/saveButton.png')} 
-	               		alt={require('./images/goButtonBasicAlt.png')} 
 
-            			style={{
-            				paddingTop: 4,
-	  						paddingLeft: 36,
-	  						paddingRight: 36,
-	  						paddingBottom: 4,
-							position: 'absolute',
-							border: '2px solid black',
-							width: 70,
-							height: 28,
-							backgroundColor: 'white',
-							boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-							top: 1020,
-							left: 312,
-						}}
-            		/>
+            		
+            		
       		</form>
 		);
 	}
@@ -670,9 +649,7 @@ function RenderPane(props)
 				</span>
 				
 				<div dangerouslySetInnerHTML={{ __html: props.htmlPaneContent }} />
-						
-				
-				
+
             </div>
             
 		</div>	
@@ -700,13 +677,13 @@ class FileButton extends React.Component
 					backgroundColor: 'white',
 					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
 					top: 1020,
-					left: 140,
+					left: 220,
 				}}
-			><img src={require('./images/chooseButton.png')} 
+			><img src={require('./images/sendButton.png')} 
 					   alt={require('./images/nodeJsButtonBasicAlt.png')} 
 					   style={{
 							padding: 3, 
-							width:'80%',
+							width:'60%',
 							height: '78%'
 					   }}
 						 />
