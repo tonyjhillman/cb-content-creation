@@ -17,8 +17,7 @@ So far, the demo does merely the following:
 
 To run you must have installed the following:
 
-    $ npm install --save draft-js react react-dom
-    $ npm install axios
+    $ npm install
 
 Then, in the src directory:
 
