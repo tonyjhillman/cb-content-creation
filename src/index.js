@@ -66,7 +66,7 @@ function BaseApplicationWindow(props)
 	var currentValueOfEditPane = "default";
 	
 	var initialMarkdownContent = '%23The First-Level Header\n\nThis is a regular paragraph, which starts '
-				+  'describing a topic. It introduces a *numbered* list, as follows:\\n\\n'
+				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
 				+ '1. This is the first element\n'
 				+ '2. This is the second element\n'
 				+ '3. This is the third element\n\n'
@@ -137,8 +137,24 @@ class UpperApplicationWindow extends React.Component
     
     updateEditPaneValueFromServer()
     {  	
-    	var nodeJsTargetURL = 'http://localhost:8083/' ;	
+    	//var nodeJsTargetURL = 'http://localhost:8083/' ;
+    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" + "./writes/test2.txt";	
     		axios.post(nodeJsTargetURL, currentValueOfEditPane, 
+							{headers: {'Content-Type': 'text/plain'}}
+				).then(response => { 
+        				alert("Returned from server: " + response.data);
+        			
+        		this.setState ( { value: response.data } );
+        	});   	
+    }
+    
+    getFileFromServer()
+    {
+    	alert("Calling getFileFromServer");
+    	
+    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForRead=" + "./writes/test3.txt";
+    	
+    	axios.get(nodeJsTargetURL, 
 							{headers: {'Content-Type': 'text/plain'}}
 				).then(response => { 
         				alert("Returned from server: " + response.data);
@@ -231,7 +247,7 @@ class UpperApplicationWindow extends React.Component
 			
 				<GenButton onClick={() => this.changeEditPaneValueOnClick() } />
 			
-				<JavaButton />
+				<JavaButton onClick={() => this.getFileFromServer() }/>
 			
 				<DotNetButton />
 			
@@ -341,33 +357,37 @@ class GenButton extends React.Component
   The JavaButton method returns the button for displaying the Java 
   filtered version of the source-file.
 */}
-function JavaButton(props)
+class JavaButton extends React.Component
 {
-	return (
-		<button
-			className='javaButton'
-			id='javaButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 110,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 110,
-				left: 162,
-			}}
-		>
-			<img src={require('./images/javaButtonBasic.png')} 
-	               alt={require('./images/javaButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 1, 
-	               		width:'70%',
-	               		height: '90%'
-	               }}
-	      	/>
-		</button>	
-	);
+	render ()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='javaButton'
+				id='javaButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 110,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 162,
+				}}
+			>
+				<img src={require('./images/javaButtonBasic.png')} 
+					   alt={require('./images/javaButtonBasicAlt.png')} 
+					   style={{
+							padding: 1, 
+							width:'70%',
+							height: '90%'
+					   }}
+				/>
+			</button>	
+		);
+	}
 }
 
 {/*
