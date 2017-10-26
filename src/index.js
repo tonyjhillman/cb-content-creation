@@ -137,8 +137,6 @@ class UpperApplicationWindow extends React.Component
     
     updateEditPaneValueFromServer()
     {  	
-    	var querystring = require('querystring');
-    	
     	var nodeJsTargetURL = 'http://localhost:8083/' ;	
     		axios.post(nodeJsTargetURL, currentValueOfEditPane, 
 							{headers: {'Content-Type': 'text/plain'}}
