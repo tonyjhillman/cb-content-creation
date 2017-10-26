@@ -136,15 +136,15 @@ class UpperApplicationWindow extends React.Component
     }
     
     updateEditPaneValueFromServer()
-    {
-    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "MyFileContent=" + currentValueOfEditPane;
-    		alert("Here is the URL we are sending to: " + nodeJsTargetURL);
-    		axios.get(nodeJsTargetURL)
-      			.then(response => { 
-        			alert("Returned from server: " + JSON.stringify(response.data));
+    {  	
+    	var nodeJsTargetURL = 'http://localhost:8083/' ;	
+    		axios.post(nodeJsTargetURL, currentValueOfEditPane, 
+							{headers: {'Content-Type': 'text/plain'}}
+				).then(response => { 
+        				alert("Returned from server: " + response.data);
         			
-        			this.setState ( { value: JSON.stringify(response.data) } );
-        			});   	
+        		this.setState ( { value: response.data } );
+        	});   	
     }
     
     changeEditPaneValueOnClick()

@@ -4,19 +4,24 @@
 
 var http = require('http');
 var url = require('url'); 
+var qs = require('querystring');
 
 http.createServer(function (request, response) 
 {
     console.log('New connection');
     
-    var queryObject = url.parse(request.url, true).query
-    var fileContentString = queryObject.MyFileContent;
-    console.log("Markdown-file content is " + fileContentString);
-    
-    response.writeHead(200, {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"});
-    //response.end(JSON.stringify(hits));
-    response.end(fileContentString);
-    		    
+    if (request.method == 'POST') {
+        var body = '';
+
+        request.on('data', function (data) {
+            body += data;
+            console.log(body);
+            
+            response.writeHead(200, {"Content-Type": "text/plain", "Access-Control-Allow-Origin": "*"});
+
+    		response.end(body);
+        });
+    }		    
 }).listen(8083);
 
 // Notify that the server is running and listening.
