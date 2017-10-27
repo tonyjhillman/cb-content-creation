@@ -87,6 +87,8 @@ function BaseApplicationWindow(props)
 				+ '[I am an inline-style link with title](https://www.google.com "Google\'s Homepage")';
 
     const sourceLocation = "./writes/";
+    
+        var currentFileName = 'default.md';
 
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
@@ -130,19 +132,20 @@ class UpperApplicationWindow extends React.Component
 			nodeImageToggle: true,
 			editPaneToggle: true,
 			value: 'Please click the GEN button to see initial content',
+			currentfilename: 'default.md',
 			javafilename: 'test3.txt',
 			dotnetfilename: 'test4.txt'
 		};
 			
 		this.changeEditPaneValueOnClick = this.changeEditPaneValueOnClick.bind(this);
-		this.updateEditPaneValueFromServer 
-			= this.updateEditPaneValueFromServer.bind(this);
+		this.saveCurrentEditsToServer 
+			= this.saveCurrentEditsToServer.bind(this);
     }
     
-    updateEditPaneValueFromServer()
+    saveCurrentEditsToServer()
     {  	
     	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
-    							+ sourceLocation + "test2.txt";	
+    							+ sourceLocation + currentFileName;	
     		
     		axios.post(nodeJsTargetURL, currentValueOfEditPane, 
 							{headers: {'Content-Type': 'text/plain'}}
@@ -153,9 +156,13 @@ class UpperApplicationWindow extends React.Component
         	});   	
     }
     
+
+    
     getFileFromServer(targetFilename)
     {
     	alert("Data from child is " + targetFilename);
+    	
+    	currentFileName = targetFilename;
     	
     	alert("Calling getFileFromServer");
     	
@@ -279,7 +286,7 @@ class UpperApplicationWindow extends React.Component
 				 { this.RenderHtmlPane() } 
 				</div>
 			
-				<FileButton onClick={() => this.updateEditPaneValueFromServer() }/>
+				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
 			
 			</div>
 		);
@@ -438,33 +445,37 @@ class DotNetButton extends React.Component
   The PhpButton method returns the button for displaying the PHP 
   filtered version of the source-file.
 */}
-function PhpButton(props)
+class PhpButton extends React.Component
 {
-	return (
-		<button
-			className='phpButton'
-			id='phpButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 110,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 110,
-				left: 410,
-			}}
-		>
-			<img src={require('./images/phpButtonBasic.png')} 
-	               alt={require('./images/phpButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 3, 
-	               		width:'62%',
-	               		height: '76%'
-	               }}
-	        />
-		</button>	
-	);
+	render ()
+	{
+		return (
+			<button
+				onClick={this.handleClick}
+				className='phpButton'
+				id='phpButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 110,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 410,
+				}}
+			>
+				<img src={require('./images/phpButtonBasic.png')} 
+					   alt={require('./images/phpButtonBasicAlt.png')} 
+					   style={{
+							padding: 3, 
+							width:'62%',
+							height: '76%'
+					   }}
+				/>
+			</button>	
+		);
+	}
 }
 
 {/*
