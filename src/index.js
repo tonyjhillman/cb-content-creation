@@ -86,6 +86,8 @@ function BaseApplicationWindow(props)
 				+ '[I am an inline-style link](https://www.google.com)\n\n'
 				+ '[I am an inline-style link with title](https://www.google.com "Google\'s Homepage")';
 
+    const sourceLocation = "./writes/";
+
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
   to say, inner) window, within which all elements except the save and render
@@ -127,7 +129,9 @@ class UpperApplicationWindow extends React.Component
 				+ 'Homepage">I&#39;m an inline-style link with title</a></p>',
 			nodeImageToggle: true,
 			editPaneToggle: true,
-			value: 'Please click the GEN button to see initial content'
+			value: 'Please click the GEN button to see initial content',
+			javafilename: 'test3.txt',
+			dotnetfilename: 'test4.txt'
 		};
 			
 		this.changeEditPaneValueOnClick = this.changeEditPaneValueOnClick.bind(this);
@@ -137,8 +141,9 @@ class UpperApplicationWindow extends React.Component
     
     updateEditPaneValueFromServer()
     {  	
-    	//var nodeJsTargetURL = 'http://localhost:8083/' ;
-    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" + "./writes/test2.txt";	
+    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
+    							+ sourceLocation + "test2.txt";	
+    		
     		axios.post(nodeJsTargetURL, currentValueOfEditPane, 
 							{headers: {'Content-Type': 'text/plain'}}
 				).then(response => { 
@@ -148,11 +153,14 @@ class UpperApplicationWindow extends React.Component
         	});   	
     }
     
-    getFileFromServer()
+    getFileFromServer(targetFilename)
     {
+    	alert("Data from child is " + targetFilename);
+    	
     	alert("Calling getFileFromServer");
     	
-    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForRead=" + "./writes/test3.txt";
+    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' 
+    		+ "LocationForRead=" + sourceLocation + targetFilename;
     	
     	axios.get(nodeJsTargetURL, 
 							{headers: {'Content-Type': 'text/plain'}}
@@ -247,9 +255,9 @@ class UpperApplicationWindow extends React.Component
 			
 				<GenButton onClick={() => this.changeEditPaneValueOnClick() } />
 			
-				<JavaButton onClick={() => this.getFileFromServer() }/>
+				<JavaButton onClick={() => this.getFileFromServer(this.state.javafilename)}/>
 			
-				<DotNetButton />
+				<DotNetButton onClick={() => this.getFileFromServer(this.state.dotnetfilename)}/>
 			
 				<PhpButton />
 			
@@ -394,32 +402,36 @@ class JavaButton extends React.Component
   The DotNetButton method returns the button for displaying the .NET 
   filtered version of the source-file.
 */}
-function DotNetButton(props)
+class DotNetButton extends React.Component
 {
-	return (
-		<button
-			className='dotNetButton'
-			id='dotNetButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 110,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 110,
-				left: 286,
-			}}
-		><img src={require('./images/dotNetButtonBasic.png')} 
-	               alt={require('./images/dotNetButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 4, 
-	               		width:'60%',
-	               		height: '64%'
-	               }}
-	                 />
-		</button>	
-	);
+	render()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='dotNetButton'
+				id='dotNetButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 110,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 286,
+				}}
+			><img src={require('./images/dotNetButtonBasic.png')} 
+					   alt={require('./images/dotNetButtonBasicAlt.png')} 
+					   style={{
+							padding: 4, 
+							width:'60%',
+							height: '64%'
+					   }}
+						 />
+			</button>	
+		);
+	}
 }
 
 {/*
