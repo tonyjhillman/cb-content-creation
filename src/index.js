@@ -60,11 +60,18 @@ function BaseApplicationWindow(props)
 		</div>
 	);
 }
-
+	// An initial instruction, which is visible when the tool first comes up.
+	//
 	var initialInstruction = "Please click the GEN button to see initial content";
 	
+	// In order to transfer data from the (child) EditPane to the (parent) UpperAppli-
+	// cationWindow, we use the currentValueOfEditPane global variable. This is kept
+	// up to date by the child, on every change to the text, based on user input.
+	//
 	var currentValueOfEditPane = "default";
 	
+	// Some content to play with, brought up by toggling the GEN button.
+	//
 	var initialMarkdownContent = '%23The First-Level Header\n\nThis is a regular paragraph, which starts '
 				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
 				+ '1. This is the first element\n'
@@ -85,6 +92,17 @@ function BaseApplicationWindow(props)
 				+ 'Now, some links:\n\n'
 				+ '[I am an inline-style link](https://www.google.com)\n\n'
 				+ '[I am an inline-style link with title](https://www.google.com "Google\'s Homepage")';
+
+	// For now, the location of files that are being read and written.
+	//
+    const sourceLocation = "./writes/";
+    
+    // When a file has been selected, its name is kept in this global variable. The
+    // value of the variable changes only when a new file is selected. When a file
+    // is to be written to disk, the current value of this variable is used to
+    // establish the filename.
+    //
+    var currentFileName = 'default.md';
 
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
@@ -112,7 +130,7 @@ class UpperApplicationWindow extends React.Component
 				+ '<p>Now we are back to a paragraph again. Now, an ' 
 				+ '<strong>unordered</strong> list:</p>'
 				+ '<ul>'
-				+ '<li>The first element</li>'
+				+ '<li>The first element</li>' 
 				+ '<li>The second</li>'
 				+ '<li>The third</li>'
 				+ '</ul>'
@@ -127,37 +145,55 @@ class UpperApplicationWindow extends React.Component
 				+ 'Homepage">I&#39;m an inline-style link with title</a></p>',
 			nodeImageToggle: true,
 			editPaneToggle: true,
-			value: 'Please click the GEN button to see initial content'
+			value: 'Please click the NEW button to create new content',
+			
+			// The names of the files that we can read, edit, and save in this
+			// prototype.
+			//
+			defaultfilename: 'default.md',
+			javafilename: 'java.md',
+			dotnetfilename: 'dotnet.md',
+			phpfilename: 'php.md',
+			pythonfilename: 'python.md',
+			cfilename: 'c.md',
+			gofilename: 'go.md',
+			nodejsfilename: 'nodejs.md'
 		};
 			
 		this.changeEditPaneValueOnClick = this.changeEditPaneValueOnClick.bind(this);
-		this.updateEditPaneValueFromServer 
-			= this.updateEditPaneValueFromServer.bind(this);
+		this.saveCurrentEditsToServer 
+			= this.saveCurrentEditsToServer.bind(this);
     }
     
-    updateEditPaneValueFromServer()
+    saveCurrentEditsToServer()
     {  	
-    	//var nodeJsTargetURL = 'http://localhost:8083/' ;
-    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" + "./writes/test2.txt";	
+    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
+    							+ sourceLocation + currentFileName;	
+    		
     		axios.post(nodeJsTargetURL, currentValueOfEditPane, 
 							{headers: {'Content-Type': 'text/plain'}}
 				).then(response => { 
-        				alert("Returned from server: " + response.data);
+        				//alert("Saved on server: " + response.data);
         			
         		this.setState ( { value: response.data } );
         	});   	
     }
     
-    getFileFromServer()
+    getFileFromServer(targetFilename)
     {
-    	alert("Calling getFileFromServer");
+    	//alert("Data from child is " + targetFilename);
     	
-    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForRead=" + "./writes/test3.txt";
+    	currentFileName = targetFilename;
+    	
+    	//alert("Calling getFileFromServer");
+    	
+    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' 
+    		+ "LocationForRead=" + sourceLocation + targetFilename;
     	
     	axios.get(nodeJsTargetURL, 
 							{headers: {'Content-Type': 'text/plain'}}
 				).then(response => { 
-        				alert("Returned from server: " + response.data);
+        				//alert("Returned from server: " + response.data);
         			
         		this.setState ( { value: response.data } );
         	});   	
@@ -178,17 +214,33 @@ class UpperApplicationWindow extends React.Component
     		nodeImageToggle: !prevState.nodeImageToggle
     	}));
     	
-    	this.state.image = this.state.nodeImageToggle ? 'pythonButtonBasic.png' : 'nodeJsButtonBasic.png' ;
+    	//this.state.image = this.state.nodeImageToggle ? 'pythonButtonBasic.png' : 'nodeJsButtonBasic.png' ;
+    	
+    	// Making this demo invisible for now. Will likely use the functionality on some
+    	// toggle buttons in due course.
+    	//
+    	this.state.image = this.state.nodeImageToggle ? 'nodeJsButtonBasic.png' : 'nodeJsButtonBasic.png' ;
 	}
 	
-	RenderNodeJsButton () {
+	// Button display-toggling, which we won't use for now.
+	//
+	// RenderNodeJsButton () {
+	// return (
+    //   <NodeJsButton 
+    //  	image={ this.state.image } 
+	//	onClick={ () => this.setNodeImageOnClick() }
+    //  />
+	//	);
+	// }
+	
+		RenderNodeJsButton () {
 	return (
-      <NodeJsButton 
-      	image={ this.state.image } 
-		onClick={ () => this.setNodeImageOnClick() }
+      <NodeJsButton image={ this.state.image } 
+      	onClick={() => this.getFileFromServer(this.state.nodejsfilename)}
       />
 		);
 	}
+	
 	
 	RenderEditPane () 
 	{
@@ -245,19 +297,19 @@ class UpperApplicationWindow extends React.Component
 								left: 60}} />
 				</span>    
 			
-				<GenButton onClick={() => this.changeEditPaneValueOnClick() } />
+				<GenButton onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
 			
-				<JavaButton onClick={() => this.getFileFromServer() }/>
+				<JavaButton onClick={() => this.getFileFromServer(this.state.javafilename)}/>
 			
-				<DotNetButton />
+				<DotNetButton onClick={() => this.getFileFromServer(this.state.dotnetfilename)}/>
 			
-				<PhpButton />
+				<PhpButton onClick={() => this.getFileFromServer(this.state.phpfilename)} />
 			
-				<PythonButton />
+				<PythonButton onClick={() => this.getFileFromServer(this.state.pythonfilename)} />
 			
-				<CButton />
+				<CButton onClick={() => this.getFileFromServer(this.state.cfilename)} />
 			
-				<GoButton />
+				<GoButton onClick={() => this.getFileFromServer(this.state.gofilename)} />
 				
 				<div>
 				 { this.RenderNodeJsButton() }
@@ -271,7 +323,7 @@ class UpperApplicationWindow extends React.Component
 				 { this.RenderHtmlPane() } 
 				</div>
 			
-				<FileButton onClick={() => this.updateEditPaneValueFromServer() }/>
+				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
 			
 			</div>
 		);
@@ -339,12 +391,12 @@ class GenButton extends React.Component
 						top: 110,
 						left: 40,
 					}}
-				><img src={require('./images/genButtonBasic.png')} 
+				><img src={require('./images/newButton.png')} 
 						   alt={require('./images/genButtonBasicAlt.png')} 
 						   style={{
-								padding: 2, 
-								width:'70%',
-								height: '90%'
+								padding: 3, 
+								width:'62%',
+								height: '76%'
 						   }}
 					/>
 				</button>	
@@ -394,167 +446,186 @@ class JavaButton extends React.Component
   The DotNetButton method returns the button for displaying the .NET 
   filtered version of the source-file.
 */}
-function DotNetButton(props)
+class DotNetButton extends React.Component
 {
-	return (
-		<button
-			className='dotNetButton'
-			id='dotNetButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 110,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 110,
-				left: 286,
-			}}
-		><img src={require('./images/dotNetButtonBasic.png')} 
-	               alt={require('./images/dotNetButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 4, 
-	               		width:'60%',
-	               		height: '64%'
-	               }}
-	                 />
-		</button>	
-	);
+	render()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='dotNetButton'
+				id='dotNetButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 110,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 286,
+				}}
+			><img src={require('./images/dotNetButtonBasic.png')} 
+					   alt={require('./images/dotNetButtonBasicAlt.png')} 
+					   style={{
+							padding: 4, 
+							width:'60%',
+							height: '64%'
+					   }}
+						 />
+			</button>	
+		);
+	}
 }
 
 {/*
   The PhpButton method returns the button for displaying the PHP 
   filtered version of the source-file.
 */}
-function PhpButton(props)
+class PhpButton extends React.Component
 {
-	return (
-		<button
-			className='phpButton'
-			id='phpButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 110,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 110,
-				left: 410,
-			}}
-		>
-			<img src={require('./images/phpButtonBasic.png')} 
-	               alt={require('./images/phpButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 3, 
-	               		width:'62%',
-	               		height: '76%'
-	               }}
-	        />
-		</button>	
-	);
+	render ()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='phpButton'
+				id='phpButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 110,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 410,
+				}}
+			>
+				<img src={require('./images/phpButtonBasic.png')} 
+					   alt={require('./images/phpButtonBasicAlt.png')} 
+					   style={{
+							padding: 3, 
+							width:'62%',
+							height: '76%'
+					   }}
+				/>
+			</button>	
+		);
+	}
 }
 
 {/*
   The PythonButton method returns the button for displaying the Python
   filtered version of the source-file.
 */}
-function PythonButton(props)
+class PythonButton extends React.Component
 {
-	return (
-		<button
-			className='pythonButton'
-			id='pythonButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 110,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 110,
-				left: 534,
-			}}
-		><img src={require('./images/pythonButtonBasic.png')} 
-	               alt={require('./images/pythonButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 0, 
-	               		width:'88%',
-	               		height: '82%'
-	               }}
-	                 />
-		</button>	
-	);
+	render ()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='pythonButton'
+				id='pythonButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 110,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 534,
+				}}
+			><img src={require('./images/pythonButtonBasic.png')} 
+					   alt={require('./images/pythonButtonBasicAlt.png')} 
+					   style={{
+							padding: 0, 
+							width:'88%',
+							height: '82%'
+					   }}
+						 />
+			</button>	
+		);
+	}
 }
 
 {/*
   The CButton method returns the button for displaying the C
   filtered version of the source-file.
 */}
-function CButton(props)
+class CButton extends React.Component
 {
-	return (
-		<button
-			className='cButton'
-			id='cButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 110,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 110,
-				left: 658,
-			}}
-		><img src={require('./images/cButtonBasic.png')} 
-	               alt={require('./images/cButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 2, 
-	               		width:'27%',
-	               		height: '72%'
-	               }}
-	                 />
-		</button>	
-	);
+	render ()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='cButton'
+				id='cButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 110,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 658,
+				}}
+			><img src={require('./images/cButtonBasic.png')} 
+					   alt={require('./images/cButtonBasicAlt.png')} 
+					   style={{
+							padding: 2, 
+							width:'27%',
+							height: '72%'
+					   }}
+						 />
+			</button>	
+		);
+	}
 }
 
 {/*
   The GoButton method returns the button for displaying the Go
   filtered version of the source-file.
 */}
-function GoButton(props)
+class GoButton extends React.Component
 {
-	return (
-		<button
-			className='goButton'
-			id='goButton'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 110,
-				height: 40,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 110,
-				left: 782,
-			}}
-		><img src={require('./images/goButtonBasic.png')} 
-	               alt={require('./images/goButtonBasicAlt.png')} 
-	               style={{
-	               		padding: 0, 
-	               		width:'42%',
-	               		height: '70%'
-	               }}
-	                 />
-		</button>	
-	);
+	render ()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='goButton'
+				id='goButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 110,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 782,
+				}}
+			><img src={require('./images/goButtonBasic.png')} 
+					   alt={require('./images/goButtonBasicAlt.png')} 
+					   style={{
+							padding: 0, 
+							width:'42%',
+							height: '70%'
+					   }}
+						 />
+			</button>	
+		);
+	}
 }
 
 {/*
   The EditPane method returns the button for displaying the Node.js
-  filtered version of the source-file. IN THE NEXT VERSION, WE ESTABLISH
-  THE PROPS FROM THE PARENT, THEN GET THE LOCAL STATE FROM ITS PROPS.
+  filtered version of the source-file. 
 */}
 class EditPane extends React.Component
 {
@@ -571,7 +642,6 @@ class EditPane extends React.Component
     handleChange(event) 
     {
 		this.setState({value: event.target.value});
-		//alert("value is now" +this.state.value);
 		
 		currentValueOfEditPane = this.state.value;
     }
@@ -615,10 +685,7 @@ class EditPane extends React.Component
 					>
 
 	  				</textarea>
-            	
 
-            		
-            		
       		</form>
 		);
 	}
@@ -699,11 +766,11 @@ class FileButton extends React.Component
 					top: 1020,
 					left: 220,
 				}}
-			><img src={require('./images/sendButton.png')} 
+			><img src={require('./images/saveButton.png')} 
 					   alt={require('./images/nodeJsButtonBasicAlt.png')} 
 					   style={{
 							padding: 3, 
-							width:'60%',
+							width:'52%',
 							height: '78%'
 					   }}
 						 />
