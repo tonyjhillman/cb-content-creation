@@ -165,8 +165,9 @@ class UpperApplicationWindow extends React.Component
 			= this.saveCurrentEditsToServer.bind(this);
     }
     
-    saveCurrentEditsToServer()
+    saveCurrentEditsToServer(filename, textvalue)
     {  	
+      console.log(textvalue)
     	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
     							+ sourceLocation + currentFileName;	
     		
@@ -323,7 +324,7 @@ class UpperApplicationWindow extends React.Component
 				 { this.RenderHtmlPane() } 
 				</div>
 			
-				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
+				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename, this.state.value) }/>
 			
 			</div>
 		);
