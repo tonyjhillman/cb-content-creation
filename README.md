@@ -1,19 +1,19 @@
 ## Notes
 
 This repository provides a demonstration of how a Content Management tool, for the
-support of Couchbase documentation, might work. The idea is that users see the filtered
-version of a markdown file, showing only the content that applies to a specific 
-variant of the technology. They edit, and their work is reintegrated into the underlying
-composite markdown file, and optionally rendered as html.
+support of Couchbase documentation, might work. The idea is that users edit
+markdown files, and as they go render these files as html. Both markdown source
+and html renderings should be capable of being saved.
 
-So far, the demo does merely the following:
+At the point, the demo:
 
-* Allows initial content in the edit pane to be toggled, by clicking the GEN button
-* Shows static content, html-based, in the right-hand render-window.
-* Sends the current edit content (in the left-hand pane) to a server (click SEND)
-* Returns the dispatched content from the server to the client, and repaints the edit
-  window.
-* Demonstrates how to toggle button-appearance (click the NODE.JS button)
+* Allows an editable markdown template to be brought up in the edit pane, by mean
+  of the NEW button. Note that no provision has yet been made for this to be
+  preserved in original state, and saved under different names.
+* Allows a demo markdown file to be brought up in the edit pane, one for each of
+  the SDK languages.
+* Allows edits to be made in the edit pane, and saved by means of the SAVE button.
+* Allows retrieval and writing of files by communication with a node.js backend.
 
 To run you must have installed the following:
 
