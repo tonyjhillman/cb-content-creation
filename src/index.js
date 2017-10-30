@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css'
 import axios from 'axios';
 import { RingLoader } from 'react-spinners';
+import Button from './components/Button';
 
 {/*
   This initial function is called by the main render method, at the bottom.
@@ -532,6 +533,15 @@ class UpperApplicationWindow extends React.Component
       		/>
 		);
 	}
+    
+    changeEditPaneValueOnClick()
+    {
+        this.setState(prevState => ({
+                                    editPaneToggle: !prevState.editPaneToggle
+                                    }));
+        
+        this.state.value = this.state.editPaneToggle ? initialMarkdownContent : initialInstruction  ;
+    }
 
 	// The pane that shows the editable markdown. The value is the current
 	// textual content.
@@ -577,13 +587,9 @@ class UpperApplicationWindow extends React.Component
 				className='upperApplicationWindow'
 				id='upperApplicationWindow'
 				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 1072,
+					width: '100%',
 					height: 1074,
 					backgroundColor: 'white',
-					top: 28,
-					left: 610,
 				}}
 			>
 				<span>
@@ -591,54 +597,53 @@ class UpperApplicationWindow extends React.Component
 						src={require('./images/couchbaseLogo.png')}
 						alt={require('./images/couchbaseLogoAlt.png')}
 							style={{
-								position: 'relative',
-								width: 80,
-								height: 80,
-								top: 16,
-								left: 46}} />
-					<img
-						src={require('./images/toolTitle.png')}
-						alt={require('./images/toolTitleAlt.png')}
-							style={{
-								position: 'relative',
-								width: 704,
-								height: 64,
-								top: 12,
-								left: 60}} />
+								width: 40, 
+								height: 40, 
+								margin: '16px 0 0 46px'}} />
+          <h2 style={{
+            display: 'inline-block',
+            lineHeight: '40px',
+            margin: '0 10px',
+            fontWeight: 300,
+            verticalAlign: 'bottom'}}>Couchbase SDK Docs Editor</h2>
 				</span>
 
-				<GenButton onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
+        <br/>
+        
+				<Button title="New" onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
+        <Button title="Java" onClick={() => this.getFileFromServer(this.state.javafilename)} />
+        <Button title=".NET" onClick={() => this.getFileFromServer(this.state.dotnetfilename)} />
+        <Button title="PHP" onClick={() => this.getFileFromServer(this.state.phpfilename)} />
+        <Button title="Python" onClick={() => this.getFileFromServer(this.state.pythonfilename)} />
+        <Button title="C" onClick={() => this.getFileFromServer(this.state.cfilename)} />
+        <Button title="Go" onClick={() => this.getFileFromServer(this.state.gofilename)} />
+        <Button title="Node.js" onClick={() => this.getFileFromServer(this.state.nodejsfilename)} />
 
-				<JavaButton onClick={() => this.getFileFromServer(this.state.javafilename)}/>
-
-				<DotNetButton onClick={() => this.getFileFromServer(this.state.dotnetfilename)}/>
-
-				<PhpButton onClick={() => this.getFileFromServer(this.state.phpfilename)} />
-
-				<PythonButton onClick={() => this.getFileFromServer(this.state.pythonfilename)} />
-
-				<CButton onClick={() => this.getFileFromServer(this.state.cfilename)} />
-
-				<GoButton onClick={() => this.getFileFromServer(this.state.gofilename)} />
-
-				<div>
-				 { this.RenderNodeJsButton() }
+				<div className="mainBox">
+          <div>
+            <EditPane
+              onChange={(text) => {
+                this.setState({
+                  htmlPaneContent: marked(text)
+                })
+              }}
+              value={ this.state.value }
+            />
+            <EditPane
+              onChange={(text) => {
+                this.setState({
+                  htmlPaneContent: marked(text)
+                })
+              }}
+              value={ this.state.value }
+            />
+          </div>
+          
+          <RenderPane
+            htmlPaneContent={ this.state.htmlPaneContent }
+          />
 				</div>
-
-				<NoFileButton onClick={() => this.getFileFromServer(this.state.nofilefilename)} />
-
-				<div>
-				 	{ this.RenderSpinner() }
-				</div>
-
-				<div>
-				 { this.RenderEditPane() }
-				</div>
-
-				<div>
-				 { this.RenderHtmlPane() }
-				</div>
-
+			
 				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
 
 			</div>
@@ -1115,6 +1120,25 @@ class EditPane extends React.Component
     {
 		return (
 
+      <form onSubmit={this.handleSubmit}>
+					
+	  				<textarea
+              value={this.state.value}
+              onChange={ (event) => {
+                this.handleChange(event)
+              }}
+              style={{
+                width: '100%',
+                paddingTop: 10,
+                paddingLeft: 10,
+                paddingRight: 10,
+                paddingBottom: 10,
+                border: '2px solid black',
+                backgroundColor: 'white',
+                boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+              }}
+            >
+
 		<div >
 			<form
 				onKeyDown={this.handleKeyDown}
@@ -1124,26 +1148,7 @@ class EditPane extends React.Component
 					onChange={ (event) => { this.handleChange(event) }}
 					onload={ this.tellme() }
 
-					style={{
-						paddingTop: 10,
-						paddingLeft: 10,
-						paddingRight: 10,
-						paddingBottom: 10,
-						position: 'absolute',
-						border: '2px solid black',
-						width: 470,
-						height: 812,
-						backgroundColor: 'white',
-						boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-						top: 170,
-						left: 40,
-						zIndex: 89
-					}}
-				>
-
-				</textarea>
-      		</form>
-        </div>
+      </form>
 		);
 	}
 }
@@ -1159,14 +1164,9 @@ function RenderPane(props)
 			className='renderPane'
 			id='renderPane'
 			style={{
-				position: 'absolute',
 				border: '2px solid black',
-				width: 490,
-				height: 832,
 				backgroundColor: 'white',
 				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 170,
-				left: 540,
 			}}
 		>
 			<div style={{
