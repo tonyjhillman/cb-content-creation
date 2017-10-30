@@ -90,6 +90,8 @@ function BaseApplicationWindow(props)
     var currentFileName = 'default.md';
     
 
+    
+
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
   to say, inner) window, within which all elements except the save and render
@@ -156,60 +158,49 @@ class UpperApplicationWindow extends React.Component
     
     saveCurrentEditsToServer()
     {  	
-    	var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
-    							+ sourceLocation + currentFileName;	
-    		
-    		axios.post(nodeJsTargetURL, currentValueOfEditPane, 
-							{headers: {'Content-Type': 'text/plain'}}
-				).then(response => { 
-        			
-        		this.setState ( { value: response.data } );
-        	});   	
-    }
-    
-    getRequiredFiles(targetFilename)
-    {
     	
-    	this.setState ( { value: 'Loading...' } );
-    	
-    	this.getFileFromServer(targetFilename);
+
+			var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
+									+ sourceLocation + currentFileName;	
+			
+				axios.post(nodeJsTargetURL, currentValueOfEditPane, 
+								{headers: {'Content-Type': 'text/plain'}}
+					).then(response => { 
+					
+					this.setState ( { value: response.data } );
+				}).catch(error => { 
+        		
+        			alert(error);
+
+        		});  
+	
     }
     
     getFileFromServer(targetFilename)
-    {
-    	alert("Getting file named " + targetFilename);
+    {	
+		currentFileName = targetFilename;
+		
+    	this.setState ( { value: 'Loading...' } );
     	
     	this.state.spinnerdisplay = true;
-    	
-    	
+
     	var nodeJsTargetURL = 'http://localhost:8083/' + '?' 
     		+ "LocationForRead=" + sourceLocation + targetFilename;
     	
     	axios.get(nodeJsTargetURL, 
 							{headers: {'Content-Type': 'text/plain'}}
 				).then(response => { 
-				
-				alert("Success in getting file");
         			
-        		this.setState ( { value: response.data } );
-        		this.forceUpdate();
-        		
-        		if (targetFilename != 'loading.md')
-        		{
-        			alert("File was not loading.md");
-        			
+        			this.setState ( { value: response.data } );
         			this.setState ( { spinnerdisplay: false } );
-        			
-        			alert("Spinner display now " + this.state.spinnerdisplay);
-        			
-        		}
 
-        	}).catch(error => { 
-        		{
+
+        		}).catch(error => { 
+        		
         			this.setState ( { spinnerdisplay: false } );
         			this.setState ( { value: 'File Not Found' } );
-        		}}); 
 
+        		}); 
     }
  
 	setNodeImageOnClick() 
@@ -241,7 +232,7 @@ class UpperApplicationWindow extends React.Component
 	{
 		return (
       		<NodeJsButton image={ this.state.image } 
-      			onClick={() => this.getRequiredFiles(this.state.nodejsfilename)}
+      			onClick={() => this.getFileFromServer(this.state.nodejsfilename)}
       		/>
 		);
 	}
@@ -317,25 +308,25 @@ class UpperApplicationWindow extends React.Component
 								left: 60}} />
 				</span>    
 			
-				<GenButton onClick={() => this.getRequiredFiles(this.state.defaultfilename) } />
+				<GenButton onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
 			
-				<JavaButton onClick={() => this.getRequiredFiles(this.state.javafilename)}/>
+				<JavaButton onClick={() => this.getFileFromServer(this.state.javafilename)}/>
 			
-				<DotNetButton onClick={() => this.getRequiredFiles(this.state.dotnetfilename)}/>
+				<DotNetButton onClick={() => this.getFileFromServer(this.state.dotnetfilename)}/>
 			
-				<PhpButton onClick={() => this.getRequiredFiles(this.state.phpfilename)} />
+				<PhpButton onClick={() => this.getFileFromServer(this.state.phpfilename)} />
 			
-				<PythonButton onClick={() => this.getRequiredFiles(this.state.pythonfilename)} />
+				<PythonButton onClick={() => this.getFileFromServer(this.state.pythonfilename)} />
 			
-				<CButton onClick={() => this.getRequiredFiles(this.state.cfilename)} />
+				<CButton onClick={() => this.getFileFromServer(this.state.cfilename)} />
 			
-				<GoButton onClick={() => this.getRequiredFiles(this.state.gofilename)} />
+				<GoButton onClick={() => this.getFileFromServer(this.state.gofilename)} />
 				
 				<div>
 				 { this.RenderNodeJsButton() }
 				</div>
 				
-				<NoFileButton onClick={() => this.getRequiredFiles(this.state.nofilefilename)} />
+				<NoFileButton onClick={() => this.getFileFromServer(this.state.nofilefilename)} />
 				
 				<div>
 				 	{ this.RenderSpinner() }
@@ -751,9 +742,11 @@ class EditPane extends React.Component
     
     handleChange(event) 
     {
-		this.setState({value: event.target.value});
+		this.setState({value: event.target.value}, () => {
+
+			currentValueOfEditPane = this.state.value;	
 		
-		currentValueOfEditPane = this.state.value;	
+		});
 		
     }
     
