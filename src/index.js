@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css'
 import axios from 'axios';
+import { RingLoader } from 'react-spinners';
 
 {/*
   This initial function is called by the main render method, at the bottom.
@@ -68,31 +69,15 @@ function BaseApplicationWindow(props)
 	// cationWindow, we use the currentValueOfEditPane global variable. This is kept
 	// up to date by the child, on every change to the text, based on user input.
 	//
+	// It would be nice to dispense with this, and use the state and props of the
+	// parent and child to pass the information. But I've yet to figure out quite
+	// how: passing { this.props.value } as a param to a parent method references
+	// the *parent's* prop, not the child's. How then, to specify the child value,
+	// when the parent makes the call?
+	//
 	var currentValueOfEditPane = "default";
 	
-	// Some content to play with, brought up by toggling the GEN button.
-	//
-	var initialMarkdownContent = '%23The First-Level Header\n\nThis is a regular paragraph, which starts '
-				+  'describing a topic. It introduces a *numbered* list, as follows:\n\n'
-				+ '1. This is the first element\n'
-				+ '2. This is the second element\n'
-				+ '3. This is the third element\n\n'
-				+ 'Now we are back to a paragraph again. Now, an **unordered** list:\n\n'
-				+ '* The first element\n'
-				+ '* The second\n'
-				+ '* The third\n\n'
-				+ 'Now, a *mixed* list:\n\n'
-				+ '1. The first element\n'
-				+ '2. The second element\n'
-				+ '  * The first element in an unordered sublist\n'
-				+ '  * The second\n'
-				+ '  * The third\n'
-				+ '3. The third element in the initial, ordered list\n\n'
-				+ '%23%23 The Second-Level Header\n\n'
-				+ 'Now, some links:\n\n'
-				+ '[I am an inline-style link](https://www.google.com)\n\n'
-				+ '[I am an inline-style link with title](https://www.google.com "Google\'s Homepage")';
-
+	
 	// For now, the location of files that are being read and written.
 	//
     const sourceLocation = "./writes/";
@@ -103,6 +88,7 @@ function BaseApplicationWindow(props)
     // establish the filename.
     //
     var currentFileName = 'default.md';
+    
 
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
@@ -157,10 +143,13 @@ class UpperApplicationWindow extends React.Component
 			pythonfilename: 'python.md',
 			cfilename: 'c.md',
 			gofilename: 'go.md',
-			nodejsfilename: 'nodejs.md'
+			nodejsfilename: 'nodejs.md',
+			nofilefilename: 'nofile.md',
+			
+			spinnerdisplay: false
+			
 		};
 			
-		this.changeEditPaneValueOnClick = this.changeEditPaneValueOnClick.bind(this);
 		this.saveCurrentEditsToServer 
 			= this.saveCurrentEditsToServer.bind(this);
     }
@@ -173,19 +162,25 @@ class UpperApplicationWindow extends React.Component
     		axios.post(nodeJsTargetURL, currentValueOfEditPane, 
 							{headers: {'Content-Type': 'text/plain'}}
 				).then(response => { 
-        				//alert("Saved on server: " + response.data);
         			
         		this.setState ( { value: response.data } );
         	});   	
     }
     
+    getRequiredFiles(targetFilename)
+    {
+    	
+    	this.setState ( { value: 'Loading...' } );
+    	
+    	this.getFileFromServer(targetFilename);
+    }
+    
     getFileFromServer(targetFilename)
     {
-    	//alert("Data from child is " + targetFilename);
+    	alert("Getting file named " + targetFilename);
     	
-    	currentFileName = targetFilename;
+    	this.state.spinnerdisplay = true;
     	
-    	//alert("Calling getFileFromServer");
     	
     	var nodeJsTargetURL = 'http://localhost:8083/' + '?' 
     		+ "LocationForRead=" + sourceLocation + targetFilename;
@@ -193,19 +188,28 @@ class UpperApplicationWindow extends React.Component
     	axios.get(nodeJsTargetURL, 
 							{headers: {'Content-Type': 'text/plain'}}
 				).then(response => { 
-        				//alert("Returned from server: " + response.data);
+				
+				alert("Success in getting file");
         			
         		this.setState ( { value: response.data } );
-        	});   	
-    }
-    
-    changeEditPaneValueOnClick()
-    {
-    	this.setState(prevState => ({
-    		editPaneToggle: !prevState.editPaneToggle
-    	}));
-    	
-    	this.state.value = this.state.editPaneToggle ? initialMarkdownContent : initialInstruction  ;
+        		this.forceUpdate();
+        		
+        		if (targetFilename != 'loading.md')
+        		{
+        			alert("File was not loading.md");
+        			
+        			this.setState ( { spinnerdisplay: false } );
+        			
+        			alert("Spinner display now " + this.state.spinnerdisplay);
+        			
+        		}
+
+        	}).catch(error => { 
+        		{
+        			this.setState ( { spinnerdisplay: false } );
+        			this.setState ( { value: 'File Not Found' } );
+        		}}); 
+
     }
  
 	setNodeImageOnClick() 
@@ -233,11 +237,12 @@ class UpperApplicationWindow extends React.Component
 	//	);
 	// }
 	
-		RenderNodeJsButton () {
-	return (
-      <NodeJsButton image={ this.state.image } 
-      	onClick={() => this.getFileFromServer(this.state.nodejsfilename)}
-      />
+	RenderNodeJsButton () 
+	{
+		return (
+      		<NodeJsButton image={ this.state.image } 
+      			onClick={() => this.getRequiredFiles(this.state.nodejsfilename)}
+      		/>
 		);
 	}
 	
@@ -245,9 +250,9 @@ class UpperApplicationWindow extends React.Component
 	RenderEditPane () 
 	{
 		return (
-      		<EditPane 
-      			value={ this.state.value }
-      		/>
+			<EditPane 
+				value={ this.state.value }
+			/>
 		);
 	}
                   	
@@ -259,8 +264,23 @@ class UpperApplicationWindow extends React.Component
     		/> 
     	);
     }
+    
+    RenderSpinner()
+    {
+
+    	return (
+    		
+    		
+    		<Spinner
+
+    			display={ this.state.spinnerdisplay }
+    			
+    		/> 
+    	);
+    }
 	
 	render () {
+		
 
 		return (
 			<div
@@ -297,23 +317,30 @@ class UpperApplicationWindow extends React.Component
 								left: 60}} />
 				</span>    
 			
-				<GenButton onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
+				<GenButton onClick={() => this.getRequiredFiles(this.state.defaultfilename) } />
 			
-				<JavaButton onClick={() => this.getFileFromServer(this.state.javafilename)}/>
+				<JavaButton onClick={() => this.getRequiredFiles(this.state.javafilename)}/>
 			
-				<DotNetButton onClick={() => this.getFileFromServer(this.state.dotnetfilename)}/>
+				<DotNetButton onClick={() => this.getRequiredFiles(this.state.dotnetfilename)}/>
 			
-				<PhpButton onClick={() => this.getFileFromServer(this.state.phpfilename)} />
+				<PhpButton onClick={() => this.getRequiredFiles(this.state.phpfilename)} />
 			
-				<PythonButton onClick={() => this.getFileFromServer(this.state.pythonfilename)} />
+				<PythonButton onClick={() => this.getRequiredFiles(this.state.pythonfilename)} />
 			
-				<CButton onClick={() => this.getFileFromServer(this.state.cfilename)} />
+				<CButton onClick={() => this.getRequiredFiles(this.state.cfilename)} />
 			
-				<GoButton onClick={() => this.getFileFromServer(this.state.gofilename)} />
+				<GoButton onClick={() => this.getRequiredFiles(this.state.gofilename)} />
 				
 				<div>
 				 { this.RenderNodeJsButton() }
 				</div>
+				
+				<NoFileButton onClick={() => this.getRequiredFiles(this.state.nofilefilename)} />
+				
+				<div>
+				 	{ this.RenderSpinner() }
+				</div>
+				     		
 			
 				<div>
 				 { this.RenderEditPane() }
@@ -326,6 +353,42 @@ class UpperApplicationWindow extends React.Component
 				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
 			
 			</div>
+		);
+	}
+}
+
+{/*
+  The NoFileButton method returns the button whereby a non-existent
+  file is searched for, and the associated error-handling tested.
+*/}
+class NoFileButton extends React.Component
+{
+	render ()
+	{
+		return (
+			<button
+				onClick={this.props.onClick}
+				className='noFileButton'
+				id='noFileButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 124,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 58,
+					left: 906,
+				}}
+			><img src={require('./images/noFileButton.png')} 
+					   alt={require('./images/goButtonBasicAlt.png')}  
+					   style={{
+							padding: 2, 
+							width:'90%',
+							height: '78%'
+					   }}
+						 />
+			</button>	
 		);
 	}
 }
@@ -587,6 +650,7 @@ class CButton extends React.Component
 	}
 }
 
+
 {/*
   The GoButton method returns the button for displaying the Go
   filtered version of the source-file.
@@ -623,6 +687,48 @@ class GoButton extends React.Component
 	}
 }
 
+class Spinner extends React.Component
+{
+	constructor(props) 
+	{
+		super(props);
+		
+		this.state = 
+		{
+			display: props.display
+		};
+		
+	}
+
+	
+	render ()
+	{
+		return (
+			<div 
+				
+				
+				style={{
+						position: 'absolute',
+						top: 400,
+						display: this.props.display ? 'inline' : 'none' ,
+						left: 254,
+						paddingTop: 10,
+						zIndex: 99
+					}}>
+					
+				<RingLoader
+					color={'#B0B0B0'} 
+					
+	
+					
+				/>
+			</div>
+		);
+	}
+}
+
+
+	
 {/*
   The EditPane method returns the button for displaying the Node.js
   filtered version of the source-file. 
@@ -632,41 +738,85 @@ class EditPane extends React.Component
 	constructor(props) 
 	{
 		super(props);
+		
+		this.handleKeyDown = this.handleKeyDown.bind(this);
 
 		this.handleChange = this.handleChange.bind(this);
-		this.handleSubmit = this.handleSubmit.bind(this);
 		
-		this.state = {value: props.value};
+		this.state = {
+						value: props.value,
+					
+					};
     }
     
     handleChange(event) 
     {
 		this.setState({value: event.target.value});
 		
-		currentValueOfEditPane = this.state.value;
-    }
-
-    handleSubmit(event) 
-    {
-		// alert(currentValueOfEditPane);
+		currentValueOfEditPane = this.state.value;	
+		
     }
     
 	componentWillReceiveProps(nextProps)
 	{
 		this.setState( { value: nextProps.value } );
 	}
+	
+	tellme()
+	{
+		
+	}
+
+	// Handles Cmd-S saving of the current edit pane. This duplicates
+	// the parental method that is triggered by clicking the SAVE button.
+	// I have not yet found a way of triggering that method without a
+	// click, and so have resorted to implementing a second-time, strictly
+	// in the local context of the child (EditPane) component. I have
+	// taken the step of, in the last line of this routine, updating
+	// currentValueOfEditPane, to keep all notions of the current edit
+	// pane-content in sync. I'm not happy with this, but need an
+	// alternative.
+	//	
+	handleKeyDown(event) 
+	{
+		let charCode = String.fromCharCode(event.which).toLowerCase();
+
+		if(event.metaKey && charCode === 's') 
+		{
+			event.preventDefault();
+			alert("Cmd + S pressed");
+	
+			var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
+								+ sourceLocation + currentFileName;	
+	
+			axios.post(nodeJsTargetURL, currentValueOfEditPane, 
+							{headers: {'Content-Type': 'text/plain'}}
+				).then(response => { 
+			
+				this.setState ( { value: response.data } );
+		
+				currentValueOfEditPane = this.state.value;
+		
+			}); 
+		}  	
+	}
     
     render ()
     {
-    	currentValueOfEditPane = this.state.value;
     	
 		return (
+		
+		<div >
 	
-			<form onSubmit={this.handleSubmit}>
+			<form 
+					onKeyDown={this.handleKeyDown} 
+					>
+					
 					
 	  				<textarea
 	  					value={this.state.value} 
 	  					onChange={ (event) => { this.handleChange(event) }} 
+	  					onload={ this.tellme() } 	  					
 	  					
 	  					style={{
 	  						paddingTop: 10,
@@ -681,12 +831,23 @@ class EditPane extends React.Component
 							boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
 							top: 170,
 							left: 40,
+							zIndex: 89
 						}}
 					>
 
 	  				</textarea>
+	  				
+
+	  				
+	  			
+
 
       		</form>
+      		
+
+      			  				
+	  				
+        			</div>
 		);
 	}
 }
