@@ -77,7 +77,6 @@ function BaseApplicationWindow(props)
 	//
 	var currentValueOfEditPane = "default";
 	
-	
 	// For now, the location of files that are being read and written.
 	//
     const sourceLocation = "./writes/";
@@ -89,9 +88,15 @@ function BaseApplicationWindow(props)
     //
     var currentFileName = 'default.md';
     
-
+    // If the user attempts to access a file that takes a long time to show up, they
+    // may elect to give up, and select a different file instead. In this case, the
+    // default behaviour for inaccessible files (the EditPane window shows a "File Not
+    // Found" message) is undesirable, since the user has brought up a different file,
+    // and is editing it. By setting the following variable, we prevent the error message
+    // from being rendered, in cases where the user has moved on.
+    //
+    var disregardAnyPriorFileAccessAttempt = false;
     
-
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
   to say, inner) window, within which all elements except the save and render
@@ -148,8 +153,7 @@ class UpperApplicationWindow extends React.Component
 			nodejsfilename: 'nodejs.md',
 			nofilefilename: 'nofile.md',
 			
-			spinnerdisplay: false
-			
+			spinnerdisplay: false	
 		};
 			
 		this.saveCurrentEditsToServer 
@@ -158,26 +162,24 @@ class UpperApplicationWindow extends React.Component
     
     saveCurrentEditsToServer()
     {  	
-    	
-
-			var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
-									+ sourceLocation + currentFileName;	
+		var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
+								+ sourceLocation + currentFileName;	
+		
+			axios.post(nodeJsTargetURL, currentValueOfEditPane, 
+							{headers: {'Content-Type': 'text/plain'}}
+				).then(response => { 
+				
+				this.setState ( { value: response.data } );
+			}).catch(error => { 
 			
-				axios.post(nodeJsTargetURL, currentValueOfEditPane, 
-								{headers: {'Content-Type': 'text/plain'}}
-					).then(response => { 
-					
-					this.setState ( { value: response.data } );
-				}).catch(error => { 
-        		
-        			alert(error);
-
-        		});  
-	
+				alert(error);
+			});  
     }
     
     getFileFromServer(targetFilename)
     {	
+    	disregardAnyPriorFileAccessAttempt = false;
+    	
 		currentFileName = targetFilename;
 		
     	this.setState ( { value: 'Loading...' } );
@@ -187,19 +189,34 @@ class UpperApplicationWindow extends React.Component
     	var nodeJsTargetURL = 'http://localhost:8083/' + '?' 
     		+ "LocationForRead=" + sourceLocation + targetFilename;
     	
-    	axios.get(nodeJsTargetURL, 
+    	axios.get(nodeJsTargetURL, {timeout: 6000},
 							{headers: {'Content-Type': 'text/plain'}}
 				).then(response => { 
         			
         			this.setState ( { value: response.data } );
         			this.setState ( { spinnerdisplay: false } );
-
+        			
+        			// If we were waiting to access a file that has not yet
+					// arrived, and so have decided to try another, register this fact,
+					// so that our EditPane will not be changed back to the File
+					// Not Found message (so making our current editing activities
+					// disappear) when the network times out.
+					//
+					disregardAnyPriorFileAccessAttempt = true;
 
         		}).catch(error => { 
         		
-        			this.setState ( { spinnerdisplay: false } );
-        			this.setState ( { value: 'File Not Found' } );
-
+        			// If the user has not elected to access a different
+        			// file in the meantime, when the error is received,
+        			// handle it by informing the user that the file was
+        			// not found. Otherwise, the display area of the EditPane
+        			// will reflect whatever the user has accessed since.
+        			//
+        			if (!disregardAnyPriorFileAccessAttempt)
+        			{
+        				this.setState ( { spinnerdisplay: false } );
+        				this.setState ( { value: 'File Not Found' } );
+        			}
         		}); 
     }
  
@@ -237,7 +254,6 @@ class UpperApplicationWindow extends React.Component
 		);
 	}
 	
-	
 	RenderEditPane () 
 	{
 		return (
@@ -258,21 +274,15 @@ class UpperApplicationWindow extends React.Component
     
     RenderSpinner()
     {
-
-    	return (
-    		
-    		
+    	return (	
     		<Spinner
-
-    			display={ this.state.spinnerdisplay }
-    			
+    			display={ this.state.spinnerdisplay }	
     		/> 
     	);
     }
 	
 	render () {
 		
-
 		return (
 			<div
 				className='upperApplicationWindow'
@@ -678,6 +688,11 @@ class GoButton extends React.Component
 	}
 }
 
+{/*
+  The Spinner is visible while a markdown file is loading. Once the file
+  has loaded, the spinner disappears. NEED TO TEST what happens when the
+  loading process is interrupted by a user-click on a different button.  
+*/}
 class Spinner extends React.Component
 {
 	constructor(props) 
@@ -687,17 +702,14 @@ class Spinner extends React.Component
 		this.state = 
 		{
 			display: props.display
-		};
-		
+		};	
 	}
 
-	
 	render ()
 	{
 		return (
 			<div 
-				
-				
+	
 				style={{
 						position: 'absolute',
 						top: 400,
@@ -709,9 +721,7 @@ class Spinner extends React.Component
 					
 				<RingLoader
 					color={'#B0B0B0'} 
-					
 	
-					
 				/>
 			</div>
 		);
@@ -757,7 +767,9 @@ class EditPane extends React.Component
 	
 	tellme()
 	{
-		
+		// This method is called when loading (as opposed to rendering)
+		// is complete. I have no use for it right now, but it may prove
+		// important in due course, so I have left this here.
 	}
 
 	// Handles Cmd-S saving of the current edit pane. This duplicates
@@ -777,7 +789,6 @@ class EditPane extends React.Component
 		if(event.metaKey && charCode === 's') 
 		{
 			event.preventDefault();
-			alert("Cmd + S pressed");
 	
 			var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
 								+ sourceLocation + currentFileName;	
