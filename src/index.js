@@ -97,6 +97,10 @@ function BaseApplicationWindow(props)
     //
     var disregardAnyPriorFileAccessAttempt = false;
     
+    // Do not allow attempts to save a file before a file has been loaded.
+    //
+    var canSaveFile = false;
+    
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
   to say, inner) window, within which all elements except the save and render
@@ -162,22 +166,31 @@ class UpperApplicationWindow extends React.Component
     
     saveCurrentEditsToServer()
     {  	
-		var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
-								+ sourceLocation + currentFileName;	
+    	if (canSaveFile)
+    	{
+			var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
+									+ sourceLocation + currentFileName;	
 		
-			axios.post(nodeJsTargetURL, currentValueOfEditPane, 
-							{headers: {'Content-Type': 'text/plain'}}
-				).then(response => { 
+				axios.post(nodeJsTargetURL, currentValueOfEditPane, 
+								{headers: {'Content-Type': 'text/plain'}}
+					).then(response => { 
 				
-				this.setState ( { value: response.data } );
-			}).catch(error => { 
+					this.setState ( { value: response.data } );
+				}).catch(error => { 
 			
-				alert(error);
-			});  
+					alert(error);
+				});  
+		}
+		else
+		{
+			alert("Nothing to be Saved...");
+		}
     }
     
     getFileFromServer(targetFilename)
     {	
+    	canSaveFile = false;
+    	
     	disregardAnyPriorFileAccessAttempt = false;
     	
 		currentFileName = targetFilename;
@@ -195,6 +208,7 @@ class UpperApplicationWindow extends React.Component
         			
         			this.setState ( { value: response.data } );
         			this.setState ( { spinnerdisplay: false } );
+        			currentValueOfEditPane = this.state.value;
         			
         			// If we were waiting to access a file that has not yet
 					// arrived, and so have decided to try another, register this fact,
@@ -203,6 +217,7 @@ class UpperApplicationWindow extends React.Component
 					// disappear) when the network times out.
 					//
 					disregardAnyPriorFileAccessAttempt = true;
+
 
         		}).catch(error => { 
         		
@@ -752,6 +767,8 @@ class EditPane extends React.Component
     
     handleChange(event) 
     {
+    	canSaveFile = true;
+    	
 		this.setState({value: event.target.value}, () => {
 
 			currentValueOfEditPane = this.state.value;	
@@ -790,68 +807,61 @@ class EditPane extends React.Component
 		{
 			event.preventDefault();
 	
-			var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
-								+ sourceLocation + currentFileName;	
+			if (canSaveFile)
+			{
+				var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite=" 
+									+ sourceLocation + currentFileName;	
 	
-			axios.post(nodeJsTargetURL, currentValueOfEditPane, 
-							{headers: {'Content-Type': 'text/plain'}}
-				).then(response => { 
+				axios.post(nodeJsTargetURL, currentValueOfEditPane, 
+								{headers: {'Content-Type': 'text/plain'}}
+					).then(response => { 
 			
-				this.setState ( { value: response.data } );
+					this.setState ( { value: response.data } );
 		
-				currentValueOfEditPane = this.state.value;
+					currentValueOfEditPane = this.state.value;
 		
-			}); 
+				}); 
+			}
+			else
+			{
+				alert("No File to be Saved");
+			}
 		}  	
 	}
     
     render ()
-    {
-    	
+    {	
 		return (
 		
 		<div >
-	
 			<form 
-					onKeyDown={this.handleKeyDown} 
-					>
+				onKeyDown={this.handleKeyDown} 
+			>
+				<textarea
+					value={this.state.value} 
+					onChange={ (event) => { this.handleChange(event) }} 
+					onload={ this.tellme() } 	  					
 					
-					
-	  				<textarea
-	  					value={this.state.value} 
-	  					onChange={ (event) => { this.handleChange(event) }} 
-	  					onload={ this.tellme() } 	  					
-	  					
-	  					style={{
-	  						paddingTop: 10,
-	  						paddingLeft: 10,
-	  						paddingRight: 10,
-	  						paddingBottom: 10,
-							position: 'absolute',
-							border: '2px solid black',
-							width: 470,
-							height: 812,
-							backgroundColor: 'white',
-							boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-							top: 170,
-							left: 40,
-							zIndex: 89
-						}}
-					>
+					style={{
+						paddingTop: 10,
+						paddingLeft: 10,
+						paddingRight: 10,
+						paddingBottom: 10,
+						position: 'absolute',
+						border: '2px solid black',
+						width: 470,
+						height: 812,
+						backgroundColor: 'white',
+						boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+						top: 170,
+						left: 40,
+						zIndex: 89
+					}}
+				>
 
-	  				</textarea>
-	  				
-
-	  				
-	  			
-
-
+				</textarea>
       		</form>
-      		
-
-      			  				
-	  				
-        			</div>
+        </div>
 		);
 	}
 }
