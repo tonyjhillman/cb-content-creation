@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.17.0",
     "draft-js": "^0.10.4",
+    "marked": "^0.3.6",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-scripts": "1.0.14",
