@@ -412,31 +412,7 @@ class UpperApplicationWindow extends React.Component
 			super(props);
       this.state = {
 				image: 'nodeJsButtonBasic.png',
-				htmlPaneContent: '<h1 id="the-first-level-header">The First-Level Header</h1>'
-					+ '\n\n'
-					+ '\<p\>This is a regular paragraph, which starts describing a topic.'
-					+ 'It introduces a <em>numbered</em> list, as follows:</p>'
-					+ '<ol>'
-					+ '<li>This is the first element</li>'
-					+ '<li>This is the second element</li>'
-					+ '<li>This is the third element</li>'
-					+ '</ol>'
-					+ '<p>Now we are back to a paragraph again. Now, an '
-					+ '<strong>unordered</strong> list:</p>'
-					+ '<ul>'
-					+ '<li>The first element</li>'
-					+ '<li>The second</li>'
-					+ '<li>The third</li>'
-					+ '</ul>'
-					+ '</li>'
-					+ '<li>The third element in the initial, ordered list</li>'
-					+ '</ol>'
-					+ '<h2 id="the-second-level-header">The Second-Level Header</h2>'
-					+ '<p>Now, some links:</p>'
-					+ '<p><a href="https://www.google.com">I&#39;m an inline-style'
-					+ ' link</a></p>'
-					+ '<p><a href="https://www.google.com" title="Google&#39;s '
-					+ 'Homepage">I&#39;m an inline-style link with title</a></p>',
+				htmlPaneContent: '',
 				nodeImageToggle: true,
 				editPaneToggle: true,
 				value: 'Please click the NEW button to create new content',
