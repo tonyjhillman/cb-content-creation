@@ -39,25 +39,9 @@ function BaseApplicationWindow(props)
 {
 	return (
 	    <div>
-
-			<div
-				className='baseApplicationWindow'
-				id='baseApplicationWindow'
-				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 1650,
-					height: 1090,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 20,
-					left: 40,
-				}}
-			>
-			</div>
-
-			<FileSelectionOuterWindow />
-
+            
+            <FileSelectionOuterWindow />
+	    
 			<UpperApplicationWindow />
 
 		</div>
