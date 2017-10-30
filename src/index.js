@@ -542,44 +542,7 @@ class UpperApplicationWindow extends React.Component
         
         this.state.value = this.state.editPaneToggle ? initialMarkdownContent : initialInstruction  ;
     }
-
-	// The pane that shows the editable markdown. The value is the current
-	// textual content.
-	//
-	RenderEditPane ()
-	{
-		return (
-			<EditPane
-				value={ this.state.value }
-			/>
-		);
-	}
-
-    // The pane that shows the rendered version of the markdown that is being
-    // edited.
-    //
-    RenderHtmlPane()
-    {
-    	return (
-    		<RenderPane
-    			htmlPaneContent={ this.state.htmlPaneContent }
-    		/>
-    	);
-    }
-
-    // The spinner should only be visible while file-access is underway. The
-    // spinnerdisplay property is therefore used to control whether the
-    // display of the component is 'inline' or 'none'.
-    //
-    RenderSpinner()
-    {
-    	return (
-    		<Spinner
-    			display={ this.state.spinnerdisplay }
-    		/>
-    	);
-    }
-
+	
 	render () {
 
 		return (
@@ -624,7 +587,7 @@ class UpperApplicationWindow extends React.Component
             <EditPane
               onChange={(text) => {
                 this.setState({
-                  htmlPaneContent: marked(text)
+                  htmlPaneContent: text
                 })
               }}
               value={ this.state.value }
@@ -632,7 +595,7 @@ class UpperApplicationWindow extends React.Component
             <EditPane
               onChange={(text) => {
                 this.setState({
-                  htmlPaneContent: marked(text)
+                  htmlPaneContent: text
                 })
               }}
               value={ this.state.value }
