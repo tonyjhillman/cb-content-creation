@@ -186,27 +186,53 @@ class FileSelectionContent extends React.Component
 		super(props);
 		this.state = {
 			plusOrMinusImageToggle: true,
-			image: 'plusSign.png'
+			javaImage: 'plusSign.png',
+			dotNetImage: 'plusSign.png',
+			beneathJavaTopMeasurement: 76
 		}
 	};
 
-	setPlusOrMinusOnClick()
+	JavaSetPlusOrMinusOnClick()
 	{
 		this.setState(prevState => ({
-				plusOrMinusImageToggle: !prevState.plusOrMinusImageToggle
+				javaPlusOrMinusImageToggle: !prevState.javaPlusOrMinusImageToggle
 			}));
 
-			this.state.image = this.state.plusOrMinusImageToggle ? 'minusSign.png' : 'plusSign.png' ;
+			this.state.javaImage = this.state.javaPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
+
+			this.state.beneathJavaTopMeasurement = this.state.javaPlusOrMinusImageToggle ? this.state.beneathJavaTopMeasurement - 76: this.state.beneathJavaTopMeasurement + 76;
+	}
+
+	DotNetSetPlusOrMinusOnClick()
+	{
+		this.setState(prevState => ({
+				dotNetPlusOrMinusImageToggle: !prevState.dotNetPlusOrMinusImageToggle
+			}));
+
+			this.state.dotNetImage = this.state.dotNetPlusOrMinusImageToggle ? 'minusSign.png' : 'plusSign.png' ;
 	}
 
 	// Button display-toggling, which we won't use for now.
 	//
-	 RenderPlusOrMinusButton () {
+	 JavaRenderPlusOrMinusButton () {
 		 	//alert("now rendering PlusOrMinusButton with this.state.image as " + this.state.image);
 	 return (
-     <PlusOrMinusButton
-		 		image = { this.state.image}
-				onClick={ () => this.setPlusOrMinusOnClick() }
+     <JavaPlusOrMinusButton
+		 		javaImage = { this.state.javaImage}
+				onClick={ () => this.JavaSetPlusOrMinusOnClick() }
+      />
+		);
+	 }
+
+	// Button display-toggling, which we won't use for now.
+	//
+	 DotNetRenderPlusOrMinusButton () {
+		 	//alert("now rendering PlusOrMinusButton with this.state.image as " + this.state.image);
+	 return (
+     <DotNetPlusOrMinusButton
+		 		beneathJavaTopMeasurement = { this.state.beneathJavaTopMeasurement}
+		 		dotNetImage = { this.state.dotNetImage}
+				onClick={ () => this.DotNetSetPlusOrMinusOnClick() }
       />
 		);
 	 }
@@ -214,6 +240,8 @@ class FileSelectionContent extends React.Component
 	render () {
 
 		return (
+			<div>
+
 			<div>
 
 					<span
@@ -234,17 +262,45 @@ class FileSelectionContent extends React.Component
 
 					</span>
 
-					 { this.RenderPlusOrMinusButton() }
+					 { this.JavaRenderPlusOrMinusButton() }
+
+		</div>
+
+				<div>
+
+						<span
+								id="dotNetNavSectionTitle"
+								class="dotNetNavSectionTitle"
+								style={{
+									position: 'absolute',
+									fontFamily: 'Arial',
+									color: 'black',
+									fontSize: 28,
+									padding: 0,
+									top: this.state.beneathJavaTopMeasurement,
+									left: 72
+
+								}}>
+
+								.NET
+
+						</span>
+
+						 { this.DotNetRenderPlusOrMinusButton() }
+
+			</div>
+
+
 
 		</div>
 	)};
 }
 
 {/*
-  The NodeJsButton method returns the button for displaying the Node.js
-  filtered version of the source-file.
+  The PlusOrMinusButton class returns the File Selector button that displays
+	a plus or minus sign, for the opening and closing of folders.
 */}
-class PlusOrMinusButton extends React.Component
+class JavaPlusOrMinusButton extends React.Component
 {
 	render ()
 	{
@@ -259,19 +315,60 @@ class PlusOrMinusButton extends React.Component
 					width: 30,
 					height: 30,
 					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 32,
-					left: 32,
+					border: 'none',
+					top: 28,
+					left: 26,
+					outlineWidth: 0,
 					zIndex:98
 				}}
 			>
 				 <img
- 					src={require('./images/' + this.props.image )}
+ 					src={require('./images/' + this.props.javaImage )}
  					alt={require('./images/couchbaseLogoAlt.png')}
  						style={{
  							position: 'relative',
- 							width: 24,
- 							height: 24,
+ 							width: 30,
+ 							height: 30,
+ 							top: 0,
+ 							left: 0}} />
+			</button>
+		);
+	}
+}
+
+{/*
+  The PlusOrMinusButton class returns the File Selector button that displays
+	a plus or minus sign, for the opening and closing of folders.
+*/}
+class DotNetPlusOrMinusButton extends React.Component
+{
+	render ()
+	{
+		return (
+			<button
+				onClick={this.props.onClick}
+				className='plusOrMinusButton'
+				id='plusOrMinusButton'
+				style={{
+					position: 'absolute',
+					border: '0px solid black',
+					width: 30,
+					height: 30,
+					backgroundColor: 'white',
+					border: 'none',
+					top: this.props.beneathJavaTopMeasurement,
+					left: 26,
+					outlineWidth: 0,
+					zIndex:98
+				}}
+			>
+				 <img
+ 					src={require('./images/' + this.props.dotNetImage )}
+ 					alt={require('./images/couchbaseLogoAlt.png')}
+ 						style={{
+ 							position: 'relative',
+ 							width: 30,
+ 							height: 30,
  							top: 0,
  							left: 0}} />
 			</button>
@@ -434,25 +531,25 @@ class UpperApplicationWindow extends React.Component
 
 	// Button display-toggling, which we won't use for now.
 	//
-	 RenderNodeJsButton () {
+	// RenderNodeJsButton () {
 		 	//alert("called also: value of this.state.image is " + this.state.image);
-	 return (
-     <NodeJsButton
-      	image={ this.state.image }
-		onClick={ () => this.setNodeImageOnClick() }
-      />
-		);
-	 }
-
-	//RenderNodeJsButton ()
-	//{
-
-	//	return (
-  //    		<NodeJsButton image={ this.state.image }
-  //    			onClick={() => this.getFileFromServer(this.state.nodejsfilename)}
-  //    		/>
+	// return (
+  //   <NodeJsButton
+  //    	image={ this.state.image }
+	//	onClick={ () => this.setNodeImageOnClick() }
+  //    />
 	//	);
-	//}
+	// }
+
+	RenderNodeJsButton ()
+	{
+
+		return (
+      		<NodeJsButton image={ this.state.image }
+      			onClick={() => this.getFileFromServer(this.state.nodejsfilename)}
+      		/>
+		);
+	}
 
 	// The pane that shows the editable markdown. The value is the current
 	// textual content.
