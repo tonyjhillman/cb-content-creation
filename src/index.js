@@ -61,45 +61,46 @@ function BaseApplicationWindow(props)
 		</div>
 	);
 }
-	// An initial instruction, which is visible when the tool first comes up.
-	//
-	var initialInstruction = "Please click the GEN button to see initial content";
-	
-	// In order to transfer data from the (child) EditPane to the (parent) UpperAppli-
-	// cationWindow, we use the currentValueOfEditPane global variable. This is kept
-	// up to date by the child, on every change to the text, based on user input.
-	//
-	// It would be nice to dispense with this, and use the state and props of the
-	// parent and child to pass the information. But I've yet to figure out quite
-	// how: passing { this.props.value } as a param to a parent method references
-	// the *parent's* prop, not the child's. How then, to specify the child value,
-	// when the parent makes the call?
-	//
-	var currentValueOfEditPane = "default";
-	
-	// For now, the location of files that are being read and written.
-	//
-    const sourceLocation = "./writes/";
-    
-    // When a file has been selected, its name is kept in this global variable. The
-    // value of the variable changes only when a new file is selected. When a file
-    // is to be written to disk, the current value of this variable is used to
-    // establish the filename.
-    //
-    var currentFileName = 'default.md';
-    
-    // If the user attempts to access a file that takes a long time to show up, they
-    // may elect to give up, and select a different file instead. In this case, the
-    // default behaviour for inaccessible files (the EditPane window shows a "File Not
-    // Found" message) is undesirable, since the user has brought up a different file,
-    // and is editing it. By setting the following variable, we prevent the error message
-    // from being rendered, in cases where the user has moved on.
-    //
-    var disregardAnyPriorFileAccessAttempt = false;
-    
-    // Do not allow attempts to save a file before a file has been loaded.
-    //
-    var canSaveFile = false;
+
+// An initial notification to the user, which is visible when the tool first comes up.
+//
+var initialInstruction = "Please click the GEN button to see initial content";
+
+// In order to transfer data from the (child) EditPane to the (parent) UpperAppli-
+// cationWindow, we use the currentValueOfEditPane global variable. This is kept
+// up to date by the child, on every change to the text, based on user input.
+//
+// It would be nice to dispense with this, and use the state and props of the
+// parent and child to pass the information. But I've yet to figure out quite
+// how: passing { this.props.value } as a param to a parent method references
+// the *parent's* prop, not the child's. How then, to specify the child value,
+// when the parent makes the call?
+//
+var currentValueOfEditPane = "default";
+
+// For now, the location of files that are being read and written.
+//
+const sourceLocation = "./writes/";
+
+// When a file has been selected, its name is kept in this global variable. The
+// value of the variable changes only when a new file is selected. When a file
+// is to be written to disk, the current value of this variable is used to
+// establish the filename.
+//
+var currentFileName = 'default.md';
+
+// If the user attempts to access a file that takes a long time to show up, they
+// may elect to give up, and select a different file instead. In this case, the
+// default behaviour for inaccessible files (the EditPane window shows a "File Not
+// Found" message) is undesirable, since the user has brought up a different file,
+// and is editing it. By setting the following variable, we prevent the error message
+// from being rendered, in cases where the user is actively working on content.
+//
+var disregardAnyPriorFileAccessAttempt = false;
+
+// Do not allow attempts to save a file before a file has been loaded.
+//
+var canSaveFile = false;
     
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
@@ -269,6 +270,9 @@ class UpperApplicationWindow extends React.Component
 		);
 	}
 	
+	// The pane that shows the editable markdown. The value is the current
+	// textual content.
+	//
 	RenderEditPane () 
 	{
 		return (
@@ -277,7 +281,10 @@ class UpperApplicationWindow extends React.Component
 			/>
 		);
 	}
-                  	
+     
+    // The pane that shows the rendered version of the markdown that is being
+    // edited.
+    //             	
     RenderHtmlPane()
     {
     	return (
@@ -287,6 +294,10 @@ class UpperApplicationWindow extends React.Component
     	);
     }
     
+    // The spinner should only be visible while file-access is underway. The 
+    // spinnerdisplay property is therefore used to control whether the 
+    // display of the component is 'inline' or 'none'.
+    //
     RenderSpinner()
     {
     	return (	
@@ -357,7 +368,6 @@ class UpperApplicationWindow extends React.Component
 				 	{ this.RenderSpinner() }
 				</div>
 				     		
-			
 				<div>
 				 { this.RenderEditPane() }
 				</div>
@@ -375,7 +385,8 @@ class UpperApplicationWindow extends React.Component
 
 {/*
   The NoFileButton method returns the button whereby a non-existent
-  file is searched for, and the associated error-handling tested.
+  file is searched for, and the associated error-handling tested. This
+  is not intended for production.
 */}
 class NoFileButton extends React.Component
 {
@@ -736,14 +747,11 @@ class Spinner extends React.Component
 					
 				<RingLoader
 					color={'#B0B0B0'} 
-	
 				/>
 			</div>
 		);
 	}
 }
-
-
 	
 {/*
   The EditPane method returns the button for displaying the Node.js
@@ -765,6 +773,11 @@ class EditPane extends React.Component
 					};
     }
     
+    // Whenever a change is made to the file, add this to the current
+    // state's value, and update the currentValueOfEditPane global variable.
+    // Use the canSaveFile variable to allow the file to be saved only after
+    // a change has been made to it.
+    //
     handleChange(event) 
     {
     	canSaveFile = true;
@@ -772,11 +785,17 @@ class EditPane extends React.Component
 		this.setState({value: event.target.value}, () => {
 
 			currentValueOfEditPane = this.state.value;	
-		
 		});
-		
     }
     
+    // For the text-pane content, update the EditPane's local state with the
+    // property value just given to it by the parent (this property value itself
+    // having been generated based on currentValueOfEditPane, which is updated
+    // on every change the user makes. Thus, we have a complete cycle, with all
+    // versions of the pane-content kept the same. Note the componentWillReceiveProps
+    // updates on each general rendering (unlike the constructor, which is fired only
+    // when the overall program commences).
+    //
 	componentWillReceiveProps(nextProps)
 	{
 		this.setState( { value: nextProps.value } );
@@ -953,7 +972,6 @@ class FileButton extends React.Component
 		);
 	}
 }
-
 
 {/*
   The main render method calls RootWindow, which gets the ball rolling. The other
