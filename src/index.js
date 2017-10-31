@@ -167,7 +167,8 @@ class FileSelectionInnerWindow extends React.Component
 					height: 1002,
 					backgroundColor: 'white',
 					top: 58,
-					left: 8
+					left: 8,
+					zIndex: 90
 				}}
 			>
 
@@ -184,27 +185,98 @@ class FileSelectionContent extends React.Component
 	{
 		super(props);
 		this.state = {
-			image: 'nodeJsButtonBasic.png'
+			plusOrMinusImageToggle: true,
+			image: 'plusSign.png'
 		}
+	};
+
+	setPlusOrMinusOnClick()
+	{
+		this.setState(prevState => ({
+				plusOrMinusImageToggle: !prevState.plusOrMinusImageToggle
+			}));
+
+			this.state.image = this.state.plusOrMinusImageToggle ? 'minusSign.png' : 'plusSign.png' ;
 	}
+
+	// Button display-toggling, which we won't use for now.
+	//
+	 RenderPlusOrMinusButton () {
+		 	//alert("now rendering PlusOrMinusButton with this.state.image as " + this.state.image);
+	 return (
+     <PlusOrMinusButton
+		 		image = { this.state.image}
+				onClick={ () => this.setPlusOrMinusOnClick() }
+      />
+		);
+	 }
+
 	render () {
 
 		return (
 			<div>
-				<span>
-					<img
-						src={require('./images/couchbaseLogo.png')}
-						alt={require('./images/couchbaseLogoAlt.png')}
+
+					<span
+							id="javaNavSectionTitle"
+							class="javaNavSectionTitle"
 							style={{
-								position: 'relative',
-								width: 80,
-								height: 80,
-								top: 16,
-								left: 46}} />
-			</span>
+								position: 'absolute',
+								fontFamily: 'Arial',
+								color: 'black',
+								fontSize: 28,
+								padding: 0,
+								top: 26,
+								left: 72
+
+							}}>
+
+							Java
+
+					</span>
+
+					 { this.RenderPlusOrMinusButton() }
 
 		</div>
 	)};
+}
+
+{/*
+  The NodeJsButton method returns the button for displaying the Node.js
+  filtered version of the source-file.
+*/}
+class PlusOrMinusButton extends React.Component
+{
+	render ()
+	{
+		return (
+			<button
+				onClick={this.props.onClick}
+				className='plusOrMinusButton'
+				id='plusOrMinusButton'
+				style={{
+					position: 'absolute',
+					border: '0px solid black',
+					width: 30,
+					height: 30,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 32,
+					left: 32,
+					zIndex:98
+				}}
+			>
+				 <img
+ 					src={require('./images/' + this.props.image )}
+ 					alt={require('./images/couchbaseLogoAlt.png')}
+ 						style={{
+ 							position: 'relative',
+ 							width: 24,
+ 							height: 24,
+ 							top: 0,
+ 							left: 0}} />
+			</button>
+		);
+	}
 }
 
 {/*
@@ -347,6 +419,7 @@ class UpperApplicationWindow extends React.Component
 
 		setNodeImageOnClick()
 		{
+				alert("called");
 			this.setState(prevState => ({
 	    		nodeImageToggle: !prevState.nodeImageToggle
 	    	}));
@@ -356,28 +429,30 @@ class UpperApplicationWindow extends React.Component
 	    	// Making this demo invisible for now. Will likely use the functionality on some
 	    	// toggle buttons in due course.
 	    	//
-	    	this.state.image = this.state.nodeImageToggle ? 'nodeJsButtonBasic.png' : 'nodeJsButtonBasic.png' ;
+	    	this.state.image = this.state.nodeImageToggle ? 'nodeJsButtonBasic.png' : 'goButtonBasic.png' ;
 		}
 
 	// Button display-toggling, which we won't use for now.
 	//
-	// RenderNodeJsButton () {
-	// return (
-    //   <NodeJsButton
-    //  	image={ this.state.image }
-	//	onClick={ () => this.setNodeImageOnClick() }
-    //  />
-	//	);
-	// }
-
-	RenderNodeJsButton ()
-	{
-		return (
-      		<NodeJsButton image={ this.state.image }
-      			onClick={() => this.getFileFromServer(this.state.nodejsfilename)}
-      		/>
+	 RenderNodeJsButton () {
+		 	//alert("called also: value of this.state.image is " + this.state.image);
+	 return (
+     <NodeJsButton
+      	image={ this.state.image }
+		onClick={ () => this.setNodeImageOnClick() }
+      />
 		);
-	}
+	 }
+
+	//RenderNodeJsButton ()
+	//{
+
+	//	return (
+  //    		<NodeJsButton image={ this.state.image }
+  //    			onClick={() => this.getFileFromServer(this.state.nodejsfilename)}
+  //    		/>
+	//	);
+	//}
 
 	// The pane that shows the editable markdown. The value is the current
 	// textual content.
