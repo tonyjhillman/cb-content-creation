@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css'
 import axios from 'axios';
 import { RingLoader } from 'react-spinners';
+import RenderPane from './components/RenderPane';
+import EditPane from './components/EditPane';
 import Button from './components/Button';
 
 {/*
@@ -41,9 +43,9 @@ function BaseApplicationWindow(props)
 	return (
 	    <div>
             
-            <FileSelectionOuterWindow />
+        {/*<FileSelectionOuterWindow />*/}
 	    
-			<UpperApplicationWindow />
+  			<UpperApplicationWindow />
 
 		</div>
 	);
@@ -397,6 +399,9 @@ class UpperApplicationWindow extends React.Component
       this.state = {
 				image: 'nodeJsButtonBasic.png',
 				htmlPaneContent: '',
+				topMdContent: '',
+				bottomMdContent: '',
+				htmlPaneContent: '',
 				nodeImageToggle: true,
 				editPaneToggle: true,
 				value: 'Please click the NEW button to create new content',
@@ -457,7 +462,7 @@ class UpperApplicationWindow extends React.Component
 				}
     }
 
-    getFileFromServer(targetFilename)
+    getFileFromServer(targetFilename, isTop)
     {
         if(canGetFile)
 				{
@@ -476,8 +481,11 @@ class UpperApplicationWindow extends React.Component
 			    	axios.get(nodeJsTargetURL, {timeout: 6000},
 										{headers: {'Content-Type': 'text/plain'}}
 							).then(response => {
-
-			        			this.setState ( { value: response.data } );
+              if (isTop) {
+                  this.setState ( { topMdContent: response.data } );
+                } else {
+                  this.setState ( { bottomMdContent: response.data } );
+                }
 			        			this.setState ( { spinnerdisplay: false } );
 			        			currentValueOfEditPane = this.state.value;
 
@@ -532,8 +540,20 @@ class UpperApplicationWindow extends React.Component
       		/>
 		);
 	}
+	
+	onTopSelectChanged(event) {
+    this.getFileFromServer(this.state[event.target.value], true);
+  }
+
+  onBottomSelectChanged(event) {
+    console.log(event.target.value)
+    this.getFileFromServer(this.state[event.target.value], false);
+  }
     
 	render () {
+		  
+    let languages = ['Java', '.NET', 'PHP', 'Python', 'C', 'Go', 'Node.js'];
+    let buttons = ['javafilename', 'dotnetfilename', 'phpfilename', 'pythonfilename', 'cfilename', 'gofilename', 'nodejsfilename'];
 
 		return (
 			<div
@@ -562,37 +582,63 @@ class UpperApplicationWindow extends React.Component
 				</span>
 
         <br/>
-        
-				<Button title="New" onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
-        <Button title="Java" onClick={() => this.getFileFromServer(this.state.javafilename)} />
-        <Button title=".NET" onClick={() => this.getFileFromServer(this.state.dotnetfilename)} />
-        <Button title="PHP" onClick={() => this.getFileFromServer(this.state.phpfilename)} />
-        <Button title="Python" onClick={() => this.getFileFromServer(this.state.pythonfilename)} />
-        <Button title="C" onClick={() => this.getFileFromServer(this.state.cfilename)} />
-        <Button title="Go" onClick={() => this.getFileFromServer(this.state.gofilename)} />
-        <Button title="Node.js" onClick={() => this.getFileFromServer(this.state.nodejsfilename)} />
+        <p>File A</p>
+        <select
+          name="fileA" id="fileA"
+          onChange={this.onTopSelectChanged.bind(this)}>
+          {
+            languages.map((language, index) => {
+              return (
+                <option value={buttons[index]}>{language}</option>
+              )
+            })
+          }
+        </select>
+        <p>File B</p>
+        <select
+          name="fileB"
+          id="fileB"
+          onChange={this.onBottomSelectChanged.bind(this)}>
+          {
+            languages.map((language, index) => {
+              return (
+                <option value={buttons[index]}>{language}</option>
+              )
+            })
+          }
+        </select>
+        {/*<Button title="New" onClick={() => this.getFileFromServer(this.state.defaultfilename) } />*/}
+        {/*<Button title="Java" onClick={() => this.getFileFromServer(this.state.javafilename)} />*/}
+        {/*<Button title=".NET" onClick={() => this.getFileFromServer(this.state.dotnetfilename)} />*/}
+        {/*<Button title="PHP" onClick={() => this.getFileFromServer(this.state.phpfilename)} />*/}
+        {/*<Button title="Python" onClick={() => this.getFileFromServer(this.state.pythonfilename)} />*/}
+        {/*<Button title="C" onClick={() => this.getFileFromServer(this.state.cfilename)} />*/}
+        {/*<Button title="Go" onClick={() => this.getFileFromServer(this.state.gofilename)} />*/}
+        {/*<Button title="Node.js" onClick={() => this.getFileFromServer(this.state.nodejsfilename)} />*/}
 
 				<div className="mainBox">
           <div>
             <EditPane
               onChange={(text) => {
                 this.setState({
-                  htmlPaneContent: text
+                  topMdContent: text
                 })
               }}
-              value={ this.state.value }
+              value={ this.state.topMdContent }
             />
             <EditPane
               onChange={(text) => {
                 this.setState({
-                  htmlPaneContent: text
+                  bottomMdContent: text
                 })
               }}
-              value={ this.state.value }
+              value={ this.state.bottomMdContent }
             />
           </div>
           
           <RenderPane
+            inputA={this.state.topMdContent}
+            inputB={this.state.bottomMdContent}
             htmlPaneContent={ this.state.htmlPaneContent }
           />
 				</div>
@@ -978,156 +1024,11 @@ class Spinner extends React.Component
   The EditPane method returns the button for displaying the Node.js
   filtered version of the source-file.
 */}
-class EditPane extends React.Component
-{
-	constructor(props)
-	{
-		super(props);
-
-		this.handleKeyDown = this.handleKeyDown.bind(this);
-
-		this.handleChange = this.handleChange.bind(this);
-
-		this.state = {
-						value: props.value,
-
-					};
-    }
-
-    // Whenever a change is made to the file, add this to the current
-    // state's value, and update the currentValueOfEditPane global variable.
-    // Use the canSaveFile variable to allow the file to be saved only after
-    // a change has been made to it.
-    //
-    handleChange(event)
-    {
-    	canSaveFile = true;
-
-		this.setState({value: event.target.value}, () => {
-
-			currentValueOfEditPane = this.state.value;
-		});
-    }
-
-    // For the text-pane content, update the EditPane's local state with the
-    // property value just given to it by the parent (this property value itself
-    // having been generated based on currentValueOfEditPane, which is updated
-    // on every change the user makes. Thus, we have a complete cycle, with all
-    // versions of the pane-content kept the same. Note the componentWillReceiveProps
-    // updates on each general rendering (unlike the constructor, which is fired only
-    // when the overall program commences).
-    //
-	componentWillReceiveProps(nextProps)
-	{
-		this.setState( { value: nextProps.value } );
-	}
-
-	tellme()
-	{
-		// This method is called when loading (as opposed to rendering)
-		// is complete. I have no use for it right now, but it may prove
-		// important in due course, so I have left this here.
-	}
-
-	// Handles Cmd-S saving of the current edit pane. This duplicates
-	// the parental method that is triggered by clicking the SAVE button.
-	// I have not yet found a way of triggering that method without a
-	// click, and so have resorted to implementing a second-time, strictly
-	// in the local context of the child (EditPane) component. I have
-	// taken the step of, in the last line of this routine, updating
-	// currentValueOfEditPane, to keep all notions of the current edit
-	// pane-content in sync. I'm not happy with this, but need an
-	// alternative.
-	//
-	handleKeyDown(event)
-	{
-		let charCode = String.fromCharCode(event.which).toLowerCase();
-
-		if(event.metaKey && charCode === 's')
-		{
-			event.preventDefault();
-
-			if (canSaveFile)
-			{
-				var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite="
-									+ sourceLocation + currentFileName;
-
-				axios.post(nodeJsTargetURL, currentValueOfEditPane,
-								{headers: {'Content-Type': 'text/plain'}}
-					).then(response => {
-
-					this.setState ( { value: response.data } );
-
-					currentValueOfEditPane = this.state.value;
-
-				});
-			}
-			else
-			{
-				alert("No File to be Saved");
-			}
-		}
-	}
-
-    render ()
-    {
-		return (
-			<form
-				onKeyDown={this.handleKeyDown}>
-				<textarea
-					value={this.state.value}
-					onChange={ (event) => { this.handleChange(event) }}
-					onload={ this.tellme() }/>
-      </form>
-		);
-	}
-}
 
 {/*
   The RenderPane method returns the button for displaying the Node.js
   filtered version of the source-file.
 */}
-function RenderPane(props)
-{
-	return (
-		<div
-			className='renderPane'
-			id='renderPane'
-			style={{
-				border: '2px solid black',
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-			}}
-		>
-			<div style={{
-						zIndex: 99,
-						paddingLeft: 20,
-						position: 'relative',
-						width: 470,
-						height: 2040,
-						top: 10,
-						left: 10}}>
-
-				<span>
-
-					<img src={require('./images/couchbaseLogoTrans.png')}
-						 alt={require('./images/couchbaseLogoTransAlt.png')}
-						 style={{
-						 	zIndex: 10,
-							position: 'absolute',
-							width: 240,
-							height: 240,
-							top: 530,
-							left: 210}}
-					/>
-				</span>
-
-				<div dangerouslySetInnerHTML={{ __html: props.htmlPaneContent }} />
-
-          </div>
-		</div>
-	);
-}
 
 {/*
   The FileButton method returns the button for choosing the

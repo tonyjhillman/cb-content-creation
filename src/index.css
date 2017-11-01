@@ -16,6 +16,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   flex: 0 50%;
+  overflow: scroll;
 }
 
 .mainBox > div > form {
