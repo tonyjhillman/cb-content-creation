@@ -4,12 +4,6 @@ import './index.css'
 import axios from 'axios';
 import { RingLoader } from 'react-spinners';
 
-import FileSelectionOuterWindow from './fileSelector/fileSelector';
-import FileSelectionInnerWindow from './fileSelector/fileSelector';
-import FileSelectionContent from './fileSelector/fileSelector';
-import JavaPlusOrMinusButton from './fileSelector/fileSelector';
-import DotNetPlusOrMinusButton from './fileSelector/fileSelector';
-
 
 {/*
   This initial function is called by the main render method, at the bottom.
@@ -71,6 +65,255 @@ function BaseApplicationWindow(props)
 	);
 }
 
+{/*
+  The outer window for the File Selector, which appears at the left of
+  the overall UI. This provides a title-image, at the upper-left.
+  */}
+class FileSelectionOuterWindow extends React.Component
+{
+	constructor(props)
+	{
+		super(props);
+		this.state =
+		{
+			test: 'test'
+		};
+	}
+
+	render () {
+
+		return (
+			<div
+				className='fileSelectionOuterWindow'
+				id='fileSelectionOuterWindow'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 552,
+					height: 1074,
+					backgroundColor: 'white',
+					top: 28,
+					left: 48
+				}}
+			>
+				<span>
+
+					<img
+						src={require('./images/fileSelectorTitle.png')}
+						alt={require('./images/toolTitleAlt.png')}
+							style={{
+								position: 'relative',
+								width: 163,
+								height: 27,
+								top: 22,
+								left: 30}} />
+
+				</span>
+
+				<FileSelectionInnerWindow />
+
+			</div>
+		)};
+}
+
+{/*
+  The inner window for the File Selector. This holds the
+  content-display.
+  */}
+class FileSelectionInnerWindow extends React.Component
+{
+	render () {
+
+		return (
+			<div
+				className='fileSelectionInnerWindow'
+				id='fileSelectionInnerWindow'
+				style={{
+					position: 'relative',
+					border: '2px solid black',
+					width: 500,
+					height: 972,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 38,
+					left: 24
+				}}
+			>
+
+				</div>
+		)};
+}
+
+class JavaFirstLevelContent extends React.Component
+{
+  render ()
+	{
+		return (
+
+      <div>
+
+        <span
+            id="javaFirstLevelContent"
+            class="javaFirstLevelContent"
+            style={{
+              position: 'relative',
+              fontFamily: 'Arial',
+              color: 'black',
+              fontSize: 22,
+              padding: 0,
+              top: 50,
+              left: 102,
+              display: this.props.display ? 'inline' : 'none'
+
+            }}  >
+
+            <button
+              onClick = {this.props.onClick}
+              style={{
+                position: 'relative',
+                fontFamily: 'Arial',
+                color: 'black',
+                fontSize: 24,
+                top: 20,
+                border: 'none'
+              }}
+
+            >
+              <i>Using the Java SDK</i>
+            </button>
+
+        </span>
+
+      </div>
+    )};
+}
+
+
+
+{/*
+  The PlusOrMinusButton class returns the File Selector button that displays
+	a plus or minus sign, for the opening and closing of folders.
+*/}
+class JavaPlusOrMinusButton extends React.Component
+{
+	render ()
+	{
+		return (
+			<button
+				onClick={this.props.onClick}
+				className='plusOrMinusButton'
+				id='plusOrMinusButton'
+				style={{
+					position: 'absolute',
+					border: '0px solid black',
+					width: 30,
+					height: 30,
+					backgroundColor: 'white',
+					border: 'none',
+					top: 28,
+					left: 26,
+					outlineWidth: 0,
+					zIndex:98
+				}}
+			>
+				 <img
+ 					src={require('./images/' + this.props.javaImage )}
+ 					alt={require('./images/couchbaseLogoAlt.png')}
+ 						style={{
+ 							position: 'relative',
+ 							width: 30,
+ 							height: 30,
+ 							top: 0,
+ 							left: 0}} />
+			</button>
+		);
+	}
+}
+
+class DotNetFirstLevelContent extends React.Component
+{
+  render ()
+	{
+		return (
+
+      <div>
+
+        <span
+            id="dotNetFirstLevelContent"
+            class="dotNetFirstLevelContent"
+            style={{
+              position: 'relative',
+              fontFamily: 'Arial',
+              color: 'black',
+              fontSize: 22,
+              padding: 0,
+              top: this.props.dotNetContentStartingHeight,
+              left: 102,
+              display: this.props.display ? 'inline' : 'none'
+
+            }}  >
+
+            <button
+              onClick = {this.props.onClick}
+              style={{
+                position: 'relative',
+                fontFamily: 'Arial',
+                color: 'black',
+                fontSize: 24,
+                top: 0,
+                border: 'none'
+              }}
+
+            >
+              <i>Using the .NET SDK</i>
+            </button>
+
+        </span>
+
+      </div>
+    )};
+}
+
+{/*
+  The PlusOrMinusButton class returns the File Selector button that displays
+	a plus or minus sign, for the opening and closing of folders.
+*/}
+class DotNetPlusOrMinusButton extends React.Component
+{
+	render ()
+	{
+		return (
+			<button
+				onClick={this.props.onClick}
+				className='plusOrMinusButton'
+				id='plusOrMinusButton'
+				style={{
+					position: 'absolute',
+					border: '0px solid black',
+					width: 30,
+					height: 30,
+					backgroundColor: 'white',
+					border: 'none',
+					top: this.props.beneathJavaTopMeasurement,
+					left: 26,
+					outlineWidth: 0,
+					zIndex:98
+				}}
+			>
+				 <img
+ 					src={require('./images/' + this.props.dotNetImage )}
+ 					alt={require('./images/couchbaseLogoAlt.png')}
+ 						style={{
+ 							position: 'relative',
+ 							width: 30,
+ 							height: 30,
+ 							top: 0,
+ 							left: 0}} />
+			</button>
+		);
+	}
+}
+
 // In order to transfer data from the (child) EditPane to the (parent) UpperAppli-
 // cationWindow, we use the currentValueOfEditPane global variable. This is kept
 // up to date by the child, on every change to the text, based on user input.
@@ -111,7 +354,7 @@ var canGetFile = true;
   populates its area by calling the functions for each of the buttons and for
   the two principal display panes.
 */}
-class UpperApplicationWindow extends React.Component
+export default class UpperApplicationWindow extends React.Component
 {
 		constructor(props)
 	  {
@@ -160,7 +403,16 @@ class UpperApplicationWindow extends React.Component
 				nodejsfilename: 'nodejs.md',
 				nofilefilename: 'nofile.md',
 
-				spinnerdisplay: false
+				spinnerdisplay: false,
+
+				javaImage: 'plusSign.png',
+	      javaContentDisplay: false,
+				dotNetImage: 'plusSign.png',
+				dotNetContentDisplay: false,
+				baseLineMeasurement: 26,
+				beneathJavaTopMeasurement: 76,
+				beneathDotNetTopMeasurement: 152,
+				dotNetContentStartingHeight: 114
 			};
 
 			this.saveCurrentEditsToServer
@@ -289,6 +541,89 @@ class UpperApplicationWindow extends React.Component
     	);
     }
 
+		JavaSetPlusOrMinusOnClick()
+		{
+			this.setState(prevState => ({
+					javaPlusOrMinusImageToggle: !prevState.javaPlusOrMinusImageToggle
+				}));
+
+				this.state.javaImage = this.state.javaPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
+
+	      this.state.javaContentDisplay = this.state.javaPlusOrMinusImageToggle ? false : true ;
+
+				this.state.beneathJavaTopMeasurement = this.state.javaPlusOrMinusImageToggle ? this.state.beneathJavaTopMeasurement - 76: this.state.beneathJavaTopMeasurement + 76;
+
+				this.state.dotNetContentStartingHeight = this.state.javaPlusOrMinusImageToggle ? this.state.dotNetContentStartingHeight - this.state.beneathJavaTopMeasurement : this.state.baseLineMeasurement + this.state.beneathJavaTopMeasurement;
+		}
+
+		DotNetSetPlusOrMinusOnClick()
+		{
+			this.setState(prevState => ({
+					dotNetPlusOrMinusImageToggle: !prevState.dotNetPlusOrMinusImageToggle
+				}));
+
+				this.state.dotNetImage = this.state.dotNetPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
+
+				this.state.dotNetContentDisplay = this.state.dotNetPlusOrMinusImageToggle ? false : true ;
+
+			  this.state.beneathDotNetTopMeasurement = this.state.dotNetPlusOrMinusImageToggle ? this.state.beneathDotNetTopMeasurement - 76: this.state.beneathDotNetTopMeasurement + 76;
+		}
+
+		// Button display-toggling for the Java content.
+		//
+		 JavaRenderPlusOrMinusButton ()
+	   {
+	  	 return (
+	       <JavaPlusOrMinusButton
+	  		 		javaImage = { this.state.javaImage}
+	  				    onClick={ () => this.JavaSetPlusOrMinusOnClick() }
+	        />
+	  		);
+		 }
+
+		 // First-level folder-content, made available when the Java-folder
+		 // button is clicked.
+		 //
+	   JavaRenderFirstLevelContent ()
+	   {
+	     return (
+	       <JavaFirstLevelContent
+	  		 		display = { this.state.javaContentDisplay }
+						onClick={ () => this.getFileFromServer(this.state.javafilename) }
+
+	        />
+	  		);
+	   }
+
+		// Button display-toggling for the .NET content.
+		//
+		 DotNetRenderPlusOrMinusButton ()
+	   {
+	  	 return (
+	       <DotNetPlusOrMinusButton
+	  		 		beneathJavaTopMeasurement = { this.state.beneathJavaTopMeasurement}
+	  		 		   dotNetImage = { this.state.dotNetImage }
+	  				       onClick={ () => this.DotNetSetPlusOrMinusOnClick() }
+	        />
+	  		);
+		 }
+
+		 // First-level folder-content, made available when the dotNet-folder
+		 // button is clicked.
+		 //
+	   DotNetRenderFirstLevelContent ()
+	   {
+	     return (
+	       <DotNetFirstLevelContent
+
+	  		 		display = { this.state.dotNetContentDisplay }
+						dotNetContentStartingHeight = { this.state.dotNetContentStartingHeight }
+						onClick={ () => this.getFileFromServer(this.state.dotnetfilename) }
+
+	        />
+	  		);
+	   }
+
 	render () {
 
 		return (
@@ -325,6 +660,74 @@ class UpperApplicationWindow extends React.Component
 								top: 12,
 								left: 60}} />
 				</span>
+
+				<div
+						id="completeNavContent"
+						class="completeNavContent"
+						style={{
+							position: 'absolute',
+							fontFamily: 'Arial',
+							color: 'black',
+							fontSize: 28,
+							padding: 0,
+							top: 76,
+							left: -532
+
+						}}
+				>
+							 <div>
+
+									<span
+											id="javaNavSectionTitle"
+											class="javaNavSectionTitle"
+											style={{
+												position: 'absolute',
+												fontFamily: 'Arial',
+												color: 'black',
+												fontSize: 28,
+												padding: 0,
+												top: 30,
+												left: 76
+
+											}}>
+
+											Java
+
+									</span>
+
+									{ this.JavaRenderFirstLevelContent() }
+
+									{ this.JavaRenderPlusOrMinusButton() }
+
+								</div>
+
+								<div>
+
+									<span
+											id="dotNetNavSectionTitle"
+											class="dotNetNavSectionTitle"
+											style={{
+												position: 'absolute',
+												fontFamily: 'Arial',
+												color: 'black',
+												fontSize: 28,
+												padding: 0,
+												top: this.state.beneathJavaTopMeasurement,
+												left: 76
+
+											}}>
+
+											.NET
+
+									</span>
+
+									{ this.DotNetRenderFirstLevelContent() }
+
+									 { this.DotNetRenderPlusOrMinusButton() }
+
+								</div>
+
+				</div>
 
 				<GenButton onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
 
