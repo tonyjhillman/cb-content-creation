@@ -112,8 +112,7 @@ class FileSelectionOuterWindow extends React.Component
 				<span>
 
 					<img
-						src={require('./images/fileSelectorTitle.png')}
-						alt={require('./images/toolTitleAlt.png')}
+						src={require('./images/cButtonBasic.png')}
 							style={{
 								position: 'relative',
 								width: 163,
@@ -534,15 +533,6 @@ class UpperApplicationWindow extends React.Component
 		);
 	}
     
-    changeEditPaneValueOnClick()
-    {
-        this.setState(prevState => ({
-                                    editPaneToggle: !prevState.editPaneToggle
-                                    }));
-        
-        this.state.value = this.state.editPaneToggle ? initialMarkdownContent : initialInstruction  ;
-    }
-	
 	render () {
 
 		return (
@@ -1082,36 +1072,15 @@ class EditPane extends React.Component
     render ()
     {
 		return (
-
-      <form onSubmit={this.handleSubmit}>
-					
-	  				<textarea
-              value={this.state.value}
-              onChange={ (event) => {
-                this.handleChange(event)
-              }}
-              style={{
-                width: '100%',
-                paddingTop: 10,
-                paddingLeft: 10,
-                paddingRight: 10,
-                paddingBottom: 10,
-                border: '2px solid black',
-                backgroundColor: 'white',
-                boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-              }}
-            >
-
-		<div >
+		<div>
 			<form
-				onKeyDown={this.handleKeyDown}
-			>
+				onKeyDown={this.handleKeyDown}>
 				<textarea
 					value={this.state.value}
 					onChange={ (event) => { this.handleChange(event) }}
-					onload={ this.tellme() }
-
+					onload={ this.tellme() }/>
       </form>
+    </div>
 		);
 	}
 }
@@ -1157,8 +1126,7 @@ function RenderPane(props)
 
 				<div dangerouslySetInnerHTML={{ __html: props.htmlPaneContent }} />
 
-            </div>
-
+          </div>
 		</div>
 	);
 }
