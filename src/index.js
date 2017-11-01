@@ -1072,7 +1072,6 @@ class EditPane extends React.Component
     render ()
     {
 		return (
-		<div>
 			<form
 				onKeyDown={this.handleKeyDown}>
 				<textarea
@@ -1080,7 +1079,6 @@ class EditPane extends React.Component
 					onChange={ (event) => { this.handleChange(event) }}
 					onload={ this.tellme() }/>
       </form>
-    </div>
 		);
 	}
 }

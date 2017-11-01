@@ -24,3 +24,6 @@ body {
   justify-content: space-between;
   flex: 0 100%;
 }
+.mainBox > div > form > textarea {
+  width: 100%;
+}
