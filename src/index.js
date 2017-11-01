@@ -133,8 +133,8 @@ class FileSelectionOuterWindow extends React.Component
 								position: 'relative',
 								width: 163,
 								height: 27,
-								top: 12,
-								left: 10}} />
+								top: 22,
+								left: 30}} />
 
 				</span>
 
@@ -161,22 +161,35 @@ class FileSelectionInnerWindow extends React.Component
 				className='fileSelectionInnerWindow'
 				id='fileSelectionInnerWindow'
 				style={{
-					position: 'absolute',
+					position: 'relative',
 					border: '2px solid black',
-					width: 532,
-					height: 1002,
+					width: 500,
+					height: 972,
 					backgroundColor: 'white',
-					top: 58,
-					left: 8,
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 38,
+					left: 24,
 					zIndex: 90
 				}}
 			>
-
 					<div>
 					{ this.RenderFileSelectionContent() }
 					</div>
 				</div>
 		)};
+}
+
+class CurrentJavaContent extends React.Component
+{
+	render()
+	{
+		return(
+			<div>
+				The name of the Java file.
+			</div>
+
+		);
+	}
 }
 
 class FileSelectionContent extends React.Component
@@ -191,6 +204,15 @@ class FileSelectionContent extends React.Component
 			beneathJavaTopMeasurement: 76
 		}
 	};
+
+	RenderCurrentJavaContent()
+	{
+		//alert("Called...");
+		return (
+			<CurrentJavaContent />
+		);
+
+	}
 
 	JavaSetPlusOrMinusOnClick()
 	{
@@ -209,7 +231,7 @@ class FileSelectionContent extends React.Component
 				dotNetPlusOrMinusImageToggle: !prevState.dotNetPlusOrMinusImageToggle
 			}));
 
-			this.state.dotNetImage = this.state.dotNetPlusOrMinusImageToggle ? 'minusSign.png' : 'plusSign.png' ;
+			this.state.dotNetImage = this.state.dotNetPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
 	}
 
 	// Button display-toggling, which we won't use for now.
@@ -516,7 +538,7 @@ class UpperApplicationWindow extends React.Component
 
 		setNodeImageOnClick()
 		{
-				alert("called");
+				//alert("called");
 			this.setState(prevState => ({
 	    		nodeImageToggle: !prevState.nodeImageToggle
 	    	}));
