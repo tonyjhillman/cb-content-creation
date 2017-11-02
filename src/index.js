@@ -189,6 +189,51 @@ class JavaFirstLevelContent extends React.Component
 }
 
 
+class PhpFirstLevelContent extends React.Component
+{
+  render ()
+	{
+		return (
+
+      <div>
+
+        <span
+            id="phpFirstLevelContent"
+            class="phpFirstLevelContent"
+            style={{
+              position: 'relative',
+              fontFamily: 'Arial',
+              color: 'black',
+              fontSize: 22,
+              padding: 0,
+              top: 0,
+              left: 102,
+              display: this.props.display ? 'inline' : 'none'
+
+            }}  >
+
+            <button
+              onClick = {this.props.onClick}
+              style={{
+                position: 'relative',
+                fontFamily: 'Arial',
+                color: 'black',
+                fontSize: 24,
+                top: this.props.phpContentStartingHeight,
+                border: 'none'
+              }}
+
+            >
+              <i>Using the PHP SDK</i>
+            </button>
+
+        </span>
+
+      </div>
+    )};
+}
+
+
 
 {/*
   The PlusOrMinusButton class returns the File Selector button that displays
@@ -230,6 +275,46 @@ class JavaPlusOrMinusButton extends React.Component
 	}
 }
 
+{/*
+  The PlusOrMinusButton class returns the File Selector button that displays
+	a plus or minus sign, for the opening and closing of folders.
+*/}
+class PhpPlusOrMinusButton extends React.Component
+{
+	render ()
+	{
+		return (
+			<button
+				onClick={this.props.onClick}
+				className='phpPlusOrMinusButton'
+				id='phpPlusOrMinusButton'
+				style={{
+					position: 'absolute',
+					border: '0px solid black',
+					width: 30,
+					height: 30,
+					backgroundColor: 'white',
+					border: 'none',
+					top: this.props.beneathDotNetTopMeasurement,
+					left: 26,
+					outlineWidth: 0,
+					zIndex:98
+				}}
+			>
+				 <img
+ 					src={require('./images/' + this.props.phpImage )}
+ 					alt={require('./images/couchbaseLogoAlt.png')}
+ 						style={{
+ 							position: 'relative',
+ 							width: 30,
+ 							height: 30,
+ 							top: 0,
+ 							left: 0}} />
+			</button>
+		);
+	}
+}
+
 class DotNetFirstLevelContent extends React.Component
 {
   render ()
@@ -247,7 +332,7 @@ class DotNetFirstLevelContent extends React.Component
               color: 'black',
               fontSize: 22,
               padding: 0,
-              top: this.props.dotNetContentStartingHeight,
+              top: 0,
               left: 102,
               display: this.props.display ? 'inline' : 'none'
 
@@ -260,7 +345,7 @@ class DotNetFirstLevelContent extends React.Component
                 fontFamily: 'Arial',
                 color: 'black',
                 fontSize: 24,
-                top: 0,
+                top: this.props.dotNetContentStartingHeight,
                 border: 'none'
               }}
 
@@ -409,10 +494,16 @@ export default class UpperApplicationWindow extends React.Component
 	      javaContentDisplay: false,
 				dotNetImage: 'plusSign.png',
 				dotNetContentDisplay: false,
-				baseLineMeasurement: 26,
+				phpImage: 'plusSign.png',
+				phpContentDisplay: false,
+
 				beneathJavaTopMeasurement: 76,
-				beneathDotNetTopMeasurement: 152,
-				dotNetContentStartingHeight: 114
+				beneathDotNetTopMeasurement: 125,
+				beneathPhpTopMeasurement: 228,
+
+				javaContentStartingHeight: 54,
+				dotNetContentStartingHeight: 118,
+				phpContentStartingHeight: 164
 			};
 
 			this.saveCurrentEditsToServer
@@ -457,6 +548,7 @@ export default class UpperApplicationWindow extends React.Component
 
     getFileFromServer(targetFilename)
     {
+				//alert("Called with value " + targetFilename);
         if(canGetFile)
 				{
 						canGetFile = false;
@@ -551,9 +643,27 @@ export default class UpperApplicationWindow extends React.Component
 
 	      this.state.javaContentDisplay = this.state.javaPlusOrMinusImageToggle ? false : true ;
 
-				this.state.beneathJavaTopMeasurement = this.state.javaPlusOrMinusImageToggle ? this.state.beneathJavaTopMeasurement - 76: this.state.beneathJavaTopMeasurement + 76;
+				// Push down or pull up the .NET button, which is immediately below Java.
+				//
+				this.state.beneathJavaTopMeasurement = this.state.javaPlusOrMinusImageToggle ?
+					this.state.beneathJavaTopMeasurement - 76: this.state.beneathJavaTopMeasurement + 76;
 
-				this.state.dotNetContentStartingHeight = this.state.javaPlusOrMinusImageToggle ? this.state.dotNetContentStartingHeight - this.state.beneathJavaTopMeasurement : this.state.baseLineMeasurement + this.state.beneathJavaTopMeasurement;
+				// Recalculate the vertical start of the .NET first-level content accordingly.
+				//
+				this.state.dotNetContentStartingHeight = this.state.javaPlusOrMinusImageToggle ?
+					this.state.dotNetContentStartingHeight - 40: this.state.dotNetContentStartingHeight + 40;
+
+				// Push down or pull up the PHP button, which is immediately below .NET.
+				//
+				this.state.beneathDotNetTopMeasurement = this.state.javaPlusOrMinusImageToggle ?
+					this.state.beneathDotNetTopMeasurement - 76: this.state.beneathDotNetTopMeasurement + 76;
+
+				// Recalculate the vertical start of the PHP first-level content accordingly.
+				//
+				this.state.phpContentStartingHeight = this.state.javaPlusOrMinusImageToggle ?
+					this.state.phpContentStartingHeight - 42: this.state.phpContentStartingHeight + 42;
+
+				//alert("this.state.beneathDotNetTopMeasurement now " + this.state.beneathDotNetTopMeasurement);
 		}
 
 		DotNetSetPlusOrMinusOnClick()
@@ -566,7 +676,28 @@ export default class UpperApplicationWindow extends React.Component
 
 				this.state.dotNetContentDisplay = this.state.dotNetPlusOrMinusImageToggle ? false : true ;
 
-			  this.state.beneathDotNetTopMeasurement = this.state.dotNetPlusOrMinusImageToggle ? this.state.beneathDotNetTopMeasurement - 76: this.state.beneathDotNetTopMeasurement + 76;
+				this.state.beneathDotNetTopMeasurement = this.state.dotNetPlusOrMinusImageToggle ?
+					this.state.beneathDotNetTopMeasurement - 76: this.state.beneathDotNetTopMeasurement + 76;
+
+				this.state.phpContentStartingHeight = this.state.dotNetPlusOrMinusImageToggle ?
+					this.state.phpContentStartingHeight - 42: this.state.phpContentStartingHeight + 42;
+
+			//alert("this.state.beneathDotNetTopMeasurement now " + this.state.beneathDotNetTopMeasurement);
+		}
+
+		PhpSetPlusOrMinusOnClick()
+		{
+			this.setState(prevState => ({
+					phpPlusOrMinusImageToggle: !prevState.phpPlusOrMinusImageToggle
+				}));
+
+				this.state.phpImage = this.state.phpPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
+
+				this.state.phpContentDisplay = this.state.phpPlusOrMinusImageToggle ? false : true ;
+
+				this.state.beneathPhpTopMeasurement = this.state.PhpPlusOrMinusImageToggle ?
+					this.state.beneathPhpTopMeasurement - 76: this.state.beneathPhpTopMeasurement + 76;
+
 		}
 
 		// Button display-toggling for the Java content.
@@ -580,6 +711,34 @@ export default class UpperApplicationWindow extends React.Component
 	        />
 	  		);
 		 }
+
+		 // Button display-toggling for the Java content.
+ 		//
+ 		 PhpRenderPlusOrMinusButton ()
+ 	   {
+ 	  	 return (
+ 	       <PhpPlusOrMinusButton
+				 beneathDotNetTopMeasurement = { this.state.beneathDotNetTopMeasurement}
+ 	  		 		phpImage = { this.state.phpImage }
+ 	  				    onClick={ () => this.PhpSetPlusOrMinusOnClick() }
+ 	        />
+ 	  		);
+ 		 }
+
+		 // First-level folder-content, made available when the Java-folder
+		 // button is clicked.
+		 //
+	   PhpRenderFirstLevelContent ()
+	   {
+	     return (
+	       <PhpFirstLevelContent
+	  		 		display = { this.state.phpContentDisplay }
+						phpContentStartingHeight = { this.state.phpContentStartingHeight }
+						onClick={ () => this.getFileFromServer(this.state.phpfilename) }
+
+	        />
+	  		);
+	   }
 
 		 // First-level folder-content, made available when the Java-folder
 		 // button is clicked.
@@ -724,6 +883,32 @@ export default class UpperApplicationWindow extends React.Component
 									{ this.DotNetRenderFirstLevelContent() }
 
 									 { this.DotNetRenderPlusOrMinusButton() }
+
+								</div>
+
+								<div>
+
+									<span
+											id="phpNavSectionTitle"
+											class="phpNavSectionTitle"
+											style={{
+												position: 'absolute',
+												fontFamily: 'Arial',
+												color: 'black',
+												fontSize: 28,
+												padding: 0,
+												top: this.state.beneathDotNetTopMeasurement,
+												left: 76
+
+											}}>
+
+											PHP
+
+									</span>
+
+									{ this.PhpRenderFirstLevelContent() }
+
+									 { this.PhpRenderPlusOrMinusButton() }
 
 								</div>
 
