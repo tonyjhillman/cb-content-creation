@@ -1,0 +1,109 @@
+<sections>
+
+	<section_info>
+	
+		<parent_page_title>
+			Java
+		</parent_page_title>
+		
+		<parent_page_location>
+			./writes/Java.md
+		</parent_page_location>
+		
+		<subsection_info>
+		
+			<child_page_info>
+			
+				<child_page_title>
+					Java Basics
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/javaBasics.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				</sub_subsection_info>
+				
+			</child_page_info>
+			
+			
+			<child_page_info>
+			
+				<child_page_title>
+					Using Java
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/javaUsing.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+					
+					<grandchild_page_info>
+			
+						<grandchild_page_title>
+							Java Debugging
+						</grandchild_page_title>
+				
+						<grandchild_page_location>
+							./writes/javaDebugging.md
+						</grandchild_page_location>
+				
+					</grandchild_page_info>
+					
+				</sub_subsection_info>
+				
+			</child_page_info>
+			
+		</subsection_info>
+		
+	</section_info>
+	
+	<section_info>
+	
+		<parent_page_title>
+			.NET
+		</parent_page_title>
+		
+		<parent_page_location>
+			./writes/dotNet.md
+		</parent_page_location>
+		
+		<subsection_info>
+		
+			<child_page_info>
+			
+				<child_page_title>
+					.NET Basics
+				</child_page_title>
+				
+				<child_page_location>
+					./dotNetBasics.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				</sub_subsection_info>
+				
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					Using .NET
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/dotNetUsing.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				</sub_subsection_info>
+				
+			</child_page_info>
+			
+		</subsection_info>
+		
+	</section_info>
+	
+</sections>
