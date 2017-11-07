@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css'
 import axios from 'axios';
 import { RingLoader } from 'react-spinners';
+import xml2js from 'xml2js';
+import xmldom from 'xmldom';
 
 
 {/*
@@ -233,6 +235,59 @@ class PhpFirstLevelContent extends React.Component
     )};
 }
 
+class PythonFirstLevelContent extends React.Component
+{
+  render ()
+	{
+		return (
+
+			<div>
+
+				<div>
+
+            <button
+              onClick = {this.props.onClick}
+              style={{
+                position: 'relative',
+								left: 102,
+                fontFamily: 'Arial',
+                color: 'black',
+                fontSize: 24,
+                top: this.props.pythonContentStartingHeight,
+                border: 'none',
+								display: this.props.display ? 'inline' : 'none'
+              }}
+
+            >
+              <i>Intro to the Python SDK</i>
+            </button>
+					</div>
+
+					<div>
+
+						<button
+							onClick = {this.props.onClick}
+							style={{
+								position: 'relative',
+								left: 102,
+								fontFamily: 'Arial',
+								color: 'black',
+								fontSize: 24,
+								top:  this.props.pythonContentStartingHeight + 20,
+								border: 'none',
+								display: this.props.display ? 'inline' : 'none'
+							}}
+
+						>
+							<i>Using the Python SDK</i>
+						</button>
+					</div>
+
+				</div>
+
+    )};
+}
+
 
 
 {/*
@@ -303,6 +358,42 @@ class PhpPlusOrMinusButton extends React.Component
 			>
 				 <img
  					src={require('./images/' + this.props.phpImage )}
+ 					alt={require('./images/couchbaseLogoAlt.png')}
+ 						style={{
+ 							position: 'relative',
+ 							width: 30,
+ 							height: 30,
+ 							top: 0,
+ 							left: 0}} />
+			</button>
+		);
+	}
+}
+
+class PythonPlusOrMinusButton extends React.Component
+{
+	render ()
+	{
+		return (
+			<button
+				onClick={this.props.onClick}
+				className='phpPlusOrMinusButton'
+				id='phpPlusOrMinusButton'
+				style={{
+					position: 'absolute',
+					border: '0px solid black',
+					width: 30,
+					height: 30,
+					backgroundColor: 'white',
+					border: 'none',
+					top: this.props.beneathPhpTopMeasurement,
+					left: 26,
+					outlineWidth: 0,
+					zIndex:98
+				}}
+			>
+				 <img
+ 					src={require('./images/' + this.props.pythonImage )}
  					alt={require('./images/couchbaseLogoAlt.png')}
  						style={{
  							position: 'relative',
@@ -487,6 +578,7 @@ export default class UpperApplicationWindow extends React.Component
 				gofilename: 'go.md',
 				nodejsfilename: 'nodejs.md',
 				nofilefilename: 'nofile.md',
+				xmlfilename: 'pages.xml',
 
 				spinnerdisplay: false,
 
@@ -496,14 +588,18 @@ export default class UpperApplicationWindow extends React.Component
 				dotNetContentDisplay: false,
 				phpImage: 'plusSign.png',
 				phpContentDisplay: false,
+				pythonImage: 'plusSign.png',
+				pythonContentDisplay: false,
 
 				beneathJavaTopMeasurement: 76,
 				beneathDotNetTopMeasurement: 125,
-				beneathPhpTopMeasurement: 228,
+				beneathPhpTopMeasurement: 174,
+				beneathPythonTopMeasurement: 400,
 
 				javaContentStartingHeight: 54,
 				dotNetContentStartingHeight: 118,
-				phpContentStartingHeight: 164
+				phpContentStartingHeight: 164,
+				pythonContentStartingHeight: 210
 			};
 
 			this.saveCurrentEditsToServer
@@ -586,6 +682,94 @@ export default class UpperApplicationWindow extends React.Component
 					}
     }
 
+
+
+		getXMLFileFromServer(targetFilename)
+    {
+	    	var nodeJsTargetURL = 'http://localhost:8083/' + '?'
+	    		+ "LocationForRead=" + sourceLocation + targetFilename;
+
+	    	axios.get(nodeJsTargetURL, {timeout: 6000},
+								{headers: {'Content-Type': 'text/plain'}}
+					).then(response => {
+
+							var originalString = JSON.stringify(response.data);
+							var cleanedString = originalString.replace("\"", "");
+
+							var DOMParser = require('xmldom').DOMParser;
+							var doc = new DOMParser().parseFromString(cleanedString);
+
+							var listOfAllSections = doc.getElementsByTagName('section_info');
+
+							// Go through each section of the document in turn.
+							//
+							for (var index = 0; index < listOfAllSections.length; index++)
+							{
+								var currentSectionFromList = listOfAllSections.item(index);
+
+								// Get the title and location for the main page of each section.
+								//
+								alert("Page-title for section " + (index + 1) + " is "
+									+ currentSectionFromList.childNodes[0].textContent + ", and page-location is "
+										+ currentSectionFromList.childNodes[1].textContent + ".");
+
+								// Examine the subsection for this section, and determine how many
+								// child-pages it contains.
+								//
+								var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');
+
+								alert("There are " + listOfAllSubSections.length + " child-pages in this section:");
+
+								// If there is at least one child page under the current section-page...
+								//
+								if (listOfAllSubSections.length > 0)
+								{
+									// Do the following once for each child page in the subsection-content area.
+									//
+									for (var subsectionindex = 0; subsectionindex < listOfAllSubSections.length; subsectionindex++)
+									{
+										// Look at each child-page in turn.
+										//
+										var currentSubSectionFromList = listOfAllSubSections.item(subsectionindex);
+
+										// Return its title and location.
+										//
+										alert("Child-page title number " + (subsectionindex + 1)
+													+ " is " + currentSubSectionFromList.childNodes[0].textContent + ", and "
+														+ "its location is "  + currentSubSectionFromList.childNodes[1].textContent);
+
+										// Any page at any level can have child pages of its own. Examine the subsubsection
+										// for the current page, and see how many offspring it contains.
+										//
+										var listOfAllSubSubSections = currentSubSectionFromList.getElementsByTagName('grandchild_page_info');
+
+										alert("Located " + listOfAllSubSubSections.length + " grandchild-page(s) in this section:");
+
+										// If there is at least one grandchild page under the current subsubsection page...
+										//
+										if (listOfAllSubSubSections.length > 0)
+										{
+											// Do the following once for each grandchild page in the subsubsection-content area.
+											//
+											for (var subsubsectionindex = 0; subsubsectionindex < listOfAllSubSubSections.length; subsubsectionindex++)
+											{
+												// Look at each grandchild-page in turn.
+												//
+												var currentSubSubSectionFromList = listOfAllSubSubSections.item(subsubsectionindex);
+
+												// Return its title and location.
+												//
+												alert("Grandchild-page title number " + (subsubsectionindex + 1)
+															+ " is " + currentSubSubSectionFromList.childNodes[0].textContent + ", and "
+																+ "its location is "  + currentSubSubSectionFromList.childNodes[1].textContent);
+											}
+										}
+									}
+								}
+							}
+						});
+    }
+
 	RenderNodeJsButton ()
 	{
 
@@ -663,7 +847,16 @@ export default class UpperApplicationWindow extends React.Component
 				this.state.phpContentStartingHeight = this.state.javaPlusOrMinusImageToggle ?
 					this.state.phpContentStartingHeight - 42: this.state.phpContentStartingHeight + 42;
 
-				//alert("this.state.beneathDotNetTopMeasurement now " + this.state.beneathDotNetTopMeasurement);
+				// Push down or pull up the Python button, which is immediately below PHP.
+				//
+				this.state.beneathPhpTopMeasurement = this.state.javaPlusOrMinusImageToggle ?
+					this.state.beneathPhpTopMeasurement - 76: this.state.beneathPhpTopMeasurement + 76;
+
+				// Recalculate the vertical start of the Python first-level content accordingly.
+				//
+				this.state.pythonContentStartingHeight = this.state.javaPlusOrMinusImageToggle ?
+					this.state.pythonContentStartingHeight - 42: this.state.pythonContentStartingHeight + 42;
+
 		}
 
 		DotNetSetPlusOrMinusOnClick()
@@ -676,13 +869,26 @@ export default class UpperApplicationWindow extends React.Component
 
 				this.state.dotNetContentDisplay = this.state.dotNetPlusOrMinusImageToggle ? false : true ;
 
+				// Push down or pull up the PHP button, which is immediately below .NET.
+				//
 				this.state.beneathDotNetTopMeasurement = this.state.dotNetPlusOrMinusImageToggle ?
 					this.state.beneathDotNetTopMeasurement - 76: this.state.beneathDotNetTopMeasurement + 76;
 
+				// Recalculate the vertical start of the PHP first-level content accordingly.
+				//
 				this.state.phpContentStartingHeight = this.state.dotNetPlusOrMinusImageToggle ?
 					this.state.phpContentStartingHeight - 42: this.state.phpContentStartingHeight + 42;
 
-			//alert("this.state.beneathDotNetTopMeasurement now " + this.state.beneathDotNetTopMeasurement);
+				// Push down or pull up the Python button, which is immediately below PHP.
+				//
+				this.state.beneathPhpTopMeasurement = this.state.dotNetPlusOrMinusImageToggle ?
+					this.state.beneathPhpTopMeasurement - 76: this.state.beneathPhpTopMeasurement + 76;
+
+				// Recalculate the vertical start of the Python first-level content accordingly.
+				//
+				this.state.pythonContentStartingHeight = this.state.dotNetPlusOrMinusImageToggle ?
+					this.state.pythonContentStartingHeight - 42: this.state.pythonContentStartingHeight + 42;
+
 		}
 
 		PhpSetPlusOrMinusOnClick()
@@ -695,8 +901,27 @@ export default class UpperApplicationWindow extends React.Component
 
 				this.state.phpContentDisplay = this.state.phpPlusOrMinusImageToggle ? false : true ;
 
-				this.state.beneathPhpTopMeasurement = this.state.PhpPlusOrMinusImageToggle ?
+				// Push down or pull up the Python button, which is immediately below PHP.
+				//
+				this.state.beneathPhpTopMeasurement = this.state.phpPlusOrMinusImageToggle ?
 					this.state.beneathPhpTopMeasurement - 76: this.state.beneathPhpTopMeasurement + 76;
+
+				// Recalculate the vertical start of the Python first-level content accordingly.
+				//
+				this.state.pythonContentStartingHeight = this.state.phpPlusOrMinusImageToggle ?
+					this.state.pythonContentStartingHeight - 42: this.state.pythonContentStartingHeight + 42;
+
+		}
+
+		PythonSetPlusOrMinusOnClick()
+		{
+			this.setState(prevState => ({
+					pythonPlusOrMinusImageToggle: !prevState.pythonPlusOrMinusImageToggle
+				}));
+
+				this.state.pythonImage = this.state.pythonPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
+
+				this.state.pythonContentDisplay = this.state.pythonPlusOrMinusImageToggle ? false : true ;
 
 		}
 
@@ -712,7 +937,7 @@ export default class UpperApplicationWindow extends React.Component
 	  		);
 		 }
 
-		 // Button display-toggling for the Java content.
+		// Button display-toggling for the Java content.
  		//
  		 PhpRenderPlusOrMinusButton ()
  	   {
@@ -725,7 +950,21 @@ export default class UpperApplicationWindow extends React.Component
  	  		);
  		 }
 
-		 // First-level folder-content, made available when the Java-folder
+		 // Button display-toggling for the Python content.
+		//
+		 PythonRenderPlusOrMinusButton ()
+	   {
+			 	//alert("beneathPhpTopMeasurement is now " + this.state.beneathPhpTopMeasurement)
+	  	 return (
+	       <PythonPlusOrMinusButton
+				 beneathPhpTopMeasurement = { this.state.beneathPhpTopMeasurement}
+	  		 		pythonImage = { this.state.pythonImage }
+	  				    onClick={ () => this.PythonSetPlusOrMinusOnClick() }
+	        />
+	  		);
+		 }
+
+		 // First-level folder-content, made available when the Php-folder
 		 // button is clicked.
 		 //
 	   PhpRenderFirstLevelContent ()
@@ -735,6 +974,21 @@ export default class UpperApplicationWindow extends React.Component
 	  		 		display = { this.state.phpContentDisplay }
 						phpContentStartingHeight = { this.state.phpContentStartingHeight }
 						onClick={ () => this.getFileFromServer(this.state.phpfilename) }
+
+	        />
+	  		);
+	   }
+
+		 // First-level folder-content, made available when the Python-folder
+		 // button is clicked.
+		 //
+	   PythonRenderFirstLevelContent ()
+	   {
+	     return (
+	       <PythonFirstLevelContent
+	  		 		display = { this.state.pythonContentDisplay }
+						pythonContentStartingHeight = { this.state.pythonContentStartingHeight }
+						onClick={ () => this.getFileFromServer(this.state.pythonfilename) }
 
 	        />
 	  		);
@@ -784,6 +1038,9 @@ export default class UpperApplicationWindow extends React.Component
 	   }
 
 	render () {
+
+		//alert("test");
+
 
 		return (
 			<div
@@ -906,9 +1163,35 @@ export default class UpperApplicationWindow extends React.Component
 
 									</span>
 
-									{ this.PhpRenderFirstLevelContent() }
+										{ this.PhpRenderFirstLevelContent() }
 
-									 { this.PhpRenderPlusOrMinusButton() }
+									 	{ this.PhpRenderPlusOrMinusButton() }
+
+								</div>
+
+								<div>
+
+									<span
+											id="pythonNavSectionTitle"
+											class="pythonNavSectionTitle"
+											style={{
+												position: 'absolute',
+												fontFamily: 'Arial',
+												color: 'black',
+												fontSize: 28,
+												padding: 0,
+												top: this.state.beneathPhpTopMeasurement,
+												left: 76
+
+											}}>
+
+											Python
+
+									</span>
+
+										{ this.PythonRenderFirstLevelContent() }
+
+									 	{ this.PythonRenderPlusOrMinusButton() }
 
 								</div>
 
@@ -947,6 +1230,8 @@ export default class UpperApplicationWindow extends React.Component
 				</div>
 
 				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
+
+				<XMLButton onClick={() => this.getXMLFileFromServer(this.state.xmlfilename) }/>
 
 			</div>
 		);
@@ -1528,9 +1813,45 @@ class FileButton extends React.Component
 					backgroundColor: 'white',
 					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
 					top: 1020,
-					left: 220,
+					left: 160,
 				}}
 			><img src={require('./images/saveButton.png')}
+					   alt={require('./images/nodeJsButtonBasicAlt.png')}
+					   style={{
+							padding: 3,
+							width:'52%',
+							height: '78%'
+					   }}
+						 />
+			</button>
+		);
+	}
+}
+
+{/*
+  The XMLButton method returns the xml file that shows the
+	available pages.
+*/}
+class XMLButton extends React.Component
+{
+	render()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='xmlButton'
+				id='xmlButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 144,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 1020,
+					left: 320,
+				}}
+			><img src={require('./images/xmlButton.png')}
 					   alt={require('./images/nodeJsButtonBasicAlt.png')}
 					   style={{
 							padding: 3,
