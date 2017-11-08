@@ -599,7 +599,9 @@ export default class UpperApplicationWindow extends React.Component
 				javaContentStartingHeight: 54,
 				dotNetContentStartingHeight: 118,
 				phpContentStartingHeight: 164,
-				pythonContentStartingHeight: 210
+				pythonContentStartingHeight: 210,
+
+				entrydisplaytitle: 'Javax'
 			};
 
 			this.saveCurrentEditsToServer
@@ -682,93 +684,114 @@ export default class UpperApplicationWindow extends React.Component
 					}
     }
 
-
-
 		getXMLFileFromServer(targetFilename)
-    {
-	    	var nodeJsTargetURL = 'http://localhost:8083/' + '?'
-	    		+ "LocationForRead=" + sourceLocation + targetFilename;
+		{
+				var nodeJsTargetURL = 'http://localhost:8083/' + '?'
+					+ "LocationForRead=" + sourceLocation + targetFilename;
 
-	    	axios.get(nodeJsTargetURL, {timeout: 6000},
+				axios.get(nodeJsTargetURL, {timeout: 6000},
 								{headers: {'Content-Type': 'text/plain'}}
 					).then(response => {
-
-							var originalString = JSON.stringify(response.data);
-							var cleanedString = originalString.replace("\"", "");
-
-							var DOMParser = require('xmldom').DOMParser;
-							var doc = new DOMParser().parseFromString(cleanedString);
-
-							var listOfAllSections = doc.getElementsByTagName('section_info');
-
-							// Go through each section of the document in turn.
-							//
-							for (var index = 0; index < listOfAllSections.length; index++)
-							{
-								var currentSectionFromList = listOfAllSections.item(index);
-
-								// Get the title and location for the main page of each section.
-								//
-								alert("Page-title for section " + (index + 1) + " is "
-									+ currentSectionFromList.childNodes[0].textContent + ", and page-location is "
-										+ currentSectionFromList.childNodes[1].textContent + ".");
-
-								// Examine the subsection for this section, and determine how many
-								// child-pages it contains.
-								//
-								var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');
-
-								alert("There are " + listOfAllSubSections.length + " child-pages in this section:");
-
-								// If there is at least one child page under the current section-page...
-								//
-								if (listOfAllSubSections.length > 0)
-								{
-									// Do the following once for each child page in the subsection-content area.
-									//
-									for (var subsectionindex = 0; subsectionindex < listOfAllSubSections.length; subsectionindex++)
-									{
-										// Look at each child-page in turn.
-										//
-										var currentSubSectionFromList = listOfAllSubSections.item(subsectionindex);
-
-										// Return its title and location.
-										//
-										alert("Child-page title number " + (subsectionindex + 1)
-													+ " is " + currentSubSectionFromList.childNodes[0].textContent + ", and "
-														+ "its location is "  + currentSubSectionFromList.childNodes[1].textContent);
-
-										// Any page at any level can have child pages of its own. Examine the subsubsection
-										// for the current page, and see how many offspring it contains.
-										//
-										var listOfAllSubSubSections = currentSubSectionFromList.getElementsByTagName('grandchild_page_info');
-
-										alert("Located " + listOfAllSubSubSections.length + " grandchild-page(s) in this section:");
-
-										// If there is at least one grandchild page under the current subsubsection page...
-										//
-										if (listOfAllSubSubSections.length > 0)
-										{
-											// Do the following once for each grandchild page in the subsubsection-content area.
-											//
-											for (var subsubsectionindex = 0; subsubsectionindex < listOfAllSubSubSections.length; subsubsectionindex++)
-											{
-												// Look at each grandchild-page in turn.
-												//
-												var currentSubSubSectionFromList = listOfAllSubSubSections.item(subsubsectionindex);
-
-												// Return its title and location.
-												//
-												alert("Grandchild-page title number " + (subsubsectionindex + 1)
-															+ " is " + currentSubSubSectionFromList.childNodes[0].textContent + ", and "
-																+ "its location is "  + currentSubSubSectionFromList.childNodes[1].textContent);
-											}
-										}
-									}
-								}
-							}
+							this.RenderNavPane(response.data);
 						});
-    }
+		}
+
+		// Button display-toggling for the parent-entry content.
+		//
+		 RenderParentEntry ()
+	   {
+	  	 return (
+	       <ParentEntry
+	  		 		parentEntryImage = { this.state.parentEntryImage }
+	  				    onClick={ () => this.SetParentEntryPlusOrMinusOnClick() }
+									display = {true}
+										EntryStartingHeight = { this.state.EntryStartingHeight }
+											onClick={ () => this.getFileFromServer(this.state.entryfilename) }
+												entrydisplaytitle = { this.state.entrydisplaytitle }
+	        />
+	  		);
+		 }
+
+		RenderNavPane(dataFromFilesystem)
+		{
+			var originalString = JSON.stringify(dataFromFilesystem);
+			var cleanedString = originalString.replace("\"", "");
+
+			var DOMParser = require('xmldom').DOMParser;
+			var doc = new DOMParser().parseFromString(cleanedString);
+
+			var listOfAllSections = doc.getElementsByTagName('section_info');
+
+			// Go through each section of the document in turn.
+			//
+			for (var index = 0; index < listOfAllSections.length; index++)
+			{
+				var currentSectionFromList = listOfAllSections.item(index);
+
+				// Get the title and location for the main page of each section.
+				//
+				alert("Page-title for section " + (index + 1) + " is "
+					+ currentSectionFromList.childNodes[0].textContent + ", and page-location is "
+						+ currentSectionFromList.childNodes[1].textContent + ".");
+
+				// Examine the subsection for this section, and determine how many
+				// child-pages it contains.
+				//
+				var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');
+
+				alert("There are " + listOfAllSubSections.length + " child-pages in this section:");
+
+				// If there is at least one child page under the current section-page...
+				//
+				if (listOfAllSubSections.length > 0)
+				{
+					// Do the following once for each child page in the subsection-content area.
+					//
+					for (var subsectionindex = 0; subsectionindex < listOfAllSubSections.length; subsectionindex++)
+					{
+						// Look at each child-page in turn.
+						//
+						var currentSubSectionFromList = listOfAllSubSections.item(subsectionindex);
+
+						// Return its title and location.
+						//
+						alert("Child-page title number " + (subsectionindex + 1)
+									+ " is " + currentSubSectionFromList.childNodes[0].textContent + ", and "
+										+ "its location is "  + currentSubSectionFromList.childNodes[1].textContent);
+
+						// Any page at any level can have child pages of its own. Examine the subsubsection
+						// for the current page, and see how many offspring it contains.
+						//
+						var listOfAllSubSubSections = currentSubSectionFromList.getElementsByTagName('grandchild_page_info');
+
+						alert("Located " + listOfAllSubSubSections.length + " grandchild-page(s) in this section:");
+
+						// If there is at least one grandchild page under the current subsubsection page...
+						//
+						if (listOfAllSubSubSections.length > 0)
+						{
+							// Do the following once for each grandchild page in the subsubsection-content area.
+							//
+							for (var subsubsectionindex = 0; subsubsectionindex < listOfAllSubSubSections.length; subsubsectionindex++)
+							{
+								// Look at each grandchild-page in turn.
+								//
+								var currentSubSubSectionFromList = listOfAllSubSubSections.item(subsubsectionindex);
+
+								// Return its title and location.
+								//
+								alert("Grandchild-page title number " + (subsubsectionindex + 1)
+											+ " is " + currentSubSubSectionFromList.childNodes[0].textContent + ", and "
+												+ "its location is "  + currentSubSubSectionFromList.childNodes[1].textContent);
+							}
+						}
+					}
+				}
+			}
+
+		}
+
+
 
 	RenderNodeJsButton ()
 	{
@@ -1115,6 +1138,8 @@ export default class UpperApplicationWindow extends React.Component
 
 									{ this.JavaRenderPlusOrMinusButton() }
 
+									{ this.RenderParentEntry() }
+
 								</div>
 
 								<div>
@@ -1197,6 +1222,10 @@ export default class UpperApplicationWindow extends React.Component
 
 				</div>
 
+				<div>
+					{ this.RenderParentEntry() }
+				</div>
+
 				<GenButton onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
 
 				<JavaButton onClick={() => this.getFileFromServer(this.state.javafilename)}/>
@@ -1232,6 +1261,61 @@ export default class UpperApplicationWindow extends React.Component
 				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
 
 				<XMLButton onClick={() => this.getXMLFileFromServer(this.state.xmlfilename) }/>
+
+			</div>
+		);
+	}
+}
+
+{/*
+  The ParentEntry method returns the parent entry object used in the
+	construction of the nav pane content.
+*/}
+class ParentEntry extends React.Component
+{
+	render ()
+	{
+		return (
+			<div style={{
+				position: 'absolute',
+				top: 400,
+				left: 26
+			}} >
+			<button
+				onClick = {this.props.onClick}
+				className='parentEntry'
+				id='parentEntry'
+				style={{
+					position: 'absolute',
+					border: '0px solid black',
+					width: 30,
+					height:30,
+					backgroundColor: 'white',
+					top: 0,
+					left: 0,
+					outlineWidth: 0,
+					zIndex: 99
+				}}
+			>
+				<img src={require('./images/plusSign.png')}
+					   alt={require('./images/javaButtonBasicAlt.png')}
+						 style={{
+  							position: 'relative',
+  							width: 30,
+  							height: 30,
+  							top: 0,
+  							left: 0}}
+				/>
+			</button>
+			<p  style={{
+					position: 'relative',
+					width: 30,
+					height: 30,
+					top: -24,
+					left:50}}
+				>
+				{this.props.entrydisplaytitle}
+			</p>
 
 			</div>
 		);
