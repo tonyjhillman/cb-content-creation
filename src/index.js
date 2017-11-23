@@ -63,8 +63,36 @@ function BaseApplicationWindow(props)
 
 			<UpperApplicationWindow />
 
+			<RenderNavContent />
+
+
+
 		</div>
 	);
+}
+
+function RenderNavContent (props)
+{
+		const numbers = [1, 2, 3, 4, 5];
+		const listItems = numbers.map((number) =>
+  			<p>{number}</p>
+			);
+
+		return (
+			<div style={{
+				position: 'absolute',
+				border: '0px solid black',
+				width: 370,
+				height: 670,
+				backgroundColor: 'white',
+				top: 328,
+				left: 108,
+				zIndex: 99
+			}}>
+			{listItems}
+			</div>
+		);
+
 }
 
 {/*
@@ -520,10 +548,15 @@ var currentFileName = 'default.md';
 //
 var canSaveFile = true;
 
+var arrayOfAllTitles = new Array();
+var arrayOfAllLocations = new Array();
+
 // By switching this to false, disallow attempts to get a file before a
 // current, ongoing attempt has concluded.
 //
 var canGetFile = true;
+
+
 
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
@@ -604,7 +637,10 @@ export default class UpperApplicationWindow extends React.Component
 				pythonContentStartingHeight: 210,
 
 				entrydisplaytitle: 'Javax',
-				parententryheight: 400
+				parententryheight: 400,
+
+				titles: arrayOfAllTitles,
+				locations: arrayOfAllLocations
 			};
 
 			this.saveCurrentEditsToServer
@@ -695,7 +731,7 @@ export default class UpperApplicationWindow extends React.Component
 				axios.get(nodeJsTargetURL, {timeout: 6000},
 								{headers: {'Content-Type': 'text/plain'}}
 					).then(response => {
-							this.RenderNavPane(response.data);
+							this.DetermineNavContent(response.data);
 						});
 		}
 
@@ -716,11 +752,8 @@ export default class UpperApplicationWindow extends React.Component
 	  		);
 		 }
 
-		RenderNavPane(dataFromFilesystem)
+		DetermineNavContent(dataFromFilesystem)
 		{
-			var arrayOfAllTitles = new Array();
-			var arrayOfAllLocations = new Array();
-
 			var originalString = JSON.stringify(dataFromFilesystem);
 			var cleanedString = originalString.replace("\"", "");
 
@@ -764,6 +797,10 @@ export default class UpperApplicationWindow extends React.Component
 				//
 				if (listOfAllSubSections.length > 0)
 				{
+					// Keep track of the page that is the parent for all the subsections.
+					//
+					var parentPage = arrayCounter;
+
 					// Do the following once for each child page in the subsection-content area.
 					//
 					for (var subsectionindex = 0; subsectionindex < listOfAllSubSections.length; subsectionindex++)
@@ -774,9 +811,9 @@ export default class UpperApplicationWindow extends React.Component
 						//
 						var currentSubSectionFromList = listOfAllSubSections.item(subsectionindex);
 
-						// Return its title, indentation-level, and location.
+						// Return its title, indentation-level, parent-page, and location.
 						//
-						arrayOfAllTitles[arrayCounter] = new Array(currentSubSectionFromList.childNodes[0].textContent, "first");
+						arrayOfAllTitles[arrayCounter] = new Array(currentSubSectionFromList.childNodes[0].textContent, "first", parentPage);
 						arrayOfAllLocations[arrayCounter] = currentSubSectionFromList.childNodes[1].textContent;
 
 						var title = arrayOfAllTitles[arrayCounter][0];
@@ -785,6 +822,7 @@ export default class UpperApplicationWindow extends React.Component
 						alert("We are now at array element number "  + arrayCounter + ". This is an element for one-level indentation:  "
 						+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
 						+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
+						+ ", the parent-page is " + arrayOfAllTitles[parentPage][0]
 						+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
 
 						// Any page at any level can have child pages of its own. Examine the subsubsection
@@ -796,12 +834,23 @@ export default class UpperApplicationWindow extends React.Component
 						//
 						if (listOfAllSubSubSections.length > 0)
 						{
-							arrayCounter++;
+							// Make the parentPage, previously established for the second-level of indentation, the
+							// grandParentPage (since we have now descended to the third-level of indentation).
+							//
+							var grandParentPage = parentPage;
+
+							// Make the parentPage the most recent value of the arrayCounter.
+							//
+							parentPage = arrayCounter;
 
 							// Do the following once for each grandchild page in the subsubsection-content area.
 							//
 							for (var subsubsectionindex = 0; subsubsectionindex < listOfAllSubSubSections.length; subsubsectionindex++)
 							{
+								// Increment the array-slot for each page.
+								//
+								arrayCounter++;
+
 								// Look at each grandchild-page in turn.
 								//
 								var currentSubSubSectionFromList = listOfAllSubSubSections.item(subsubsectionindex);
@@ -812,14 +861,27 @@ export default class UpperApplicationWindow extends React.Component
 								alert("We are now at array element number "  + arrayCounter + ". This is an array for two-level indentation: "
 								+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
 								+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
+								+ ", the parent-page is " + arrayOfAllTitles[parentPage][0]
+								+ ", the grandparent-page is " + arrayOfAllTitles[grandParentPage][0]
 								+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
 							}
+
+							// Now that we have finished, for now, at the third-level of indentation, re-establish the parentPage
+							// as the value most recently used as grandParentPage.
+							//
+							parentPage = grandParentPage;
 						}
 					}
 				}
 			}
-		}
 
+			//const listItems = arrayOfAllTitles.map((current) =>
+			//	<li>{arrayOfAllTitles[current]}</li>
+			//);
+
+			this.setState ( { titles: arrayOfAllTitles } );
+			this.setState ( { locations: arrayOfAllTitles } );
+		}
 
 
 	RenderNodeJsButton ()
@@ -1036,13 +1098,24 @@ export default class UpperApplicationWindow extends React.Component
 		 //
 	   PythonRenderFirstLevelContent ()
 	   {
+
+			 const numbers = [1, 2, 3, 4, 5];
+ 				const listItems = numbers.map((number) =>
+   			<li>{number}</li>
+ 			);
+
+
+
 	     return (
+
 	       <PythonFirstLevelContent
 	  		 		display = { this.state.pythonContentDisplay }
 						pythonContentStartingHeight = { this.state.pythonContentStartingHeight }
 						onClick={ () => this.getFileFromServer(this.state.pythonfilename) }
 
 	        />
+
+
 	  		);
 	   }
 
@@ -1268,6 +1341,7 @@ export default class UpperApplicationWindow extends React.Component
 
 				<div>
 				 { this.RenderNodeJsButton() }
+
 				</div>
 
 				<NoFileButton onClick={() => this.getFileFromServer(this.state.nofilefilename)} />
