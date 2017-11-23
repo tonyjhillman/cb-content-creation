@@ -719,61 +719,7 @@ export default class UpperApplicationWindow extends React.Component
 		RenderNavPane(dataFromFilesystem)
 		{
 			var arrayOfAllTitles = new Array();
-			arrayOfAllTitles[0] = new Array();
-			arrayOfAllTitles[0][0] = new Array();
-			arrayOfAllTitles[0][0][0] = new Array();
-
 			var arrayOfAllLocations = new Array();
-			arrayOfAllLocations[0] = new Array();
-			arrayOfAllLocations[0][0] = new Array();
-			arrayOfAllLocations[0][0][0] = new Array();
-
-			alert("Start array test now");
-
-			var myArr = new Array();
-			myArr[0] = new Array("Val", "Va");
-			myArr[1] = new Array("Val", "yo");
-			myArr[2] = new Array("Val", "Val");
-
-			//alert(myArr[1][1]); // Alerts 'yo'
-
-			var myArrr = new Array();
-			myArrr[0] = new Array();
-			myArrr[0][0] = new Array()
-			myArrr[0][0][0] = "Howdy";
-			myArrr[0][0][1] = "pardner";
-
-			//alert(myArrr[0][0][1]); // Alerts 'pardner'
-
-			//arrayOfAllTitles[0][0][1] = "testphrase";
-			//alert(arrayOfAllTitles[0][0][1]);
-
-			//arrayOfAllTitles[0][1] = "hello";
-			//alert(arrayOfAllTitles[0][1][0]);
-
-			var testArray = new Array();
-			testArray[0] = "FirstElement";
-			testArray[1] = new Array("NestedTheFirst", "NestedTheSecond");
-
-			for (var i = 0; i <= testArray.length - 1; i++)
-			{
-					//alert("Length is " + testArray.length + ", while current iteration is " + i);
-
-					if (Array.isArray(testArray[i]))
-					{
-						//alert("Found array: ");
-
-						for (var j = 0; j <= testArray[i].length - 1; j++)
-						{
-							//alert("Element " + j + " is named " + testArray[i][j]);
-						}
-					}
-					else
-					{
-						//alert("Found simple element, which is " + testArray[i]);
-					}
-			}
-
 
 			var originalString = JSON.stringify(dataFromFilesystem);
 			var cleanedString = originalString.replace("\"", "");
@@ -798,58 +744,38 @@ export default class UpperApplicationWindow extends React.Component
 
 				// Get the title and location for the main page of each section.
 				//
-				//alert("Page-title for section " + (index + 1) + " is "
-				//	+ currentSectionFromList.childNodes[0].textContent + ", and page-location is "
-				//		+ currentSectionFromList.childNodes[1].textContent + ".");
-
-				arrayOfAllTitles[arrayCounter] = currentSectionFromList.childNodes[0].textContent;
+				arrayOfAllTitles[arrayCounter] = new Array(currentSectionFromList.childNodes[0].textContent, "zeroeth");
 				arrayOfAllLocations[arrayCounter] = currentSectionFromList.childNodes[1].textContent;
-				//alert("Initialized arrayOfAllTitles as " + arrayOfAllTitles[arrayCounter]);
-				//alert("Initialized arrayOfAllLocations as " + arrayOfAllLocations[arrayCounter]);
 
-				alert("We are now at array element number "  + arrayCounter + ". This element's "
-					+ "title is " + arrayOfAllTitles[arrayCounter] + ", and its location is " + arrayOfAllLocations[arrayCounter]);
+				var title = arrayOfAllTitles[arrayCounter][0];
+				var indentationLevel = arrayOfAllTitles[arrayCounter][1];
 
-				//alert("arrayOfAllTitles[" + arrayCounter + "] is now " + arrayOfAllTitles[arrayCounter]);
-				//alert("arrayOfAllLocations[" + arrayCounter + "] is now " + arrayOfAllLocations[arrayCounter]);
-
-				//alert("Array test 1: " + arrayOfAllTitles[index]);
-				//alert("Array test 2: " + arrayOfAllLocations[index]);
+				alert("We are now at array element number "  + arrayCounter + ". This is an element for zero-level indentation:  "
+				+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
+				+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
+				+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
 
 				// Examine the subsection for this section, and determine how many
 				// child-pages it contains.
 				//
 				var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');
 
-				//alert("There are " + listOfAllSubSections.length + " child-pages in this section:");
-
 				// If there is at least one child page under the current section-page...
 				//
 				if (listOfAllSubSections.length > 0)
 				{
-
-
 					// Do the following once for each child page in the subsection-content area.
 					//
 					for (var subsectionindex = 0; subsectionindex < listOfAllSubSections.length; subsectionindex++)
 					{
 						arrayCounter++;
-						//arrayOfAllTitles[arrayCounter] = new Array();
-						arrayOfAllLocations[arrayCounter] = new Array();
 
 						// Look at each child-page in turn.
 						//
 						var currentSubSectionFromList = listOfAllSubSections.item(subsectionindex);
 
-						// Return its title and location.
+						// Return its title, indentation-level, and location.
 						//
-						//alert("Child-page title number " + (subsectionindex + 1)
-						//			+ " is " + currentSubSectionFromList.childNodes[0].textContent + ", and "
-						//				+ "its location is "  + currentSubSectionFromList.childNodes[1].textContent);
-
-						var theTitle = currentSubSectionFromList.childNodes[0].textContent;
-						alert("theTitle is " + theTitle);
-
 						arrayOfAllTitles[arrayCounter] = new Array(currentSubSectionFromList.childNodes[0].textContent, "first");
 						arrayOfAllLocations[arrayCounter] = currentSubSectionFromList.childNodes[1].textContent;
 
@@ -857,27 +783,20 @@ export default class UpperApplicationWindow extends React.Component
 					  var indentationLevel = arrayOfAllTitles[arrayCounter][1];
 
 						alert("We are now at array element number "  + arrayCounter + ". This is an element for one-level indentation:  "
-							+  "the title is " + title + ","
-							+ " the indent-level is " + indentationLevel
-							+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
-
-						//alert("arrayOfAllTitles[" + arrayCounter + "][" + subsectionindex + "] is now " + arrayOfAllTitles[arrayCounter][subsectionindex]);
-						//alert("arrayOfAllLocations[" + arrayCounter + "][" + subsectionindex + "] is now " + arrayOfAllLocations[arrayCounter][subsectionindex]);
+						+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
+						+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
+						+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
 
 						// Any page at any level can have child pages of its own. Examine the subsubsection
 						// for the current page, and see how many offspring it contains.
 						//
 						var listOfAllSubSubSections = currentSubSectionFromList.getElementsByTagName('grandchild_page_info');
 
-						alert("Located " + listOfAllSubSubSections.length + " grandchild-page(s) in this section:");
-
 						// If there is at least one grandchild page under the current subsubsection page...
 						//
 						if (listOfAllSubSubSections.length > 0)
 						{
 							arrayCounter++;
-							arrayOfAllTitles[arrayCounter] = new Array();
-							arrayOfAllLocations[arrayCounter] = new Array();
 
 							// Do the following once for each grandchild page in the subsubsection-content area.
 							//
@@ -887,31 +806,18 @@ export default class UpperApplicationWindow extends React.Component
 								//
 								var currentSubSubSectionFromList = listOfAllSubSubSections.item(subsubsectionindex);
 
-								//alert("arrayOfAllTitles[arrayCounter][subsectionindex][subsubsectionindex] is " + arrayOfAllTitles[arrayCounter][subsectionindex][subsubsectionindex] );
+								arrayOfAllTitles[arrayCounter] = new Array(currentSubSubSectionFromList.childNodes[0].textContent, "second");
+								arrayOfAllLocations[arrayCounter] = currentSubSubSectionFromList.childNodes[1].textContent;
 
-								arrayOfAllTitles[arrayCounter][subsubsectionindex] = currentSubSubSectionFromList.childNodes[0].textContent;
-								arrayOfAllLocations[arrayCounter][subsubsectionindex] = currentSubSubSectionFromList.childNodes[0].textContent;
-
-								alert("We are now at array element number "  + arrayCounter + ". This is an array for two-level indentation, whose "
-									+ "title is " + arrayOfAllTitles[arrayCounter][subsubsectionindex] + ", and whose location is " + arrayOfAllLocations[arrayCounter][subsubsectionindex]);
-
-								//alert("arrayOfAllTitles[" + arrayCounter + "][" + subsubsectionindex + " is now "
-								//																							+ arrayOfAllTitles[arrayCounter][subsubsectionindex]);
-
-								//alert("arrayOfAllLocations[" + arrayCounter + "][" + subsubsectionindex + " is now "
-								//																							+ arrayOfAllLocations[arrayCounter][subsubsectionindex]);
-
-								// Return its title and location.
-								//
-								//alert("Grandchild-page title number " + (subsubsectionindex + 1)
-								//			+ " is " + currentSubSubSectionFromList.childNodes[0].textContent + ", and "
-								//				+ "its location is "  + currentSubSubSectionFromList.childNodes[1].textContent);
+								alert("We are now at array element number "  + arrayCounter + ". This is an array for two-level indentation: "
+								+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
+								+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
+								+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
 							}
 						}
 					}
 				}
 			}
-
 		}
 
 
