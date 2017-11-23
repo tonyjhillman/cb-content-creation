@@ -63,7 +63,7 @@ function BaseApplicationWindow(props)
 
 			<UpperApplicationWindow />
 
-			<RenderNavContent />
+
 
 
 
@@ -73,10 +73,18 @@ function BaseApplicationWindow(props)
 
 function RenderNavContent (props)
 {
-		const numbers = [1, 2, 3, 4, 5];
-		const listItems = numbers.map((number) =>
-  			<p>{number}</p>
-			);
+		//const numbers = [1, 2, 3, 4, 5];
+		//const doubledNumbers = numbers.map((number) => number * 2);
+
+		//const listDoubles = doubledNumbers.map((doubledNumber) =>
+  	//		<p>{doubledNumber}</p>
+		//	);
+
+		const theTitles = props.titles;
+
+		const listTitles = theTitles.map((aTitle) =>
+			<p>{aTitle}</p>
+		);
 
 		return (
 			<div style={{
@@ -89,7 +97,7 @@ function RenderNavContent (props)
 				left: 108,
 				zIndex: 99
 			}}>
-			{listItems}
+			{listTitles}
 			</div>
 		);
 
@@ -548,7 +556,7 @@ var currentFileName = 'default.md';
 //
 var canSaveFile = true;
 
-var arrayOfAllTitles = new Array();
+var arrayOfAllTitles = new Array("first", "second");
 var arrayOfAllLocations = new Array();
 
 // By switching this to false, disallow attempts to get a file before a
@@ -881,7 +889,12 @@ export default class UpperApplicationWindow extends React.Component
 
 			this.setState ( { titles: arrayOfAllTitles } );
 			this.setState ( { locations: arrayOfAllTitles } );
+
+			alert("Array of All titles is: " + this.state.titles);
+			alert("global array version is: " + arrayOfAllTitles);
 		}
+
+
 
 
 	RenderNodeJsButton ()
@@ -1361,6 +1374,8 @@ export default class UpperApplicationWindow extends React.Component
 				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
 
 				<XMLButton onClick={() => this.getXMLFileFromServer(this.state.xmlfilename) }/>
+
+				<RenderNavContent titles={ this.state.titles } />
 
 			</div>
 		);
