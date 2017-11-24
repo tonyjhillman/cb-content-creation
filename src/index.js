@@ -73,6 +73,7 @@ function BaseApplicationWindow(props)
 
 function RenderNavContent (props)
 {
+		//alert("Rendering");
 		//const numbers = [1, 2, 3, 4, 5];
 		//const doubledNumbers = numbers.map((number) => number * 2);
 
@@ -82,9 +83,31 @@ function RenderNavContent (props)
 
 		const theTitles = props.titles;
 
-		const listTitles = theTitles.map((aTitle) =>
+		var titlesOnly = new Array();
+
+		var upperLimitOfLoop = 1;
+
+		if (xmlFileAvailable)
+		{
+			upperLimitOfLoop = theTitles.length - 1;
+		}
+
+
+		for (var k = 0; k <= upperLimitOfLoop; k++)
+		{
+			titlesOnly[k] = new Array();
+			titlesOnly[k][0] = props.titles[k][0];
+			alert("titlesOnly[" + k + "] is " + titlesOnly[k]);
+		}
+
+		//const listTitles = titlesOnly.map((aTitle) =>
+		//	<p>{aTitle}</p>
+		//);
+
+		const listTitles = titlesOnly.map((aTitle) =>
 			<p>{aTitle}</p>
 		);
+
 
 		return (
 			<div style={{
@@ -94,7 +117,7 @@ function RenderNavContent (props)
 				height: 670,
 				backgroundColor: 'white',
 				top: 328,
-				left: 108,
+				left: -500,
 				zIndex: 99
 			}}>
 			{listTitles}
@@ -556,7 +579,12 @@ var currentFileName = 'default.md';
 //
 var canSaveFile = true;
 
-var arrayOfAllTitles = new Array("first", "second");
+// Perform nav-content rendering according to length of current file only when
+// file is available, otherwise use default value.
+//
+var xmlFileAvailable = false;
+
+var arrayOfAllTitles = new Array("", "");
 var arrayOfAllLocations = new Array();
 
 // By switching this to false, disallow attempts to get a file before a
@@ -739,6 +767,7 @@ export default class UpperApplicationWindow extends React.Component
 				axios.get(nodeJsTargetURL, {timeout: 6000},
 								{headers: {'Content-Type': 'text/plain'}}
 					).then(response => {
+						  xmlFileAvailable = true;
 							this.DetermineNavContent(response.data);
 						});
 		}
@@ -890,8 +919,8 @@ export default class UpperApplicationWindow extends React.Component
 			this.setState ( { titles: arrayOfAllTitles } );
 			this.setState ( { locations: arrayOfAllTitles } );
 
-			alert("Array of All titles is: " + this.state.titles);
-			alert("global array version is: " + arrayOfAllTitles);
+			//alert("Array of All titles is: " + this.state.titles);
+			//alert("global array version is: " + arrayOfAllTitles);
 		}
 
 
