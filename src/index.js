@@ -593,13 +593,27 @@ class Organisation extends React.Component {
 
     let nodes = arrayOfAllTitles.map(function(person) {
       return (
-        <Node node={person} children={person[3]} />
+        <Node
+
+				node={person} children={person[3]} toppadding={30}/>
       );
     });
 
     return (
       <div>
-        <ul className="org">
+        <ul style={{
+				 position: 'absolute',
+				 border: '0px solid black',
+				 width: 370,
+				 height: 670,
+				 backgroundColor: 'white',
+				 top: 328,
+				 left: -500,
+				 zIndex: 99,
+				 fontSize: 28
+			 }}
+
+				className="org">
          {nodes}
         </ul>
       </div>
@@ -611,22 +625,84 @@ class Node extends React.Component {
 
   render() {
 
-		alert("rendering a node...");
+		//alert("rendering a node...");
 
     let childnodes = null;
 
     if(this.props.children) {
       childnodes = this.props.children.map(function(childnode) {
-				alert("childnode is " + childnode[1]);
+				//alert("childnode is " + childnode[1]);
        return (
-         <Node node={childnode} children={childnode[3]} />
+         <Node2  node={childnode} children={childnode[3]} />
        );
      });
     }
 
     return (
-      <li key={this.props.node.id}>
-        <span>.....{this.props.node[1]}</span>
+      <li style={{ paddingTop: 30 }}
+
+				key={this.props.node.id}>
+        <span>{this.props.node[1]}</span>
+        { childnodes ?
+          <ul>{childnodes}</ul>
+        : null }
+      </li>
+    );
+  }
+}
+
+class Node2 extends React.Component {
+
+  render() {
+
+		//alert("rendering a node...");
+
+    let childnodes = null;
+
+    if(this.props.children) {
+      childnodes = this.props.children.map(function(childnode) {
+				//alert("childnode is " + childnode[1]);
+       return (
+         <Node3  node={childnode} children={childnode[3]} toppadding={0}/>
+       );
+     });
+    }
+
+    return (
+      <li style={{ paddingTop: 10 }}
+
+				key={this.props.node.id}>
+        <span>{this.props.node[1]}</span>
+        { childnodes ?
+          <ul>{childnodes}</ul>
+        : null }
+      </li>
+    );
+  }
+}
+
+class Node3 extends React.Component {
+
+  render() {
+
+		//alert("rendering a node...");
+
+    let childnodes = null;
+
+    if(this.props.children) {
+      childnodes = this.props.children.map(function(childnode) {
+				//alert("childnode is " + childnode[1]);
+       return (
+         <Node3  node={childnode} children={childnode[3]} />
+       );
+     });
+    }
+
+    return (
+      <li style={{ paddingTop: 0 }}
+
+				key={this.props.node.id}>
+        <span>{this.props.node[1]}</span>
         { childnodes ?
           <ul>{childnodes}</ul>
         : null }
@@ -877,10 +953,24 @@ export default class UpperApplicationWindow extends React.Component
 				testArray[0][3][1][0] = 3;
 				testArray[0][3][1][1] = "Using Java";
 				testArray[0][3][1][2] = "./writes/usingJava.md";
+				testArray[0][3][1][3] = new Array();
 
-				alert(testArray);
-				var ok = JSON.stringify(testArray);
-				alert(ok);
+				testArray [0][3][1][3][0] = new Array();
+				testArray [0][3][1][3][0][0] = 4;
+				testArray [0][3][1][3][0][1] = "Java Debugging";
+				testArray [0][3][1][3][0][2] = "./writes/javaDebugging.md";
+
+				testArray[1] = new Array();
+				testArray[1][0] = 5;
+				testArray[1][1] = ".NET";
+				testArray[1][2] = "./writes/dotNet.md";
+				testArray[1][3] = new Array();
+
+
+
+				//alert(testArray);
+				//var ok = JSON.stringify(testArray);
+				//alert(ok);
 
 				//testArray[0][2][0] = new Array("ThreePointOne", "ThreePointTwo", "ThreePointThree");
 /*
