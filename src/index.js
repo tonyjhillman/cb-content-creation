@@ -73,14 +73,6 @@ function BaseApplicationWindow(props)
 
 function RenderNavContent (props)
 {
-		//alert("Rendering");
-		//const numbers = [1, 2, 3, 4, 5];
-		//const doubledNumbers = numbers.map((number) => number * 2);
-
-		//const listDoubles = doubledNumbers.map((doubledNumber) =>
-  	//		<p>{doubledNumber}</p>
-		//	);
-
 		const theTitles = props.titles;
 
 		var titlesOnly = new Array();
@@ -92,22 +84,25 @@ function RenderNavContent (props)
 			upperLimitOfLoop = theTitles.length - 1;
 		}
 
-
 		for (var k = 0; k <= upperLimitOfLoop; k++)
 		{
 			titlesOnly[k] = new Array();
 			titlesOnly[k][0] = props.titles[k][0];
-			alert("titlesOnly[" + k + "] is " + titlesOnly[k]);
+			//alert("titlesOnly[" + k + "] is " + titlesOnly[k]);
+			//alert("props.titles indent value is " + props.titles[k][1]);
+
+			if (props.titles[k][1] == "first")
+			{
+				this.setState ( { navEntryIndentation: 60});
+			}
+
 		}
 
-		//const listTitles = titlesOnly.map((aTitle) =>
-		//	<p>{aTitle}</p>
-		//);
-
 		const listTitles = titlesOnly.map((aTitle) =>
-			<p>{aTitle}</p>
-		);
+			<p style={{paddingLeft: props.indentation, fontSize: 28 }}
 
+			>{aTitle}</p>
+		);
 
 		return (
 			<div style={{
@@ -592,6 +587,54 @@ var arrayOfAllLocations = new Array();
 //
 var canGetFile = true;
 
+class Organisation extends React.Component {
+
+  render() {
+
+    let nodes = arrayOfAllTitles.map(function(person) {
+      return (
+        <Node node={person} children={person[3]} />
+      );
+    });
+
+    return (
+      <div>
+        <ul className="org">
+         {nodes}
+        </ul>
+      </div>
+    );
+  }
+}
+
+class Node extends React.Component {
+
+  render() {
+
+		alert("rendering a node...");
+
+    let childnodes = null;
+
+    if(this.props.children) {
+      childnodes = this.props.children.map(function(childnode) {
+				alert("childnode is " + childnode[1]);
+       return (
+         <Node node={childnode} children={childnode[3]} />
+       );
+     });
+    }
+
+    return (
+      <li key={this.props.node.id}>
+        <span>.....{this.props.node[1]}</span>
+        { childnodes ?
+          <ul>{childnodes}</ul>
+        : null }
+      </li>
+    );
+  }
+}
+
 
 
 {/*
@@ -676,7 +719,11 @@ export default class UpperApplicationWindow extends React.Component
 				parententryheight: 400,
 
 				titles: arrayOfAllTitles,
-				locations: arrayOfAllLocations
+				locations: arrayOfAllLocations,
+
+				navEntryIndentationZeroeth: 20,
+				navEntryIndentationFirst: 30,
+				navEntryIndentationSecond: 40,
 			};
 
 			this.saveCurrentEditsToServer
@@ -812,6 +859,46 @@ export default class UpperApplicationWindow extends React.Component
 
 				var currentSectionFromList = listOfAllSections.item(index);
 
+				var testArray = new Array();
+				var titles = new Array();
+
+				testArray[0] = new Array();
+				testArray[0][0] = 1;
+				testArray[0][1] = "Java";
+				testArray[0][2] = "./writes/Java.md";
+				testArray[0][3] = new Array();
+
+				testArray[0][3][0] = new Array();
+				testArray[0][3][0][0] = 2;
+				testArray[0][3][0][1] = "Java Basics";
+				testArray[0][3][0][2] = "./writes/javaBasics.md";
+
+				testArray[0][3][1] = new Array();
+				testArray[0][3][1][0] = 3;
+				testArray[0][3][1][1] = "Using Java";
+				testArray[0][3][1][2] = "./writes/usingJava.md";
+
+				alert(testArray);
+				var ok = JSON.stringify(testArray);
+				alert(ok);
+
+				//testArray[0][2][0] = new Array("ThreePointOne", "ThreePointTwo", "ThreePointThree");
+/*
+				alert("testArray[0][0] is " + testArray[0][0]);
+				alert("testArray[0][1] is " + testArray[0][1]);
+				alert("testArray[0][2] is " + testArray[0][2]);
+				alert("testArray[0][3][0][0] is " + testArray[0][3][0][0]);
+				alert("testArray[0][3][0][1] is " + testArray[0][3][0][1]);
+				alert("testArray[0][3][0][2] is " + testArray[0][3][0][2]);
+				alert("testArray[0][3][1][0] is " + testArray[0][3][1][0]);
+				alert("testArray[0][3][1][1] is " + testArray[0][3][1][1]);
+				alert("testArray[0][3][1][2] is " + testArray[0][3][1][2]);
+				*/
+
+
+
+				/*
+
 				// Get the title and location for the main page of each section.
 				//
 				arrayOfAllTitles[arrayCounter] = new Array(currentSectionFromList.childNodes[0].textContent, "zeroeth");
@@ -820,10 +907,10 @@ export default class UpperApplicationWindow extends React.Component
 				var title = arrayOfAllTitles[arrayCounter][0];
 				var indentationLevel = arrayOfAllTitles[arrayCounter][1];
 
-				alert("We are now at array element number "  + arrayCounter + ". This is an element for zero-level indentation:  "
-				+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
-				+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
-				+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
+				//alert("We are now at array element number "  + arrayCounter + ". This is an element for zero-level indentation:  "
+				//+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
+				//+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
+				//+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
 
 				// Examine the subsection for this section, and determine how many
 				// child-pages it contains.
@@ -856,11 +943,11 @@ export default class UpperApplicationWindow extends React.Component
 						var title = arrayOfAllTitles[arrayCounter][0];
 					  var indentationLevel = arrayOfAllTitles[arrayCounter][1];
 
-						alert("We are now at array element number "  + arrayCounter + ". This is an element for one-level indentation:  "
-						+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
-						+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
-						+ ", the parent-page is " + arrayOfAllTitles[parentPage][0]
-						+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
+						//alert("We are now at array element number "  + arrayCounter + ". This is an element for one-level indentation:  "
+						//+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
+						//+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
+						//+ ", the parent-page is " + arrayOfAllTitles[parentPage][0]
+						//+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
 
 						// Any page at any level can have child pages of its own. Examine the subsubsection
 						// for the current page, and see how many offspring it contains.
@@ -895,12 +982,12 @@ export default class UpperApplicationWindow extends React.Component
 								arrayOfAllTitles[arrayCounter] = new Array(currentSubSubSectionFromList.childNodes[0].textContent, "second");
 								arrayOfAllLocations[arrayCounter] = currentSubSubSectionFromList.childNodes[1].textContent;
 
-								alert("We are now at array element number "  + arrayCounter + ". This is an array for two-level indentation: "
-								+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
-								+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
-								+ ", the parent-page is " + arrayOfAllTitles[parentPage][0]
-								+ ", the grandparent-page is " + arrayOfAllTitles[grandParentPage][0]
-								+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
+								//alert("We are now at array element number "  + arrayCounter + ". This is an array for two-level indentation: "
+								//+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
+								//+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
+								//+ ", the parent-page is " + arrayOfAllTitles[parentPage][0]
+								//+ ", the grandparent-page is " + arrayOfAllTitles[grandParentPage][0]
+								//+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
 							}
 
 							// Now that we have finished, for now, at the third-level of indentation, re-establish the parentPage
@@ -911,10 +998,15 @@ export default class UpperApplicationWindow extends React.Component
 					}
 				}
 			}
+			*/
 
 			//const listItems = arrayOfAllTitles.map((current) =>
 			//	<li>{arrayOfAllTitles[current]}</li>
 			//);
+
+			//this.setState ( { titles: arrayOfAllTitles } );
+
+			arrayOfAllTitles = testArray;
 
 			this.setState ( { titles: arrayOfAllTitles } );
 			this.setState ( { locations: arrayOfAllTitles } );
@@ -923,6 +1015,81 @@ export default class UpperApplicationWindow extends React.Component
 			//alert("global array version is: " + arrayOfAllTitles);
 		}
 
+		/*
+
+		RenderNavContent ()
+		{
+				//alert("Called");
+				const theTitles = this.state.titles;
+
+
+				var titlesOnly = new Array();
+
+				var upperLimitOfLoop = 1;
+
+				if (xmlFileAvailable)
+				{
+					upperLimitOfLoop = theTitles.length - 1;
+				}
+
+				for (var k = 0; k <= upperLimitOfLoop; k++)
+				{
+					titlesOnly[k] = new Array();
+					titlesOnly[k][0] = theTitles[k][0];
+					//alert("titlesOnly[" + k + "] is " + titlesOnly[k]);
+					//alert("props.titles indent value is " + props.titles[k][1]);
+
+					var test = 20;
+
+					if (theTitles[k][1] == "first")
+					{
+						test = 80;
+					}
+					else {
+						{
+							if (theTitles[k][1]== "zeroeth")
+							{
+								test = 0;
+							}
+							else {
+								{
+									if (theTitles[k][1] == "second")
+									{
+										test = 40;
+									}
+								}
+							}
+						}
+					}
+
+				}
+
+				var listTitles = titlesOnly.map((aTitle) =>
+					<p style={{paddingLeft: test, fontSize: 28 }}
+
+					>{aTitle}</p>
+				);
+
+				return (
+					<div style={{
+						position: 'absolute',
+						border: '0px solid black',
+						width: 370,
+						height: 670,
+						backgroundColor: 'white',
+						top: 328,
+						left: -500,
+						zIndex: 99
+					}}>
+					{listTitles}
+					</div>
+				);
+
+		}
+
+		*/
+
+}
 
 
 
@@ -1404,7 +1571,9 @@ export default class UpperApplicationWindow extends React.Component
 
 				<XMLButton onClick={() => this.getXMLFileFromServer(this.state.xmlfilename) }/>
 
-				<RenderNavContent titles={ this.state.titles } />
+				<div>
+					<Organisation />
+				</div>
 
 			</div>
 		);
