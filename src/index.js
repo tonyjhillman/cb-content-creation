@@ -580,6 +580,7 @@ var canSaveFile = true;
 var xmlFileAvailable = false;
 
 var arrayOfAllTitles = new Array("", "");
+var arrayOfAllTitles2 = new Array("", "");
 var arrayOfAllLocations = new Array();
 
 // By switching this to false, disallow attempts to get a file before a
@@ -589,9 +590,13 @@ var canGetFile = true;
 
 class Organisation extends React.Component {
 
+
+
   render() {
 
-    let nodes = arrayOfAllTitles.map(function(person) {
+		alert("In organization: "  + JSON.stringify(arrayOfAllTitles2));
+
+    let nodes = arrayOfAllTitles2.map(function(person) {
       return (
         <Node
 
@@ -928,118 +933,62 @@ export default class UpperApplicationWindow extends React.Component
 			//
 			for (var index = 0; index < listOfAllSections.length; index++)
 			{
-				if (index > 0)
-				{
-					arrayCounter++;
-				}
-
+				// Look at one section at a time.
+				//
 				var currentSectionFromList = listOfAllSections.item(index);
 
-				var testArray = new Array();
-				var titles = new Array();
-
-				testArray[0] = new Array();
-				testArray[0][0] = 1;
-				testArray[0][1] = "Java";
-				testArray[0][2] = "./writes/Java.md";
-				testArray[0][3] = new Array();
-
-				testArray[0][3][0] = new Array();
-				testArray[0][3][0][0] = 2;
-				testArray[0][3][0][1] = "Java Basics";
-				testArray[0][3][0][2] = "./writes/javaBasics.md";
-
-				testArray[0][3][1] = new Array();
-				testArray[0][3][1][0] = 3;
-				testArray[0][3][1][1] = "Using Java";
-				testArray[0][3][1][2] = "./writes/usingJava.md";
-				testArray[0][3][1][3] = new Array();
-
-				testArray [0][3][1][3][0] = new Array();
-				testArray [0][3][1][3][0][0] = 4;
-				testArray [0][3][1][3][0][1] = "Java Debugging";
-				testArray [0][3][1][3][0][2] = "./writes/javaDebugging.md";
-
-				testArray[1] = new Array();
-				testArray[1][0] = 5;
-				testArray[1][1] = ".NET";
-				testArray[1][2] = "./writes/dotNet.md";
-				testArray[1][3] = new Array();
-
-
-
-				//alert(testArray);
-				//var ok = JSON.stringify(testArray);
-				//alert(ok);
-
-				//testArray[0][2][0] = new Array("ThreePointOne", "ThreePointTwo", "ThreePointThree");
-/*
-				alert("testArray[0][0] is " + testArray[0][0]);
-				alert("testArray[0][1] is " + testArray[0][1]);
-				alert("testArray[0][2] is " + testArray[0][2]);
-				alert("testArray[0][3][0][0] is " + testArray[0][3][0][0]);
-				alert("testArray[0][3][0][1] is " + testArray[0][3][0][1]);
-				alert("testArray[0][3][0][2] is " + testArray[0][3][0][2]);
-				alert("testArray[0][3][1][0] is " + testArray[0][3][1][0]);
-				alert("testArray[0][3][1][1] is " + testArray[0][3][1][1]);
-				alert("testArray[0][3][1][2] is " + testArray[0][3][1][2]);
-				*/
-
-
-
-				/*
-
-				// Get the title and location for the main page of each section.
+				// For each page, create an array to hold the information.
 				//
-				arrayOfAllTitles[arrayCounter] = new Array(currentSectionFromList.childNodes[0].textContent, "zeroeth");
-				arrayOfAllLocations[arrayCounter] = currentSectionFromList.childNodes[1].textContent;
+				arrayOfAllTitles2[index] = new Array;
 
-				var title = arrayOfAllTitles[arrayCounter][0];
-				var indentationLevel = arrayOfAllTitles[arrayCounter][1];
+				// Give this page an id.
+				//
+				arrayOfAllTitles2[index][0] = arrayCounter++;
 
-				//alert("We are now at array element number "  + arrayCounter + ". This is an element for zero-level indentation:  "
-				//+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
-				//+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
-				//+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
+				// Store the page-name.
+				//
+				arrayOfAllTitles2[index][1] = currentSectionFromList.childNodes[0].textContent;
+
+				// Store the page-location.
+				//
+				arrayOfAllTitles2[index][2] = currentSectionFromList.childNodes[1].textContent;
 
 				// Examine the subsection for this section, and determine how many
 				// child-pages it contains.
 				//
-				var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');
-
-				// If there is at least one child page under the current section-page...
+				var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');// If there is at least one child page under the current section-page...
 				//
 				if (listOfAllSubSections.length > 0)
 				{
-					// Keep track of the page that is the parent for all the subsections.
+					// Array to hold Document object contents for this subsection.
 					//
-					var parentPage = arrayCounter;
+					arrayOfAllTitles2[index][3] = new Array();
 
 					// Do the following once for each child page in the subsection-content area.
 					//
 					for (var subsectionindex = 0; subsectionindex < listOfAllSubSections.length; subsectionindex++)
 					{
-						arrayCounter++;
+						// Create a sub-array for each set of child-page information in this subsection.
+						//
+						arrayOfAllTitles2[index][3][subsectionindex] = new Array();
 
 						// Look at each child-page in turn.
 						//
 						var currentSubSectionFromList = listOfAllSubSections.item(subsectionindex);
 
-						// Return its title, indentation-level, parent-page, and location.
+						// Give this page an id.
 						//
-						arrayOfAllTitles[arrayCounter] = new Array(currentSubSectionFromList.childNodes[0].textContent, "first", parentPage);
-						arrayOfAllLocations[arrayCounter] = currentSubSectionFromList.childNodes[1].textContent;
+						arrayOfAllTitles2[index][3][subsectionindex][0] = arrayCounter++;
 
-						var title = arrayOfAllTitles[arrayCounter][0];
-					  var indentationLevel = arrayOfAllTitles[arrayCounter][1];
+						// Store the page-name.
+						//
+						arrayOfAllTitles2[index][3][subsectionindex][1] = currentSubSectionFromList.childNodes[0].textContent;
 
-						//alert("We are now at array element number "  + arrayCounter + ". This is an element for one-level indentation:  "
-						//+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
-						//+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
-						//+ ", the parent-page is " + arrayOfAllTitles[parentPage][0]
-						//+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
+						// Store the page-location.
+						//
+						arrayOfAllTitles2[index][3][subsectionindex][2] = currentSubSectionFromList.childNodes[1].textContent;
 
-						// Any page at any level can have child pages of its own. Examine the subsubsection
+						// Examine the subsubsection
 						// for the current page, and see how many offspring it contains.
 						//
 						var listOfAllSubSubSections = currentSubSectionFromList.getElementsByTagName('grandchild_page_info');
@@ -1048,138 +997,43 @@ export default class UpperApplicationWindow extends React.Component
 						//
 						if (listOfAllSubSubSections.length > 0)
 						{
-							// Make the parentPage, previously established for the second-level of indentation, the
-							// grandParentPage (since we have now descended to the third-level of indentation).
-							//
-							var grandParentPage = parentPage;
-
-							// Make the parentPage the most recent value of the arrayCounter.
-							//
-							parentPage = arrayCounter;
+							arrayOfAllTitles2[index][3][subsectionindex][3] = new Array();
 
 							// Do the following once for each grandchild page in the subsubsection-content area.
 							//
 							for (var subsubsectionindex = 0; subsubsectionindex < listOfAllSubSubSections.length; subsubsectionindex++)
 							{
-								// Increment the array-slot for each page.
+								// Create a sub-array for each set of grandchild-page information in this subsubsection.
 								//
-								arrayCounter++;
+								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex] = new Array();
 
 								// Look at each grandchild-page in turn.
 								//
 								var currentSubSubSectionFromList = listOfAllSubSubSections.item(subsubsectionindex);
 
-								arrayOfAllTitles[arrayCounter] = new Array(currentSubSubSectionFromList.childNodes[0].textContent, "second");
-								arrayOfAllLocations[arrayCounter] = currentSubSubSectionFromList.childNodes[1].textContent;
+								// Give this page an id.
+								//
+								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][0] = arrayCounter++;
 
-								//alert("We are now at array element number "  + arrayCounter + ". This is an array for two-level indentation: "
-								//+  "the title is " + arrayOfAllTitles[arrayCounter][0] + ","
-								//+ " the indent-level is " + arrayOfAllTitles[arrayCounter][1]
-								//+ ", the parent-page is " + arrayOfAllTitles[parentPage][0]
-								//+ ", the grandparent-page is " + arrayOfAllTitles[grandParentPage][0]
-								//+ ", and the location is " + arrayOfAllLocations[arrayCounter] + ".");
+								// Store the page-name.
+								//
+								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][1] = currentSubSubSectionFromList.childNodes[0].textContent;
+
+								// Store the page-location.
+								//
+								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][2] = currentSubSubSectionFromList.childNodes[1].textContent;
+
+								// There are no great-grandchild-pages: this is the lowest level. So, we end. The array is complete.
+								//
 							}
-
-							// Now that we have finished, for now, at the third-level of indentation, re-establish the parentPage
-							// as the value most recently used as grandParentPage.
-							//
-							parentPage = grandParentPage;
 						}
 					}
 				}
 			}
-			*/
+			alert("completed: " + JSON.stringify(arrayOfAllTitles2));
 
-			//const listItems = arrayOfAllTitles.map((current) =>
-			//	<li>{arrayOfAllTitles[current]}</li>
-			//);
-
-			//this.setState ( { titles: arrayOfAllTitles } );
-
-			arrayOfAllTitles = testArray;
-
-			this.setState ( { titles: arrayOfAllTitles } );
-			this.setState ( { locations: arrayOfAllTitles } );
-
-			//alert("Array of All titles is: " + this.state.titles);
-			//alert("global array version is: " + arrayOfAllTitles);
+			this.setState( { arrayOfAllTitles: arrayOfAllTitles2 });
 		}
-
-		/*
-
-		RenderNavContent ()
-		{
-				//alert("Called");
-				const theTitles = this.state.titles;
-
-
-				var titlesOnly = new Array();
-
-				var upperLimitOfLoop = 1;
-
-				if (xmlFileAvailable)
-				{
-					upperLimitOfLoop = theTitles.length - 1;
-				}
-
-				for (var k = 0; k <= upperLimitOfLoop; k++)
-				{
-					titlesOnly[k] = new Array();
-					titlesOnly[k][0] = theTitles[k][0];
-					//alert("titlesOnly[" + k + "] is " + titlesOnly[k]);
-					//alert("props.titles indent value is " + props.titles[k][1]);
-
-					var test = 20;
-
-					if (theTitles[k][1] == "first")
-					{
-						test = 80;
-					}
-					else {
-						{
-							if (theTitles[k][1]== "zeroeth")
-							{
-								test = 0;
-							}
-							else {
-								{
-									if (theTitles[k][1] == "second")
-									{
-										test = 40;
-									}
-								}
-							}
-						}
-					}
-
-				}
-
-				var listTitles = titlesOnly.map((aTitle) =>
-					<p style={{paddingLeft: test, fontSize: 28 }}
-
-					>{aTitle}</p>
-				);
-
-				return (
-					<div style={{
-						position: 'absolute',
-						border: '0px solid black',
-						width: 370,
-						height: 670,
-						backgroundColor: 'white',
-						top: 328,
-						left: -500,
-						zIndex: 99
-					}}>
-					{listTitles}
-					</div>
-				);
-
-		}
-
-		*/
-
-}
 
 
 
