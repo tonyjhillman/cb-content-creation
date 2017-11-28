@@ -590,23 +590,40 @@ var canGetFile = true;
 
 class Organisation extends React.Component {
 
-
-
   render() {
 
-		alert("In organization: "  + JSON.stringify(arrayOfAllTitles2));
+		//alert("In organization: "  + JSON.stringify(arrayOfAllTitles2));
 
-    let nodes = arrayOfAllTitles2.map(function(person) {
-      return (
-        <Node
-
-				node={person} children={person[3]} toppadding={30}/>
-      );
+    let nodes = arrayOfAllTitles2.map(function(person)
+		{
+			if (person[4] == "closed")
+			{
+	      return (
+	        <NodeClosed node={person}
+								children={person[3]}
+								toppadding={30}
+								whetherOpen={person[4]}
+								onClick={ () => this.SetNodeOpen(person[0]) }
+								/>
+	      );
+			}
+			else
+			{
+				return (
+				 <NodeOpen node={person}
+							 children={person[3]}
+							 toppadding={30}
+							 whetherOpen={person[4]}
+							 onClick={ () => this.SetNodeClosed(person[0]) }
+							 />
+			 );
+			}
     });
 
     return (
       <div>
         <ul style={{
+				 listStyle: 'none',
 				 position: 'absolute',
 				 border: '0px solid black',
 				 width: 370,
@@ -626,30 +643,108 @@ class Organisation extends React.Component {
   }
 }
 
-class Node extends React.Component {
-
-  render() {
-
-		//alert("rendering a node...");
-
+class NodeClosed extends React.Component
+{
+  render()
+	{
     let childnodes = null;
 
-    if(this.props.children) {
-      childnodes = this.props.children.map(function(childnode) {
-				//alert("childnode is " + childnode[1]);
+		// Iterate over the child-elements for this array-item only if (a) they
+		// do exist, and (b) the current status of the parent is "open" (the default
+	  // is "closed", which means the child-items do not appear unless the parent
+	  // has been opened by user-click).
+		//
+    if (this.props.children && this.props.whetherOpen == "open")
+		{
+      childnodes = this.props.children.map(function(childnode)
+			{
+			 // If child-iteration does occur, for each childnode, as properties,
+			 // return the array containing the node information, as well as the
+			 // items that contain any grandchildren, plus whether the child-node is
+			 // currently open or closed.
+			 //
        return (
-         <Node2  node={childnode} children={childnode[3]} />
+         <Node2  node={childnode} children={childnode[3]} whetherOpen={childnode[4]}/>
        );
      });
     }
 
     return (
       <li style={{ paddingTop: 30 }}
+				  key={this.props.node.id}>
 
-				key={this.props.node.id}>
-        <span>{this.props.node[1]}</span>
+					<div>
+
+						<img src={ require('./images/plusSign.png')}
+						  onClick={this.props.onClick}
+							style={{
+								position: 'relative',
+								width: 30,
+								height: 30,
+								top: 4,
+								left: -10
+							}} />
+
+						<span>{this.props.node[1]}</span>
+
+					</div>
+
         { childnodes ?
-          <ul>{childnodes}</ul>
+          <ul style={{listStyle: 'none'}}>{childnodes}</ul>
+        : null }
+      </li>
+    );
+  }
+}
+
+class NodeOpen extends React.Component
+{
+  render()
+	{
+    let childnodes = null;
+
+		// Iterate over the child-elements for this array-item only if (a) they
+		// do exist, and (b) the current status of the parent is "open" (the default
+	  // is "closed", which means the child-items do not appear unless the parent
+	  // has been opened by user-click).
+		//
+    if (this.props.children && this.props.whetherOpen == "open")
+		{
+      childnodes = this.props.children.map(function(childnode)
+			{
+			 // If child-iteration does occur, for each childnode, as properties,
+			 // return the array containing the node information, as well as the
+			 // items that contain any grandchildren, plus whether the child-node is
+			 // currently open or closed.
+			 //
+       return (
+         <Node2  node={childnode} children={childnode[3]} whetherOpen={childnode[4]}/>
+       );
+     });
+    }
+
+    return (
+      <li style={{ paddingTop: 30 }}
+				  key={this.props.node.id}>
+
+					<div>
+
+						<img src={ require('./images/minusSign.png')}
+						  onClick={this.props.onClick}
+							style={{
+								position: 'relative',
+								width: 30,
+								height: 30,
+								top: 4,
+								left: -10
+							}} />
+
+						<span>{this.props.node[1]}</span>
+
+					</div>
+
+        { childnodes ?
+          <ul style={{listStyle: 'none'}}>{childnodes}</ul>
         : null }
       </li>
     );
@@ -664,8 +759,10 @@ class Node2 extends React.Component {
 
     let childnodes = null;
 
-    if(this.props.children) {
-      childnodes = this.props.children.map(function(childnode) {
+    if (this.props.children && this.props.whetherOpen == "open")
+		{
+      childnodes = this.props.children.map(function(childnode)
+			{
 				//alert("childnode is " + childnode[1]);
        return (
          <Node3  node={childnode} children={childnode[3]} toppadding={0}/>
@@ -679,7 +776,7 @@ class Node2 extends React.Component {
 				key={this.props.node.id}>
         <span>{this.props.node[1]}</span>
         { childnodes ?
-          <ul>{childnodes}</ul>
+          <ul style={{listStyle: 'none'}}>{childnodes}</ul>
         : null }
       </li>
     );
@@ -917,6 +1014,11 @@ export default class UpperApplicationWindow extends React.Component
 	  		);
 		 }
 
+		// Clean up the string retrieved from the server that specifies the nav content.
+		// Transform it into a DOM object. Iterate through the object, and put each value
+		// into a standard JSON array. We will use this as data for a map iterator, which
+		// will render the nav content.
+		//
 		DetermineNavContent(dataFromFilesystem)
 		{
 			var originalString = JSON.stringify(dataFromFilesystem);
@@ -956,13 +1058,19 @@ export default class UpperApplicationWindow extends React.Component
 				// Examine the subsection for this section, and determine how many
 				// child-pages it contains.
 				//
-				var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');// If there is at least one child page under the current section-page...
+				var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');
+
+				// If there is at least one child page under the current section-page...
 				//
 				if (listOfAllSubSections.length > 0)
 				{
 					// Array to hold Document object contents for this subsection.
 					//
 					arrayOfAllTitles2[index][3] = new Array();
+
+					// The default view is that the sub-array is not visible.
+					//
+					arrayOfAllTitles2[index][4] = "closed";
 
 					// Do the following once for each child page in the subsection-content area.
 					//
@@ -997,7 +1105,13 @@ export default class UpperApplicationWindow extends React.Component
 						//
 						if (listOfAllSubSubSections.length > 0)
 						{
+							// Create an array to hold the subsubsection page information.
+							//
 							arrayOfAllTitles2[index][3][subsectionindex][3] = new Array();
+
+							// The default view is that the sub-array is not visible.
+							//
+							arrayOfAllTitles2[index][3][subsectionindex][4] = "closed";
 
 							// Do the following once for each grandchild page in the subsubsection-content area.
 							//
@@ -1016,26 +1130,28 @@ export default class UpperApplicationWindow extends React.Component
 								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][0] = arrayCounter++;
 
 								// Store the page-name.
-								//
+								//7
 								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][1] = currentSubSubSectionFromList.childNodes[0].textContent;
 
 								// Store the page-location.
 								//
 								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][2] = currentSubSubSectionFromList.childNodes[1].textContent;
 
-								// There are no great-grandchild-pages: this is the lowest level. So, we end. The array is complete.
+								// There are no great-grandchild-pages: this is the lowest level.
+								// So, we now end. Our array is complete.
 								//
 							}
 						}
 					}
 				}
 			}
+
 			alert("completed: " + JSON.stringify(arrayOfAllTitles2));
 
+			// Change state, so that a re-rendering occurs.
+			//
 			this.setState( { arrayOfAllTitles: arrayOfAllTitles2 });
 		}
-
-
 
 	RenderNodeJsButton ()
 	{
