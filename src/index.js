@@ -588,11 +588,59 @@ var arrayOfAllLocations = new Array();
 //
 var canGetFile = true;
 
-class Organisation extends React.Component {
+
+class Organisation extends React.Component
+{
+	constructor(props, context)
+	{
+		super(props, context);
+		this.state =
+		{
+			count: 0,
+			latestArray: arrayOfAllTitles2
+		};
+		this.setNodeOpen = this.setNodeOpen.bind(this);
+	}
+
+	setNodeOpen(id, theArray)
+	{
+		//alert("called setNodeOpen successfully...");
+		var levelCount = 0;
+
+		//alert("Before changing, the array is " + JSON.stringify(theArray));
+
+		// Find the item in the array based on the id that has been passed, then
+		// change its 4th position to "open".
+		//
+		for (var q = 0; q <= theArray.length - 1; q++)
+		{
+			if (theArray[q][0] == id)
+			{
+				theArray[q][4] = "open";
+				//alert("After changing, the array is " + JSON.stringify(theArray));
+				break;
+			}
+
+			if (levelCount <= 1 && theArray[q][3] != undefined)
+			{
+				levelCount++;
+
+				if (theArray[q][3].length > 0)
+				{
+					this.setNodeOpen(id, theArray[q][3]);
+				}
+			}
+		}
+
+		this.state.count = this.state.count + 1;
+		//alert("count is " + this.state.count);
+		this.forceUpdate();
+	}
 
   render() {
-
-		//alert("In organization: "  + JSON.stringify(arrayOfAllTitles2));
+		//alert("count is " + this.state.count);
+		//this.setNodeOpen(0, this.state.latestArray);
+		var self = this;
 
     let nodes = arrayOfAllTitles2.map(function(person)
 		{
@@ -600,10 +648,11 @@ class Organisation extends React.Component {
 			{
 	      return (
 	        <NodeClosed node={person}
+								onClick={ () => self.setNodeOpen(person[0], arrayOfAllTitles2) }
 								children={person[3]}
 								toppadding={30}
 								whetherOpen={person[4]}
-								onClick={ () => this.SetNodeOpen(person[0]) }
+
 								/>
 	      );
 			}
@@ -675,7 +724,7 @@ class NodeClosed extends React.Component
 
 					<div>
 
-						<img src={ require('./images/plusSign.png')}
+						<img src={ require('./images/plusSign.png') }
 						  onClick={this.props.onClick}
 							style={{
 								position: 'relative',
@@ -690,7 +739,7 @@ class NodeClosed extends React.Component
 					</div>
 
         { childnodes ?
-          <ul style={{listStyle: 'none'}}>{childnodes}</ul>
+          <ul style={ {listStyle: 'none'} }>{childnodes}</ul>
         : null }
       </li>
     );
@@ -943,6 +992,8 @@ export default class UpperApplicationWindow extends React.Component
 						//alert("Nothing to be Saved...");
 				}
     }
+
+
 
     getFileFromServer(targetFilename)
     {
