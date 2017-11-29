@@ -588,6 +588,7 @@ var arrayOfAllLocations = new Array();
 //
 var canGetFile = true;
 
+var self = null;
 
 class Organisation extends React.Component
 {
@@ -596,74 +597,101 @@ class Organisation extends React.Component
 		super(props, context);
 		this.state =
 		{
-			count: 0,
 			latestArray: arrayOfAllTitles2
 		};
-		this.setNodeOpen = this.setNodeOpen.bind(this);
+
+		this.toggleNodeToOpenOrClosed = this.toggleNodeToOpenOrClosed.bind(this);
 	}
 
-	setNodeOpen(id, theArray)
+	// This method is called when the user clicks on a plus or minus icon, to
+	// the left of a page-name. The icon indicates that there is child-content
+	// to be revealed or hidden. The function toggles the icon-appearance,
+	// and establishes an "open" or "closed" item in the array-line for the page. On
+	// re-render, this causes the child-content to be displayed. The function takes
+	// three params, which are the new status (open or closed) to which we are
+	// moving the item, id of the array-item we are searching for, and the
+	// array to be searched in.
+	//
+	toggleNodeToOpenOrClosed(newStatus, id, theArray)
 	{
-		//alert("called setNodeOpen successfully...");
+		//alert("Called toggleNodeToOpenOrClosed");
+		//ualert("newStatus is " + newStatus + ", childnode[0] is " + id + ", and theArray is " + theArray);
+		// Make sure we don't try to dig down below the third level, by
+		// keeping track of the level we are on.
+		//
 		var levelCount = 0;
-
-		//alert("Before changing, the array is " + JSON.stringify(theArray));
 
 		// Find the item in the array based on the id that has been passed, then
 		// change its 4th position to "open".
 		//
 		for (var q = 0; q <= theArray.length - 1; q++)
 		{
+			// Once we find an array-item that has the id passed to us, we know
+			// this is the item we modify; changing its 4 slot to "open".
+			//
 			if (theArray[q][0] == id)
 			{
-				theArray[q][4] = "open";
-				//alert("After changing, the array is " + JSON.stringify(theArray));
+				theArray[q][4] = newStatus;
+
 				break;
 			}
 
+			// While above the third level, and while the 3 slot is not
+			// undefined, examine child-content recursively.
+			//
 			if (levelCount <= 1 && theArray[q][3] != undefined)
 			{
 				levelCount++;
 
 				if (theArray[q][3].length > 0)
 				{
-					this.setNodeOpen(id, theArray[q][3]);
+					this.toggleNodeToOpenOrClosed(newStatus, id, theArray[q][3]);
 				}
 			}
 		}
 
-		this.state.count = this.state.count + 1;
-		//alert("count is " + this.state.count);
+		// This is not considered good style, but I've not yet found a way otherwise
+		// to trigger a general rendering when the parent-opening is completed.
+		//
 		this.forceUpdate();
 	}
 
-  render() {
-		//alert("count is " + this.state.count);
-		//this.setNodeOpen(0, this.state.latestArray);
-		var self = this;
+  render()
+	{
+		// To keep track of "this" during our descent into the map function,
+		// we need to bind the current "this" (which we use to call the function
+		// that opens the nav-parents to reveal children) to a local variable, "self".
+		// Note that this is used in the onClick definition, when we return the
+		// NodeClosed object.
+		//
+		//var self = this;
+		self = this;
 
     let nodes = arrayOfAllTitles2.map(function(person)
 		{
 			if (person[4] == "closed")
 			{
 	      return (
-	        <NodeClosed node={person}
-								onClick={ () => self.setNodeOpen(person[0], arrayOfAllTitles2) }
+	        <NodeIsEitherOpenOrClosed
+								node={person}
+								paddingTop={30}
+								image={'plusSign.png'}
+								onClick={ () => self.toggleNodeToOpenOrClosed("open", person[0], arrayOfAllTitles2) }
 								children={person[3]}
-								toppadding={30}
 								whetherOpen={person[4]}
-
 								/>
 	      );
 			}
 			else
 			{
 				return (
-				 <NodeOpen node={person}
+				 <NodeIsEitherOpenOrClosed
+				 			 node={person}
+							 paddingTop={30}
+				 			 image={'minusSign.png'}
 							 children={person[3]}
-							 toppadding={30}
 							 whetherOpen={person[4]}
-							 onClick={ () => this.SetNodeClosed(person[0]) }
+							 onClick={ () => self.toggleNodeToOpenOrClosed("closed", person[0], arrayOfAllTitles2) }
 							 />
 			 );
 			}
@@ -692,11 +720,15 @@ class Organisation extends React.Component
   }
 }
 
-class NodeClosed extends React.Component
+class NodeIsEitherOpenOrClosed extends React.Component
 {
   render()
 	{
+
     let childnodes = null;
+
+		var theImage = null;
+		var theIntendedDisposition = "";
 
 		// Iterate over the child-elements for this array-item only if (a) they
 		// do exist, and (b) the current status of the parent is "open" (the default
@@ -707,24 +739,62 @@ class NodeClosed extends React.Component
 		{
       childnodes = this.props.children.map(function(childnode)
 			{
-			 // If child-iteration does occur, for each childnode, as properties,
-			 // return the array containing the node information, as well as the
-			 // items that contain any grandchildren, plus whether the child-node is
-			 // currently open or closed.
-			 //
-       return (
-         <Node2  node={childnode} children={childnode[3]} whetherOpen={childnode[4]}/>
-       );
+			 if (childnode[3] == undefined)
+			 {
+				 theImage = "blank.png";
+				 theIntendedDisposition = "";
+
+	       return (
+					 <NodeIsEitherOpenOrClosed
+					 			 node={childnode}
+								 paddingTop={10}
+					 			 image={theImage}
+								 children={childnode[3]}
+								 whetherOpen={childnode[4]}
+								 />
+	       );
+			 }
+			 else
+			 {
+				 if (childnode[3] != undefined && childnode[4] == "closed")
+				 {
+					 return (
+							<NodeIsEitherOpenOrClosed
+										node={childnode}
+										paddingTop={10}
+										image={'plusSign.png'}
+										children={childnode[3]}
+										whetherOpen={childnode[4]}
+										onClick={ () => self.toggleNodeToOpenOrClosed("open", childnode[0], arrayOfAllTitles2) }
+										/>
+						);
+				 }
+				 else
+				 {
+				   if (childnode[3] != undefined && childnode[4] == "open")
+
+					 return (
+							<NodeIsEitherOpenOrClosed
+										node={childnode}
+										paddingTop={10}
+										image={'minusSign.png'}
+										children={childnode[3]}
+										whetherOpen={childnode[4]}
+										onClick={ () => self.toggleNodeToOpenOrClosed("closed", childnode[0], arrayOfAllTitles2) }
+										/>
+						);
+					}
+			 }
      });
     }
 
     return (
-      <li style={{ paddingTop: 30 }}
-				  key={this.props.node.id}>
+      <li style={{ paddingTop: this.props.paddingTop }}
+				  key={this.props.node[0]}>
 
 					<div>
 
-						<img src={ require('./images/plusSign.png') }
+						<img src={ require('./images/' + this.props.image) }
 						  onClick={this.props.onClick}
 							style={{
 								position: 'relative',
@@ -745,124 +815,6 @@ class NodeClosed extends React.Component
     );
   }
 }
-
-class NodeOpen extends React.Component
-{
-  render()
-	{
-    let childnodes = null;
-
-		// Iterate over the child-elements for this array-item only if (a) they
-		// do exist, and (b) the current status of the parent is "open" (the default
-	  // is "closed", which means the child-items do not appear unless the parent
-	  // has been opened by user-click).
-		//
-    if (this.props.children && this.props.whetherOpen == "open")
-		{
-      childnodes = this.props.children.map(function(childnode)
-			{
-			 // If child-iteration does occur, for each childnode, as properties,
-			 // return the array containing the node information, as well as the
-			 // items that contain any grandchildren, plus whether the child-node is
-			 // currently open or closed.
-			 //
-       return (
-         <Node2  node={childnode} children={childnode[3]} whetherOpen={childnode[4]}/>
-       );
-     });
-    }
-
-    return (
-      <li style={{ paddingTop: 30 }}
-				  key={this.props.node.id}>
-
-					<div>
-
-						<img src={ require('./images/minusSign.png')}
-						  onClick={this.props.onClick}
-							style={{
-								position: 'relative',
-								width: 30,
-								height: 30,
-								top: 4,
-								left: -10
-							}} />
-
-						<span>{this.props.node[1]}</span>
-
-					</div>
-
-        { childnodes ?
-          <ul style={{listStyle: 'none'}}>{childnodes}</ul>
-        : null }
-      </li>
-    );
-  }
-}
-
-class Node2 extends React.Component {
-
-  render() {
-
-		//alert("rendering a node...");
-
-    let childnodes = null;
-
-    if (this.props.children && this.props.whetherOpen == "open")
-		{
-      childnodes = this.props.children.map(function(childnode)
-			{
-				//alert("childnode is " + childnode[1]);
-       return (
-         <Node3  node={childnode} children={childnode[3]} toppadding={0}/>
-       );
-     });
-    }
-
-    return (
-      <li style={{ paddingTop: 10 }}
-
-				key={this.props.node.id}>
-        <span>{this.props.node[1]}</span>
-        { childnodes ?
-          <ul style={{listStyle: 'none'}}>{childnodes}</ul>
-        : null }
-      </li>
-    );
-  }
-}
-
-class Node3 extends React.Component {
-
-  render() {
-
-		//alert("rendering a node...");
-
-    let childnodes = null;
-
-    if(this.props.children) {
-      childnodes = this.props.children.map(function(childnode) {
-				//alert("childnode is " + childnode[1]);
-       return (
-         <Node3  node={childnode} children={childnode[3]} />
-       );
-     });
-    }
-
-    return (
-      <li style={{ paddingTop: 0 }}
-
-				key={this.props.node.id}>
-        <span>{this.props.node[1]}</span>
-        { childnodes ?
-          <ul>{childnodes}</ul>
-        : null }
-      </li>
-    );
-  }
-}
-
-
 
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
