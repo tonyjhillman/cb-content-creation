@@ -664,7 +664,6 @@ class Organisation extends React.Component
 		// Note that this is used in the onClick definition, when we return the
 		// NodeClosed object.
 		//
-		//var self = this;
 		self = this;
 
     let nodes = arrayOfAllTitles2.map(function(person)
@@ -720,15 +719,21 @@ class Organisation extends React.Component
   }
 }
 
+var currentNodeLocation = "";
+
 class NodeIsEitherOpenOrClosed extends React.Component
 {
+	callGetFileFromServer(filename)
+	{
+		//alert("hello there");
+		alert("filename is " + filename);
+		upperApplicationWindowContext.getFileFromServer(filename);
+	}
   render()
 	{
-
     let childnodes = null;
-
 		var theImage = null;
-		var theIntendedDisposition = "";
+		var theDisposition = "";
 
 		// Iterate over the child-elements for this array-item only if (a) they
 		// do exist, and (b) the current status of the parent is "open" (the default
@@ -739,10 +744,11 @@ class NodeIsEitherOpenOrClosed extends React.Component
 		{
       childnodes = this.props.children.map(function(childnode)
 			{
+
 			 if (childnode[3] == undefined)
 			 {
 				 theImage = "blank.png";
-				 theIntendedDisposition = "";
+				 theDisposition = "";
 
 	       return (
 					 <NodeIsEitherOpenOrClosed
@@ -804,7 +810,16 @@ class NodeIsEitherOpenOrClosed extends React.Component
 								left: -10
 							}} />
 
-						<span>{this.props.node[1]}</span>
+						<button
+							onClick={this.callGetFileFromServer.bind(this, this.props.node[2])}
+							style={{
+                position: 'relative',
+                fontFamily: 'Arial',
+                color: 'black',
+                fontSize: 30,
+                top: 2,
+                border: 'none'
+              }}>{this.props.node[1]}</button>
 
 					</div>
 
@@ -815,6 +830,8 @@ class NodeIsEitherOpenOrClosed extends React.Component
     );
   }
 }
+
+var upperApplicationWindowContext = null;
 
 {/*
   The class UpperApplicationWindow returns the principal, upper (which is
@@ -907,6 +924,9 @@ export default class UpperApplicationWindow extends React.Component
 
 			this.saveCurrentEditsToServer
 				= this.saveCurrentEditsToServer.bind(this);
+
+				this.getFileFromServer
+					= this.getFileFromServer.bind(this);
     }
 
     saveCurrentEditsToServer()
@@ -949,7 +969,7 @@ export default class UpperApplicationWindow extends React.Component
 
     getFileFromServer(targetFilename)
     {
-				//alert("Called with value " + targetFilename);
+				alert("Called with value " + targetFilename);
         if(canGetFile)
 				{
 						canGetFile = false;
@@ -962,7 +982,7 @@ export default class UpperApplicationWindow extends React.Component
 			    	this.state.spinnerdisplay = true;
 
 			    	var nodeJsTargetURL = 'http://localhost:8083/' + '?'
-			    		+ "LocationForRead=" + sourceLocation + targetFilename;
+			    		+ "LocationForRead="  + targetFilename;
 
 			    	axios.get(nodeJsTargetURL, {timeout: 6000},
 										{headers: {'Content-Type': 'text/plain'}}
@@ -1437,6 +1457,14 @@ export default class UpperApplicationWindow extends React.Component
 	render () {
 
 		//alert("test");
+
+		//getFileGlobalAccess = this
+
+		// Globalize the "this" of the UpperApplicatioWindow. This will allow us to call
+		// its internal GetFileFroServer method from multiple points in the render-hierarchy
+		// (for example, from the Organization sub-hierarchy, which provides the nav pane).
+		//
+		upperApplicationWindowContext = this;
 
 
 		return (
@@ -2106,10 +2134,9 @@ class EditPane extends React.Component
     {
     	canSaveFile = true;
 
-		this.setState({value: event.target.value}, () => {
-
-			currentValueOfEditPane = this.state.value;
-		});
+			this.setState({value: event.target.value}, () => {
+				currentValueOfEditPane = this.state.value;
+			});
     }
 
     // For the text-pane content, update the EditPane's local state with the
