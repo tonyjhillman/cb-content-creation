@@ -15,22 +15,8 @@ import xmldom from 'xmldom';
 function RootWindow(props)
 {
 	return (
-		<GlobalStateSetter />
+		<BaseApplicationWindow />
 	);
-}
-
-{/*
-  The GlobalStateSetter class establishes whatever global state is required,
-  and then calls the function that returns the application's base window.
-*/}
-class GlobalStateSetter extends React.Component
-{
-	render()
-	{
-		return (
-			<BaseApplicationWindow />
-		);
-	}
 }
 
 {/*
@@ -63,62 +49,8 @@ function BaseApplicationWindow(props)
 
 			<UpperApplicationWindow />
 
-
-
-
-
 		</div>
 	);
-}
-
-function RenderNavContent (props)
-{
-		const theTitles = props.titles;
-
-		var titlesOnly = new Array();
-
-		var upperLimitOfLoop = 1;
-
-		if (xmlFileAvailable)
-		{
-			upperLimitOfLoop = theTitles.length - 1;
-		}
-
-		for (var k = 0; k <= upperLimitOfLoop; k++)
-		{
-			titlesOnly[k] = new Array();
-			titlesOnly[k][0] = props.titles[k][0];
-			//alert("titlesOnly[" + k + "] is " + titlesOnly[k]);
-			//alert("props.titles indent value is " + props.titles[k][1]);
-
-			if (props.titles[k][1] == "first")
-			{
-				this.setState ( { navEntryIndentation: 60});
-			}
-
-		}
-
-		const listTitles = titlesOnly.map((aTitle) =>
-			<p style={{paddingLeft: props.indentation, fontSize: 28 }}
-
-			>{aTitle}</p>
-		);
-
-		return (
-			<div style={{
-				position: 'absolute',
-				border: '0px solid black',
-				width: 370,
-				height: 670,
-				backgroundColor: 'white',
-				top: 328,
-				left: -500,
-				zIndex: 99
-			}}>
-			{listTitles}
-			</div>
-		);
-
 }
 
 {/*
@@ -191,6 +123,7 @@ class FileSelectionInnerWindow extends React.Component
 					border: '2px solid black',
 					width: 500,
 					height: 972,
+					overflow: 'scroll',
 					backgroundColor: 'white',
 					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
 					top: 38,
@@ -202,349 +135,7 @@ class FileSelectionInnerWindow extends React.Component
 		)};
 }
 
-class JavaFirstLevelContent extends React.Component
-{
-  render ()
-	{
-		return (
 
-      <div>
-
-        <span
-            id="javaFirstLevelContent"
-            class="javaFirstLevelContent"
-            style={{
-              position: 'relative',
-              fontFamily: 'Arial',
-              color: 'black',
-              fontSize: 22,
-              padding: 0,
-              top: 50,
-              left: 102,
-              display: this.props.display ? 'inline' : 'none'
-
-            }}  >
-
-            <button
-              onClick = {this.props.onClick}
-              style={{
-                position: 'relative',
-                fontFamily: 'Arial',
-                color: 'black',
-                fontSize: 24,
-                top: 20,
-                border: 'none'
-              }}
-
-            >
-              <i>Using the Java SDK</i>
-            </button>
-
-        </span>
-
-      </div>
-    )};
-}
-
-
-class PhpFirstLevelContent extends React.Component
-{
-  render ()
-	{
-		return (
-
-      <div>
-
-        <span
-            id="phpFirstLevelContent"
-            class="phpFirstLevelContent"
-            style={{
-              position: 'relative',
-              fontFamily: 'Arial',
-              color: 'black',
-              fontSize: 22,
-              padding: 0,
-              top: 0,
-              left: 102,
-              display: this.props.display ? 'inline' : 'none'
-
-            }}  >
-
-            <button
-              onClick = {this.props.onClick}
-              style={{
-                position: 'relative',
-                fontFamily: 'Arial',
-                color: 'black',
-                fontSize: 24,
-                top: this.props.phpContentStartingHeight,
-                border: 'none'
-              }}
-
-            >
-              <i>Using the PHP SDK</i>
-            </button>
-
-        </span>
-
-      </div>
-    )};
-}
-
-class PythonFirstLevelContent extends React.Component
-{
-  render ()
-	{
-		return (
-
-			<div>
-
-				<div>
-
-            <button
-              onClick = {this.props.onClick}
-              style={{
-                position: 'relative',
-								left: 102,
-                fontFamily: 'Arial',
-                color: 'black',
-                fontSize: 24,
-                top: this.props.pythonContentStartingHeight,
-                border: 'none',
-								display: this.props.display ? 'inline' : 'none'
-              }}
-
-            >
-              <i>Intro to the Python SDK</i>
-            </button>
-					</div>
-
-					<div>
-
-						<button
-							onClick = {this.props.onClick}
-							style={{
-								position: 'relative',
-								left: 102,
-								fontFamily: 'Arial',
-								color: 'black',
-								fontSize: 24,
-								top:  this.props.pythonContentStartingHeight + 20,
-								border: 'none',
-								display: this.props.display ? 'inline' : 'none'
-							}}
-
-						>
-							<i>Using the Python SDK</i>
-						</button>
-					</div>
-
-				</div>
-
-    )};
-}
-
-
-
-{/*
-  The PlusOrMinusButton class returns the File Selector button that displays
-	a plus or minus sign, for the opening and closing of folders.
-*/}
-class JavaPlusOrMinusButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick={this.props.onClick}
-				className='plusOrMinusButton'
-				id='plusOrMinusButton'
-				style={{
-					position: 'absolute',
-					border: '0px solid black',
-					width: 30,
-					height: 30,
-					backgroundColor: 'white',
-					border: 'none',
-					top: 28,
-					left: 26,
-					outlineWidth: 0,
-					zIndex:98
-				}}
-			>
-				 <img
- 					src={require('./images/' + this.props.javaImage )}
- 					alt={require('./images/couchbaseLogoAlt.png')}
- 						style={{
- 							position: 'relative',
- 							width: 30,
- 							height: 30,
- 							top: 0,
- 							left: 0}} />
-			</button>
-		);
-	}
-}
-
-{/*
-  The PlusOrMinusButton class returns the File Selector button that displays
-	a plus or minus sign, for the opening and closing of folders.
-*/}
-class PhpPlusOrMinusButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick={this.props.onClick}
-				className='phpPlusOrMinusButton'
-				id='phpPlusOrMinusButton'
-				style={{
-					position: 'absolute',
-					border: '0px solid black',
-					width: 30,
-					height: 30,
-					backgroundColor: 'white',
-					border: 'none',
-					top: this.props.beneathDotNetTopMeasurement,
-					left: 26,
-					outlineWidth: 0,
-					zIndex:98
-				}}
-			>
-				 <img
- 					src={require('./images/' + this.props.phpImage )}
- 					alt={require('./images/couchbaseLogoAlt.png')}
- 						style={{
- 							position: 'relative',
- 							width: 30,
- 							height: 30,
- 							top: 0,
- 							left: 0}} />
-			</button>
-		);
-	}
-}
-
-class PythonPlusOrMinusButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick={this.props.onClick}
-				className='phpPlusOrMinusButton'
-				id='phpPlusOrMinusButton'
-				style={{
-					position: 'absolute',
-					border: '0px solid black',
-					width: 30,
-					height: 30,
-					backgroundColor: 'white',
-					border: 'none',
-					top: this.props.beneathPhpTopMeasurement,
-					left: 26,
-					outlineWidth: 0,
-					zIndex:98
-				}}
-			>
-				 <img
- 					src={require('./images/' + this.props.pythonImage )}
- 					alt={require('./images/couchbaseLogoAlt.png')}
- 						style={{
- 							position: 'relative',
- 							width: 30,
- 							height: 30,
- 							top: 0,
- 							left: 0}} />
-			</button>
-		);
-	}
-}
-
-class DotNetFirstLevelContent extends React.Component
-{
-  render ()
-	{
-		return (
-
-      <div>
-
-        <span
-            id="dotNetFirstLevelContent"
-            class="dotNetFirstLevelContent"
-            style={{
-              position: 'relative',
-              fontFamily: 'Arial',
-              color: 'black',
-              fontSize: 22,
-              padding: 0,
-              top: 0,
-              left: 102,
-              display: this.props.display ? 'inline' : 'none'
-
-            }}  >
-
-            <button
-              onClick = {this.props.onClick}
-              style={{
-                position: 'relative',
-                fontFamily: 'Arial',
-                color: 'black',
-                fontSize: 24,
-                top: this.props.dotNetContentStartingHeight,
-                border: 'none'
-              }}
-
-            >
-              <i>Using the .NET SDK</i>
-            </button>
-
-        </span>
-
-      </div>
-    )};
-}
-
-{/*
-  The PlusOrMinusButton class returns the File Selector button that displays
-	a plus or minus sign, for the opening and closing of folders.
-*/}
-class DotNetPlusOrMinusButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick={this.props.onClick}
-				className='plusOrMinusButton'
-				id='plusOrMinusButton'
-				style={{
-					position: 'absolute',
-					border: '0px solid black',
-					width: 30,
-					height: 30,
-					backgroundColor: 'white',
-					border: 'none',
-					top: this.props.beneathJavaTopMeasurement,
-					left: 26,
-					outlineWidth: 0,
-					zIndex:98
-				}}
-			>
-				 <img
- 					src={require('./images/' + this.props.dotNetImage )}
- 					alt={require('./images/couchbaseLogoAlt.png')}
- 						style={{
- 							position: 'relative',
- 							width: 30,
- 							height: 30,
- 							top: 0,
- 							left: 0}} />
-			</button>
-		);
-	}
-}
 
 // In order to transfer data from the (child) EditPane to the (parent) UpperAppli-
 // cationWindow, we use the currentValueOfEditPane global variable. This is kept
@@ -561,6 +152,10 @@ var currentValueOfEditPane = "default";
 // For now, the location of files that are being read and written.
 //
 const sourceLocation = "./writes/";
+
+// Get the XML file when the tool starts. Then, prohibit access subsequently.
+//
+var navInitializationComplete = false;
 
 // When a file has been selected, its name is kept in this global variable. The
 // value of the variable changes only when a new file is selected. When a file
@@ -597,7 +192,7 @@ class Organisation extends React.Component
 		super(props, context);
 		this.state =
 		{
-			latestArray: arrayOfAllTitles2
+			latestArray: props.theServerSideArray
 		};
 
 		this.toggleNodeToOpenOrClosed = this.toggleNodeToOpenOrClosed.bind(this);
@@ -614,8 +209,18 @@ class Organisation extends React.Component
 	//
 	toggleNodeToOpenOrClosed(newStatus, id, theArray)
 	{
+		//alert("Name is: " + theArray);
+		//if (theArray[3] != undefined)
+		//{
+		//	alert("When [1] is " + theArray[1] + ", the length of the subarray is " + theArray[3].length);
+		//}
+		//else {
+		//	alert("The item is " + theArray[1] + ", and there is no subarray");
+		//}
+		//alert("Current slice is: " + theArray);
 		//alert("Called toggleNodeToOpenOrClosed");
 		//ualert("newStatus is " + newStatus + ", childnode[0] is " + id + ", and theArray is " + theArray);
+
 		// Make sure we don't try to dig down below the third level, by
 		// keeping track of the level we are on.
 		//
@@ -624,7 +229,7 @@ class Organisation extends React.Component
 		// Find the item in the array based on the id that has been passed, then
 		// change its 4th position to "open".
 		//
-		for (var q = 0; q <= theArray.length - 1; q++)
+		for (var q = 0; q < theArray.length; q++)
 		{
 			// Once we find an array-item that has the id passed to us, we know
 			// this is the item we modify; changing its 4 slot to "open".
@@ -636,15 +241,15 @@ class Organisation extends React.Component
 				break;
 			}
 
-			// While above the third level, and while the 3 slot is not
+			// While  the 3 slot is not
 			// undefined, examine child-content recursively.
 			//
-			if (levelCount <= 1 && theArray[q][3] != undefined)
+			if (theArray[q][3] != undefined)
 			{
-				levelCount++;
 
 				if (theArray[q][3].length > 0)
 				{
+
 					this.toggleNodeToOpenOrClosed(newStatus, id, theArray[q][3]);
 				}
 			}
@@ -673,7 +278,7 @@ class Organisation extends React.Component
 	      return (
 	        <NodeIsEitherOpenOrClosed
 								node={person}
-								paddingTop={30}
+								paddingTop={10}
 								image={'plusSign.png'}
 								onClick={ () => self.toggleNodeToOpenOrClosed("open", person[0], arrayOfAllTitles2) }
 								children={person[3]}
@@ -686,7 +291,7 @@ class Organisation extends React.Component
 				return (
 				 <NodeIsEitherOpenOrClosed
 				 			 node={person}
-							 paddingTop={30}
+							 paddingTop={10}
 				 			 image={'minusSign.png'}
 							 children={person[3]}
 							 whetherOpen={person[4]}
@@ -705,8 +310,8 @@ class Organisation extends React.Component
 				 width: 370,
 				 height: 670,
 				 backgroundColor: 'white',
-				 top: 328,
-				 left: -500,
+				 top: 48,
+				 left: -530,
 				 zIndex: 99,
 				 fontSize: 28
 			 }}
@@ -725,15 +330,12 @@ class NodeIsEitherOpenOrClosed extends React.Component
 {
 	callGetFileFromServer(filename)
 	{
-		//alert("hello there");
-		alert("filename is " + filename);
 		upperApplicationWindowContext.getFileFromServer(filename);
 	}
   render()
 	{
     let childnodes = null;
 		var theImage = null;
-		var theDisposition = "";
 
 		// Iterate over the child-elements for this array-item only if (a) they
 		// do exist, and (b) the current status of the parent is "open" (the default
@@ -745,10 +347,15 @@ class NodeIsEitherOpenOrClosed extends React.Component
       childnodes = this.props.children.map(function(childnode)
 			{
 
+				//alert("Childnode name is " + childnode[1]);
+				//if (childnode[1] == "Setting up saslauthd")
+				//{
+				//	alert("Found it, with a [3] value of " + childnode[3]);
+				//}
+
 			 if (childnode[3] == undefined)
 			 {
 				 theImage = "blank.png";
-				 theDisposition = "";
 
 	       return (
 					 <NodeIsEitherOpenOrClosed
@@ -879,7 +486,7 @@ export default class UpperApplicationWindow extends React.Component
 				// The names of the files that we can read, edit, and save in this
 				// prototype.
 				//
-				defaultfilename: 'default.md',
+				defaultfilename: './writes/default.md',
 				javafilename: 'java.md',
 				dotnetfilename: 'dotnet.md',
 				phpfilename: 'php.md',
@@ -888,7 +495,7 @@ export default class UpperApplicationWindow extends React.Component
 				gofilename: 'go.md',
 				nodejsfilename: 'nodejs.md',
 				nofilefilename: 'nofile.md',
-				xmlfilename: 'pages.xml',
+				xmlfilename: 'security_pages.xml',
 
 				spinnerdisplay: false,
 
@@ -929,6 +536,8 @@ export default class UpperApplicationWindow extends React.Component
 					= this.getFileFromServer.bind(this);
     }
 
+		// FIX: currently adds "./writes" to "./writes" and so the save fails.
+		//
     saveCurrentEditsToServer()
     {
     	if (canSaveFile)
@@ -969,7 +578,6 @@ export default class UpperApplicationWindow extends React.Component
 
     getFileFromServer(targetFilename)
     {
-				alert("Called with value " + targetFilename);
         if(canGetFile)
 				{
 						canGetFile = false;
@@ -1009,33 +617,22 @@ export default class UpperApplicationWindow extends React.Component
 
 		getXMLFileFromServer(targetFilename)
 		{
-				var nodeJsTargetURL = 'http://localhost:8083/' + '?'
-					+ "LocationForRead=" + sourceLocation + targetFilename;
+				if (!navInitializationComplete)
+				{
+					var nodeJsTargetURL = 'http://localhost:8083/' + '?'
+						+ "LocationForRead=" + sourceLocation + targetFilename;
 
-				axios.get(nodeJsTargetURL, {timeout: 6000},
-								{headers: {'Content-Type': 'text/plain'}}
-					).then(response => {
-						  xmlFileAvailable = true;
-							this.DetermineNavContent(response.data);
-						});
+					axios.get(nodeJsTargetURL, {timeout: 6000},
+									{headers: {'Content-Type': 'text/plain'}}
+						).then(response => {
+							  xmlFileAvailable = true;
+								//alert(response.data);
+								this.DetermineNavContent(response.data);
+							});
+
+							navInitializationComplete = true;
+					}
 		}
-
-		// Button display-toggling for the parent-entry content.
-		//
-		 RenderParentEntry ()
-	   {
-	  	 return (
-	       <ParentEntry
-	  		 		parentEntryImage = { this.state.parentEntryImage }
-	  				    onClick={ () => this.SetParentEntryPlusOrMinusOnClick() }
-									display = {true}
-										EntryStartingHeight = { this.state.EntryStartingHeight }
-											onClick={ () => this.getFileFromServer(this.state.entryfilename) }
-												entrydisplaytitle = { this.state.entrydisplaytitle }
-													parententryheight = { this.state.parententryheight }
-	        />
-	  		);
-		 }
 
 		// Clean up the string retrieved from the server that specifies the nav content.
 		// Transform it into a DOM object. Iterate through the object, and put each value
@@ -1045,8 +642,15 @@ export default class UpperApplicationWindow extends React.Component
 		DetermineNavContent(dataFromFilesystem)
 		{
 			var originalString = JSON.stringify(dataFromFilesystem);
-			var cleanedString = originalString.replace("\"", "");
 
+			// Remove the tabs and line-breaks from the xml string.
+			//
+			var cleanedString = originalString.replace(/(\\t\\n|\\n|\\t)/gm, "");
+
+			//alert(cleanedString);
+
+			// Parse the string to a DOM object.
+			//
 			var DOMParser = require('xmldom').DOMParser;
 			var doc = new DOMParser().parseFromString(cleanedString);
 
@@ -1167,24 +771,15 @@ export default class UpperApplicationWindow extends React.Component
 						}
 					}
 				}
+				//alert(JSON.stringify(arrayOfAllTitles2));
 			}
 
-			alert("completed: " + JSON.stringify(arrayOfAllTitles2));
+			//alert("completed: " + JSON.stringify(arrayOfAllTitles2));
 
 			// Change state, so that a re-rendering occurs.
 			//
 			this.setState( { arrayOfAllTitles: arrayOfAllTitles2 });
 		}
-
-	RenderNodeJsButton ()
-	{
-
-		return (
-      		<NodeJsButton image={ this.state.image }
-      			onClick={() => this.getFileFromServer(this.state.nodejsfilename)}
-      		/>
-		);
-	}
 
 	// The pane that shows the editable markdown. The value is the current
 	// textual content.
@@ -1222,237 +817,6 @@ export default class UpperApplicationWindow extends React.Component
     		/>
     	);
     }
-
-		JavaSetPlusOrMinusOnClick()
-		{
-			this.setState(prevState => ({
-					javaPlusOrMinusImageToggle: !prevState.javaPlusOrMinusImageToggle
-				}));
-
-				this.state.javaImage = this.state.javaPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
-
-	      this.state.javaContentDisplay = this.state.javaPlusOrMinusImageToggle ? false : true ;
-
-				// Push down or pull up the .NET button, which is immediately below Java.
-				//
-				this.state.beneathJavaTopMeasurement = this.state.javaPlusOrMinusImageToggle ?
-					this.state.beneathJavaTopMeasurement - 76: this.state.beneathJavaTopMeasurement + 76;
-
-				// Recalculate the vertical start of the .NET first-level content accordingly.
-				//
-				this.state.dotNetContentStartingHeight = this.state.javaPlusOrMinusImageToggle ?
-					this.state.dotNetContentStartingHeight - 40: this.state.dotNetContentStartingHeight + 40;
-
-				// Push down or pull up the PHP button, which is immediately below .NET.
-				//
-				this.state.beneathDotNetTopMeasurement = this.state.javaPlusOrMinusImageToggle ?
-					this.state.beneathDotNetTopMeasurement - 76: this.state.beneathDotNetTopMeasurement + 76;
-
-				// Recalculate the vertical start of the PHP first-level content accordingly.
-				//
-				this.state.phpContentStartingHeight = this.state.javaPlusOrMinusImageToggle ?
-					this.state.phpContentStartingHeight - 42: this.state.phpContentStartingHeight + 42;
-
-				// Push down or pull up the Python button, which is immediately below PHP.
-				//
-				this.state.beneathPhpTopMeasurement = this.state.javaPlusOrMinusImageToggle ?
-					this.state.beneathPhpTopMeasurement - 76: this.state.beneathPhpTopMeasurement + 76;
-
-				// Recalculate the vertical start of the Python first-level content accordingly.
-				//
-				this.state.pythonContentStartingHeight = this.state.javaPlusOrMinusImageToggle ?
-					this.state.pythonContentStartingHeight - 42: this.state.pythonContentStartingHeight + 42;
-
-		}
-
-		DotNetSetPlusOrMinusOnClick()
-		{
-			this.setState(prevState => ({
-					dotNetPlusOrMinusImageToggle: !prevState.dotNetPlusOrMinusImageToggle
-				}));
-
-				this.state.dotNetImage = this.state.dotNetPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
-
-				this.state.dotNetContentDisplay = this.state.dotNetPlusOrMinusImageToggle ? false : true ;
-
-				// Push down or pull up the PHP button, which is immediately below .NET.
-				//
-				this.state.beneathDotNetTopMeasurement = this.state.dotNetPlusOrMinusImageToggle ?
-					this.state.beneathDotNetTopMeasurement - 76: this.state.beneathDotNetTopMeasurement + 76;
-
-				// Recalculate the vertical start of the PHP first-level content accordingly.
-				//
-				this.state.phpContentStartingHeight = this.state.dotNetPlusOrMinusImageToggle ?
-					this.state.phpContentStartingHeight - 42: this.state.phpContentStartingHeight + 42;
-
-				// Push down or pull up the Python button, which is immediately below PHP.
-				//
-				this.state.beneathPhpTopMeasurement = this.state.dotNetPlusOrMinusImageToggle ?
-					this.state.beneathPhpTopMeasurement - 76: this.state.beneathPhpTopMeasurement + 76;
-
-				// Recalculate the vertical start of the Python first-level content accordingly.
-				//
-				this.state.pythonContentStartingHeight = this.state.dotNetPlusOrMinusImageToggle ?
-					this.state.pythonContentStartingHeight - 42: this.state.pythonContentStartingHeight + 42;
-
-		}
-
-		PhpSetPlusOrMinusOnClick()
-		{
-			this.setState(prevState => ({
-					phpPlusOrMinusImageToggle: !prevState.phpPlusOrMinusImageToggle
-				}));
-
-				this.state.phpImage = this.state.phpPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
-
-				this.state.phpContentDisplay = this.state.phpPlusOrMinusImageToggle ? false : true ;
-
-				// Push down or pull up the Python button, which is immediately below PHP.
-				//
-				this.state.beneathPhpTopMeasurement = this.state.phpPlusOrMinusImageToggle ?
-					this.state.beneathPhpTopMeasurement - 76: this.state.beneathPhpTopMeasurement + 76;
-
-				// Recalculate the vertical start of the Python first-level content accordingly.
-				//
-				this.state.pythonContentStartingHeight = this.state.phpPlusOrMinusImageToggle ?
-					this.state.pythonContentStartingHeight - 42: this.state.pythonContentStartingHeight + 42;
-
-		}
-
-		PythonSetPlusOrMinusOnClick()
-		{
-			this.setState(prevState => ({
-					pythonPlusOrMinusImageToggle: !prevState.pythonPlusOrMinusImageToggle
-				}));
-
-				this.state.pythonImage = this.state.pythonPlusOrMinusImageToggle ? 'plusSign.png' : 'minusSign.png' ;
-
-				this.state.pythonContentDisplay = this.state.pythonPlusOrMinusImageToggle ? false : true ;
-
-		}
-
-		// Button display-toggling for the Java content.
-		//
-		 JavaRenderPlusOrMinusButton ()
-	   {
-	  	 return (
-	       <JavaPlusOrMinusButton
-	  		 		javaImage = { this.state.javaImage}
-	  				    onClick={ () => this.JavaSetPlusOrMinusOnClick() }
-	        />
-	  		);
-		 }
-
-		// Button display-toggling for the Java content.
- 		//
- 		 PhpRenderPlusOrMinusButton ()
- 	   {
- 	  	 return (
- 	       <PhpPlusOrMinusButton
-				 beneathDotNetTopMeasurement = { this.state.beneathDotNetTopMeasurement}
- 	  		 		phpImage = { this.state.phpImage }
- 	  				    onClick={ () => this.PhpSetPlusOrMinusOnClick() }
- 	        />
- 	  		);
- 		 }
-
-		 // Button display-toggling for the Python content.
-		//
-		 PythonRenderPlusOrMinusButton ()
-	   {
-			 	//alert("beneathPhpTopMeasurement is now " + this.state.beneathPhpTopMeasurement)
-	  	 return (
-	       <PythonPlusOrMinusButton
-				 beneathPhpTopMeasurement = { this.state.beneathPhpTopMeasurement}
-	  		 		pythonImage = { this.state.pythonImage }
-	  				    onClick={ () => this.PythonSetPlusOrMinusOnClick() }
-	        />
-	  		);
-		 }
-
-		 // First-level folder-content, made available when the Php-folder
-		 // button is clicked.
-		 //
-	   PhpRenderFirstLevelContent ()
-	   {
-	     return (
-	       <PhpFirstLevelContent
-	  		 		display = { this.state.phpContentDisplay }
-						phpContentStartingHeight = { this.state.phpContentStartingHeight }
-						onClick={ () => this.getFileFromServer(this.state.phpfilename) }
-
-	        />
-	  		);
-	   }
-
-		 // First-level folder-content, made available when the Python-folder
-		 // button is clicked.
-		 //
-	   PythonRenderFirstLevelContent ()
-	   {
-
-			 const numbers = [1, 2, 3, 4, 5];
- 				const listItems = numbers.map((number) =>
-   			<li>{number}</li>
- 			);
-
-
-
-	     return (
-
-	       <PythonFirstLevelContent
-	  		 		display = { this.state.pythonContentDisplay }
-						pythonContentStartingHeight = { this.state.pythonContentStartingHeight }
-						onClick={ () => this.getFileFromServer(this.state.pythonfilename) }
-
-	        />
-
-
-	  		);
-	   }
-
-		 // First-level folder-content, made available when the Java-folder
-		 // button is clicked.
-		 //
-	   JavaRenderFirstLevelContent ()
-	   {
-	     return (
-	       <JavaFirstLevelContent
-	  		 		display = { this.state.javaContentDisplay }
-						onClick={ () => this.getFileFromServer(this.state.javafilename) }
-
-	        />
-	  		);
-	   }
-
-		// Button display-toggling for the .NET content.
-		//
-		 DotNetRenderPlusOrMinusButton ()
-	   {
-	  	 return (
-	       <DotNetPlusOrMinusButton
-	  		 		beneathJavaTopMeasurement = { this.state.beneathJavaTopMeasurement}
-	  		 		   dotNetImage = { this.state.dotNetImage }
-	  				       onClick={ () => this.DotNetSetPlusOrMinusOnClick() }
-	        />
-	  		);
-		 }
-
-		 // First-level folder-content, made available when the dotNet-folder
-		 // button is clicked.
-		 //
-	   DotNetRenderFirstLevelContent ()
-	   {
-	     return (
-	       <DotNetFirstLevelContent
-
-	  		 		display = { this.state.dotNetContentDisplay }
-						dotNetContentStartingHeight = { this.state.dotNetContentStartingHeight }
-						onClick={ () => this.getFileFromServer(this.state.dotnetfilename) }
-
-	        />
-	  		);
-	   }
 
 	render () {
 
@@ -1502,149 +866,13 @@ export default class UpperApplicationWindow extends React.Component
 								left: 60}} />
 				</span>
 
-				<div
-						id="completeNavContent"
-						class="completeNavContent"
-						style={{
-							position: 'absolute',
-							fontFamily: 'Arial',
-							color: 'black',
-							fontSize: 28,
-							padding: 0,
-							top: 76,
-							left: -532
 
-						}}
-				>
-							 <div>
-
-									<span
-											id="javaNavSectionTitle"
-											class="javaNavSectionTitle"
-											style={{
-												position: 'absolute',
-												fontFamily: 'Arial',
-												color: 'black',
-												fontSize: 28,
-												padding: 0,
-												top: 30,
-												left: 76
-
-											}}>
-
-											Java
-
-									</span>
-
-									{ this.JavaRenderFirstLevelContent() }
-
-									{ this.JavaRenderPlusOrMinusButton() }
-
-
-								</div>
-
-								<div>
-
-									<span
-											id="dotNetNavSectionTitle"
-											class="dotNetNavSectionTitle"
-											style={{
-												position: 'absolute',
-												fontFamily: 'Arial',
-												color: 'black',
-												fontSize: 28,
-												padding: 0,
-												top: this.state.beneathJavaTopMeasurement,
-												left: 76
-
-											}}>
-
-											.NET
-
-									</span>
-
-									{ this.DotNetRenderFirstLevelContent() }
-
-									 { this.DotNetRenderPlusOrMinusButton() }
-
-								</div>
-
-								<div>
-
-									<span
-											id="phpNavSectionTitle"
-											class="phpNavSectionTitle"
-											style={{
-												position: 'absolute',
-												fontFamily: 'Arial',
-												color: 'black',
-												fontSize: 28,
-												padding: 0,
-												top: this.state.beneathDotNetTopMeasurement,
-												left: 76
-
-											}}>
-
-											PHP
-
-									</span>
-
-										{ this.PhpRenderFirstLevelContent() }
-
-									 	{ this.PhpRenderPlusOrMinusButton() }
-
-								</div>
-
-								<div>
-
-									<span
-											id="pythonNavSectionTitle"
-											class="pythonNavSectionTitle"
-											style={{
-												position: 'absolute',
-												fontFamily: 'Arial',
-												color: 'black',
-												fontSize: 28,
-												padding: 0,
-												top: this.state.beneathPhpTopMeasurement,
-												left: 76
-
-											}}>
-
-											Python
-
-									</span>
-
-										{ this.PythonRenderFirstLevelContent() }
-
-									 	{ this.PythonRenderPlusOrMinusButton() }
-
-								</div>
-
-				</div>
 
 
 
 				<GenButton onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
 
-				<JavaButton onClick={() => this.getFileFromServer(this.state.javafilename)}/>
 
-				<DotNetButton onClick={() => this.getFileFromServer(this.state.dotnetfilename)}/>
-
-				<PhpButton onClick={() => this.getFileFromServer(this.state.phpfilename)} />
-
-				<PythonButton onClick={() => this.getFileFromServer(this.state.pythonfilename)} />
-
-				<CButton onClick={() => this.getFileFromServer(this.state.cfilename)} />
-
-				<GoButton onClick={() => this.getFileFromServer(this.state.gofilename)} />
-
-				<div>
-				 { this.RenderNodeJsButton() }
-
-				</div>
-
-				<NoFileButton onClick={() => this.getFileFromServer(this.state.nofilefilename)} />
 
 				<div>
 				 	{ this.RenderSpinner() }
@@ -1660,75 +888,11 @@ export default class UpperApplicationWindow extends React.Component
 
 				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
 
-				<XMLButton onClick={() => this.getXMLFileFromServer(this.state.xmlfilename) }/>
+
 
 				<div>
-					<Organisation />
+					<Organisation theServerSideArray={ this.getXMLFileFromServer("security_pages.xml") }/>
 				</div>
-
-			</div>
-		);
-	}
-}
-
-{/*
-  The ParentEntry method returns the parent entry object used in the
-	construction of the nav pane content.
-*/}
-class ParentEntry extends React.Component
-{
-	constructor(props)
-	{
-		super(props);
-
-		this.state =
-		{
-			parententryheight: props.parententryheight
-		};
-	}
-	render ()
-	{
-		return (
-			<div style={{
-				position: 'absolute',
-				top: this.props.parententryheight,
-				left: 26
-			}} >
-			<button
-				onClick = {this.props.onClick}
-				className='parentEntry'
-				id='parentEntry'
-				style={{
-					position: 'absolute',
-					border: '0px solid black',
-					width: 30,
-					height:30,
-					backgroundColor: 'white',
-					top: 0,
-					left: 0,
-					outlineWidth: 0,
-					zIndex: 99
-				}}
-			>
-				<img src={require('./images/plusSign.png')}
-					   alt={require('./images/javaButtonBasicAlt.png')}
-						 style={{
-  							position: 'relative',
-  							width: 30,
-  							height: 30,
-  							top: 0,
-  							left: 0}}
-				/>
-			</button>
-			<p  style={{
-					position: 'relative',
-					width: 30,
-					height: 30,
-					top: -24,
-					left:50}}
-				>
-				{this.props.entrydisplaytitle}
-			</p>
 
 			</div>
 		);
@@ -1742,6 +906,9 @@ class ParentEntry extends React.Component
 */}
 class NoFileButton extends React.Component
 {
+	// Activate with "<NoFileButton onClick={() => this.getFileFromServer(this.state.nofilefilename)} />".
+	// Not currently used.
+	//
 	render ()
 	{
 		return (
@@ -1773,42 +940,6 @@ class NoFileButton extends React.Component
 }
 
 {/*
-  The NodeJsButton method returns the button for displaying the Node.js
-  filtered version of the source-file.
-*/}
-class NodeJsButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick={this.props.onClick}
-				className='nodeJsButton'
-				id='nodeJsButton'
-				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 124,
-					height: 40,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 110,
-					left: 906,
-				}}
-			><img src={require('./images/' + this.props.image)}
-					   alt={require('./images/goButtonBasicAlt.png')}
-					   style={{
-							padding: 2,
-							width:'90%',
-							height: '78%'
-					   }}
-						 />
-			</button>
-		);
-	}
-}
-
-{/*
   The GenButton method returns the button for displaying the generic
   documentation source-file.
 */}
@@ -1826,242 +957,23 @@ class GenButton extends React.Component
 					style={{
 						position: 'absolute',
 						border: '2px solid black',
-						width: 110,
+						width: 144,
 						height: 40,
 						backgroundColor: 'white',
 						boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-						top: 110,
-						left: 40,
+						top: 1020,
+						left: 160,
 					}}
 				><img src={require('./images/newButton.png')}
 						   alt={require('./images/genButtonBasicAlt.png')}
 						   style={{
 								padding: 3,
-								width:'62%',
-								height: '76%'
+								width:'52%',
+								height: '74%'
 						   }}
 					/>
 				</button>
 			</div>
-		);
-	}
-}
-
-{/*
-  The JavaButton method returns the button for displaying the Java
-  filtered version of the source-file.
-*/}
-class JavaButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick = {this.props.onClick}
-				className='javaButton'
-				id='javaButton'
-				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 110,
-					height: 40,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 110,
-					left: 162,
-				}}
-			>
-				<img src={require('./images/javaButtonBasic.png')}
-					   alt={require('./images/javaButtonBasicAlt.png')}
-					   style={{
-							padding: 1,
-							width:'70%',
-							height: '90%'
-					   }}
-				/>
-			</button>
-		);
-	}
-}
-
-{/*
-  The DotNetButton method returns the button for displaying the .NET
-  filtered version of the source-file.
-*/}
-class DotNetButton extends React.Component
-{
-	render()
-	{
-		return (
-			<button
-				onClick = {this.props.onClick}
-				className='dotNetButton'
-				id='dotNetButton'
-				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 110,
-					height: 40,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 110,
-					left: 286,
-				}}
-			><img src={require('./images/dotNetButtonBasic.png')}
-					   alt={require('./images/dotNetButtonBasicAlt.png')}
-					   style={{
-							padding: 4,
-							width:'60%',
-							height: '64%'
-					   }}
-						 />
-			</button>
-		);
-	}
-}
-
-{/*
-  The PhpButton method returns the button for displaying the PHP
-  filtered version of the source-file.
-*/}
-class PhpButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick = {this.props.onClick}
-				className='phpButton'
-				id='phpButton'
-				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 110,
-					height: 40,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 110,
-					left: 410,
-				}}
-			>
-				<img src={require('./images/phpButtonBasic.png')}
-					   alt={require('./images/phpButtonBasicAlt.png')}
-					   style={{
-							padding: 3,
-							width:'62%',
-							height: '76%'
-					   }}
-				/>
-			</button>
-		);
-	}
-}
-
-{/*
-  The PythonButton method returns the button for displaying the Python
-  filtered version of the source-file.
-*/}
-class PythonButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick = {this.props.onClick}
-				className='pythonButton'
-				id='pythonButton'
-				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 110,
-					height: 40,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 110,
-					left: 534,
-				}}
-			><img src={require('./images/pythonButtonBasic.png')}
-					   alt={require('./images/pythonButtonBasicAlt.png')}
-					   style={{
-							padding: 0,
-							width:'88%',
-							height: '82%'
-					   }}
-						 />
-			</button>
-		);
-	}
-}
-
-{/*
-  The CButton method returns the button for displaying the C
-  filtered version of the source-file.
-*/}
-class CButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick = {this.props.onClick}
-				className='cButton'
-				id='cButton'
-				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 110,
-					height: 40,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 110,
-					left: 658,
-				}}
-			><img src={require('./images/cButtonBasic.png')}
-					   alt={require('./images/cButtonBasicAlt.png')}
-					   style={{
-							padding: 2,
-							width:'27%',
-							height: '72%'
-					   }}
-						 />
-			</button>
-		);
-	}
-}
-
-
-{/*
-  The GoButton method returns the button for displaying the Go
-  filtered version of the source-file.
-*/}
-class GoButton extends React.Component
-{
-	render ()
-	{
-		return (
-			<button
-				onClick = {this.props.onClick}
-				className='goButton'
-				id='goButton'
-				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 110,
-					height: 40,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 110,
-					left: 782,
-				}}
-			><img src={require('./images/goButtonBasic.png')}
-					   alt={require('./images/goButtonBasicAlt.png')}
-					   style={{
-							padding: 0,
-							width:'42%',
-							height: '70%'
-					   }}
-						 />
-			</button>
 		);
 	}
 }
@@ -2220,10 +1132,10 @@ class EditPane extends React.Component
 						position: 'absolute',
 						border: '2px solid black',
 						width: 470,
-						height: 812,
+						height: 872,
 						backgroundColor: 'white',
 						boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-						top: 170,
+						top: 110,
 						left: 40,
 						zIndex: 89
 					}}
@@ -2250,10 +1162,10 @@ function RenderPane(props)
 				position: 'absolute',
 				border: '2px solid black',
 				width: 490,
-				height: 832,
+				height: 892,
 				backgroundColor: 'white',
 				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 170,
+				top: 110,
 				left: 540,
 			}}
 		>
@@ -2275,7 +1187,7 @@ function RenderPane(props)
 							position: 'absolute',
 							width: 240,
 							height: 240,
-							top: 530,
+							top: 590,
 							left: 210}}
 					/>
 				</span>
@@ -2309,13 +1221,13 @@ class FileButton extends React.Component
 					backgroundColor: 'white',
 					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
 					top: 1020,
-					left: 160,
+					left: 320,
 				}}
 			><img src={require('./images/saveButton.png')}
 					   alt={require('./images/nodeJsButtonBasicAlt.png')}
 					   style={{
 							padding: 3,
-							width:'52%',
+							width:'58%',
 							height: '78%'
 					   }}
 						 />
@@ -2330,6 +1242,9 @@ class FileButton extends React.Component
 */}
 class XMLButton extends React.Component
 {
+	// Activate with "<XMLButton onClick={() => this.getXMLFileFromServer(this.state.xmlfilename) }/>"
+	// Not currently used.
+	//
 	render()
 	{
 		return (

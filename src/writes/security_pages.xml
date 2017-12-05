@@ -3,11 +3,11 @@
 	<section_info>
 	
 		<parent_page_title>
-			Java
+			Authentication
 		</parent_page_title>
 		
 		<parent_page_location>
-			./writes/Java.md
+			./writes/security/authentication.md
 		</parent_page_location>
 		
 		<subsection_info>
@@ -15,39 +15,50 @@
 			<child_page_info>
 			
 				<child_page_title>
-					Java Basics
+					Certificate-Based
 				</child_page_title>
 				
 				<child_page_location>
-					./writes/javaBasics.md
+					./writes/security/certificateBased.md
 				</child_page_location>
 				
-				<sub_subsection_info>
-				</sub_subsection_info>
-				
+
 			</child_page_info>
 			
 			
 			<child_page_info>
 			
 				<child_page_title>
-					Using Java
+					Password-Based
 				</child_page_title>
 				
 				<child_page_location>
-					./writes/javaUsing.md
+					./writes/security/passwordBased.md
 				</child_page_location>
+				
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					LDAP-Based
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/ldapBased.md
+				</child_page_location>
+			
 				
 				<sub_subsection_info>
 					
 					<grandchild_page_info>
 			
 						<grandchild_page_title>
-							Java Debugging
+							Setting 
 						</grandchild_page_title>
 				
 						<grandchild_page_location>
-							./writes/javaDebugging.md
+							./writes/security/settingUpSaslauthd.md
 						</grandchild_page_location>
 				
 					</grandchild_page_info>
@@ -55,11 +66,11 @@
 					<grandchild_page_info>
 			
 						<grandchild_page_title>
-							Test Entry
+							Troubleshooting 
 						</grandchild_page_title>
 				
 						<grandchild_page_location>
-							./writes/testEntry.md
+							./writes/security/troubleshootingSettings.md
 						</grandchild_page_location>
 				
 					</grandchild_page_info>
@@ -67,16 +78,28 @@
 					<grandchild_page_info>
 			
 						<grandchild_page_title>
-							Another Test Entry
+							Test Entry 
 						</grandchild_page_title>
 				
 						<grandchild_page_location>
-							./writes/anotherTestEntry.md
+							./writes/security/testEntry.md
 						</grandchild_page_location>
 				
 					</grandchild_page_info>
 					
 				</sub_subsection_info>
+				
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					PAM-Based
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/pamBased.md
+				</child_page_location>
 				
 			</child_page_info>
 			
