@@ -312,11 +312,12 @@ class FileSelectionInnerWindow extends React.Component
 // the *parent's* prop, not the child's. How then, to specify the child value,
 // when the parent makes the call?
 //
-var currentValueOfEditPane = "default";
+var currentValueOfEditPane = "Click the NEW button, to create new content.";
 
 // Likewise...this is for the RenderPane.
 //
-var currentValueOfRenderPane = "<h1>Default Content</h1>";
+var currentValueOfRenderPane = "<p style='position: absolute; width:400px; left: 20px; top:100px; font-size:32px'><i>Bring up a file" +
+ 	" in the panel to the left. Then, start editing, and see your rendered content here...</i></p>";
 
 // For now, the location of files that are being read and written.
 //
@@ -609,7 +610,7 @@ export default class UpperApplicationWindow extends React.Component
 				htmlPaneContent: currentValueOfRenderPane,
 				nodeImageToggle: true,
 				editPaneToggle: true,
-				value: 'Please click the NEW button to create new content',
+				value: currentValueOfEditPane,
 
 				// The names of the files that we can read, edit, and save in this
 				// prototype.
@@ -620,6 +621,7 @@ export default class UpperApplicationWindow extends React.Component
 				spinnerdisplay: false,
 				entrydisplaytitle: 'Javax',
 				parententryheight: 400,
+				currentContentForRenderPane: "theDefault",
 
 				titles: arrayOfAllTitles,
 				locations: arrayOfAllLocations,
@@ -674,9 +676,6 @@ export default class UpperApplicationWindow extends React.Component
 						//alert("Nothing to be Saved...");
 				}
     }
-
-
-
     getFileFromServer(targetFilename)
     {
         if(canGetFile)
@@ -699,7 +698,16 @@ export default class UpperApplicationWindow extends React.Component
 
 			        			this.setState ( { value: response.data } );
 			        			this.setState ( { spinnerdisplay: false } );
+
+										// Ensure that the retrieved file becomes the content of the edit pane.
+										//
 			        			currentValueOfEditPane = this.state.value;
+
+										// Similarly, ensure its html-rendered version becomes the content of
+										// the render pane.
+										//
+										currentValueOfRenderPane = marked(this.state.value);
+										this.setState ( { currentContentForRenderPane: currentValueOfRenderPane})
 
 										canGetFile = true;
 										canSaveFile = true;
@@ -1129,16 +1137,16 @@ class RenderPane extends React.Component
 			>
 				<div style={{
 							zIndex: 99,
-							paddingLeft: 20,
+							paddingLeft: 10,
 							position: 'relative',
 							width: 470,
 							height: 2040,
-							top: 10,
+							top: 0,
 							left: 10}}>
 
 					<span>
 
-						<img src={require('./images/couchbaseLogoTrans.png')}
+						<img src={require('./images/couchbaseLogoTrans2.png')}
 							 alt={require('./images/couchbaseLogoTransAlt.png')}
 							 style={{
 							 	zIndex: 10,
