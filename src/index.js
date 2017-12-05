@@ -4,6 +4,7 @@ import './index.css'
 import axios from 'axios';
 import { RingLoader } from 'react-spinners';
 import xmldom from 'xmldom';
+import marked from 'marked';
 
 {/*
   This initial function is called by the main render method, at the bottom.
@@ -266,10 +267,7 @@ class FileSelectionInnerWindow extends React.Component
 					}
 				}
 			}
-			//alert(JSON.stringify(arrayOfAllTitles2));
 		}
-
-		//alert("completed: " + JSON.stringify(arrayOfAllTitles2));
 
 		// Change state, so that a re-rendering occurs.
 		//
@@ -315,6 +313,10 @@ class FileSelectionInnerWindow extends React.Component
 // when the parent makes the call?
 //
 var currentValueOfEditPane = "default";
+
+// Likewise...this is for the RenderPane.
+//
+var currentValueOfRenderPane = "<h1>Default Content</h1>";
 
 // For now, the location of files that are being read and written.
 //
@@ -503,13 +505,6 @@ class NodeInNavTree extends React.Component
 		{
       childnodes = this.props.children.map(function(childnode)
 			{
-
-				//alert("Childnode name is " + childnode[1]);
-				//if (childnode[1] == "Setting up saslauthd")
-				//{
-				//	alert("Found it, with a [3] value of " + childnode[3]);
-				//}
-
 			 if (childnode[3] == undefined)
 			 {
 				 theImage = "blank.png";
@@ -611,31 +606,7 @@ export default class UpperApplicationWindow extends React.Component
 			super(props);
       this.state = {
 				image: 'nodeJsButtonBasic.png',
-				htmlPaneContent: '<h1 id="the-first-level-header">The First-Level Header</h1>'
-					+ '\n\n'
-					+ '\<p\>This is a regular paragraph, which starts describing a topic.'
-					+ 'It introduces a <em>numbered</em> list, as follows:</p>'
-					+ '<ol>'
-					+ '<li>This is the first element</li>'
-					+ '<li>This is the second element</li>'
-					+ '<li>This is the third element</li>'
-					+ '</ol>'
-					+ '<p>Now we are back to a paragraph again. Now, an '
-					+ '<strong>unordered</strong> list:</p>'
-					+ '<ul>'
-					+ '<li>The first element</li>'
-					+ '<li>The second</li>'
-					+ '<li>The third</li>'
-					+ '</ul>'
-					+ '</li>'
-					+ '<li>The third element in the initial, ordered list</li>'
-					+ '</ol>'
-					+ '<h2 id="the-second-level-header">The Second-Level Header</h2>'
-					+ '<p>Now, some links:</p>'
-					+ '<p><a href="https://www.google.com">I&#39;m an inline-style'
-					+ ' link</a></p>'
-					+ '<p><a href="https://www.google.com" title="Google&#39;s '
-					+ 'Homepage">I&#39;m an inline-style link with title</a></p>',
+				htmlPaneContent: currentValueOfRenderPane,
 				nodeImageToggle: true,
 				editPaneToggle: true,
 				value: 'Please click the NEW button to create new content',
@@ -660,6 +631,13 @@ export default class UpperApplicationWindow extends React.Component
 				this.getFileFromServer
 					= this.getFileFromServer.bind(this);
     }
+
+		refreshRenderPane()
+		{
+			alert("called");
+			this.state.htmlPaneContent = currentValueOfRenderPane;
+			alert("htmlPaneContent is " + this.state.htmlPaneContent);
+		}
 
     saveCurrentEditsToServer()
     {
@@ -738,7 +716,6 @@ export default class UpperApplicationWindow extends React.Component
 					}
     }
 
-
 	// The pane that shows the editable markdown. The value is the current
 	// textual content.
 	//
@@ -756,9 +733,12 @@ export default class UpperApplicationWindow extends React.Component
     //
     RenderHtmlPane()
     {
+			//this.setState( { htmlPaneContent: currentValueOfEditPane});
+
+			//("The RenderHtmlPane is called, with value of ..." + currentValueOfRenderPane);
     	return (
     		<RenderPane
-    			htmlPaneContent={ this.state.htmlPaneContent }
+    			htmlPaneContent={currentValueOfRenderPane}
     		/>
     	);
     }
@@ -990,10 +970,19 @@ class EditPane extends React.Component
     //
     handleChange(event)
     {
+
     	canSaveFile = true;
 
 			this.setState({value: event.target.value}, () => {
 				currentValueOfEditPane = this.state.value;
+
+				// Update the RenderPane to show the latest html rendered version
+				// of the markdown that is undergoing editing.
+				//
+				currentValueOfRenderPane = marked(this.state.value);
+				//alert(currentValueOfRenderPane);
+
+				RenderPaneContext.forceUpdate();
 			});
     }
 
@@ -1096,56 +1085,78 @@ class EditPane extends React.Component
 	}
 }
 
+var RenderPaneContext = null;
+
 {/*
-  The RenderPane method returns the button for displaying the Node.js
+  The RenderPane class returns the button for displaying the Node.js
   filtered version of the source-file.
 */}
-function RenderPane(props)
+class RenderPane extends React.Component
 {
-	return (
-		<div
-			className='renderPane'
-			id='renderPane'
-			style={{
-				position: 'absolute',
-				border: '2px solid black',
-				width: 490,
-				height: 892,
-				backgroundColor: 'white',
-				boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-				top: 110,
-				left: 540,
-			}}
-		>
-			<div style={{
-						zIndex: 99,
-						paddingLeft: 20,
-						position: 'relative',
-						width: 470,
-						height: 2040,
-						top: 10,
-						left: 10}}>
+	constructor(props)
+	{
+		super(props);
 
-				<span>
+		this.state = {
+					value: props.htmlPaneContent
 
-					<img src={require('./images/couchbaseLogoTrans.png')}
-						 alt={require('./images/couchbaseLogoTransAlt.png')}
-						 style={{
-						 	zIndex: 10,
-							position: 'absolute',
-							width: 240,
-							height: 240,
-							top: 590,
-							left: 210}}
-					/>
-				</span>
+				};
+	}
 
-				<div dangerouslySetInnerHTML={{ __html: props.htmlPaneContent }} />
+	componentWillReceiveProps(nextProps)
+	{
+		this.setState( { value: nextProps.htmlPaneContent } );
+	}
 
-            </div>
+	render ()
+	{
+		RenderPaneContext = this;
 
-		</div>
-	);
+		return (
+			<div
+				className='renderPane'
+				id='renderPane'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 490,
+					height: 892,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 540,
+				}}
+			>
+				<div style={{
+							zIndex: 99,
+							paddingLeft: 20,
+							position: 'relative',
+							width: 470,
+							height: 2040,
+							top: 10,
+							left: 10}}>
+
+					<span>
+
+						<img src={require('./images/couchbaseLogoTrans.png')}
+							 alt={require('./images/couchbaseLogoTransAlt.png')}
+							 style={{
+							 	zIndex: 10,
+								position: 'absolute',
+								width: 240,
+								height: 240,
+								top: 590,
+								left: 210}}
+						/>
+					</span>
+
+					<div dangerouslySetInnerHTML={{ __html: currentValueOfRenderPane }} />
+
+	            </div>
+
+			</div>
+		);
+	}
 }
 
 {/*
