@@ -3,9 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css'
 import axios from 'axios';
 import { RingLoader } from 'react-spinners';
-import xml2js from 'xml2js';
 import xmldom from 'xmldom';
-
 
 {/*
   This initial function is called by the main render method, at the bottom.
@@ -112,7 +110,174 @@ class FileSelectionOuterWindow extends React.Component
   */}
 class FileSelectionInnerWindow extends React.Component
 {
-	render () {
+	getXMLFileFromServer(targetFilename)
+	{
+			if (!navInitializationComplete)
+			{
+				var nodeJsTargetURL = 'http://localhost:8083/' + '?'
+					+ "LocationForRead=" + sourceLocation + targetFilename;
+
+				axios.get(nodeJsTargetURL, {timeout: 6000},
+								{headers: {'Content-Type': 'text/plain'}}
+					).then(response => {
+							xmlFileAvailable = true;
+							//alert("response.data is " + response.data);
+							this.DetermineNavContent(response.data);
+						});
+
+						navInitializationComplete = true;
+				}
+	}
+
+	// Clean up the string retrieved from the server that specifies the nav content.
+	// Transform it into a DOM object. Iterate through the object, and put each value
+	// into a standard JSON array. We will use this as data for a map iterator, which
+	// will render the nav content.
+	//
+	DetermineNavContent(dataFromFilesystem)
+	{
+		var originalString = JSON.stringify(dataFromFilesystem);
+
+		// Remove the tabs and line-breaks from the xml string.
+		//
+		var cleanedString = originalString.replace(/(\\t\\n|\\n|\\t)/gm, "");
+
+		//alert(cleanedString);
+
+		// Parse the string to a DOM object.
+		//
+		var DOMParser = require('xmldom').DOMParser;
+		var doc = new DOMParser().parseFromString(cleanedString);
+
+		var listOfAllSections = doc.getElementsByTagName('section_info');
+
+		var arrayCounter = 0;
+
+		// Go through each section of the document in turn.
+		//
+		for (var index = 0; index < listOfAllSections.length; index++)
+		{
+			// Look at one section at a time.
+			//
+			var currentSectionFromList = listOfAllSections.item(index);
+
+			// For each page, create an array to hold the information.
+			//
+			arrayOfAllTitles2[index] = new Array;
+
+			// Give this page an id.
+			//
+			arrayOfAllTitles2[index][0] = arrayCounter++;
+
+			// Store the page-name.
+			//
+			arrayOfAllTitles2[index][1] = currentSectionFromList.childNodes[0].textContent;
+
+			// Store the page-location.
+			//
+			arrayOfAllTitles2[index][2] = currentSectionFromList.childNodes[1].textContent;
+
+			// Examine the subsection for this section, and determine how many
+			// child-pages it contains.
+			//
+			var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');
+
+			// If there is at least one child page under the current section-page...
+			//
+			if (listOfAllSubSections.length > 0)
+			{
+				// Array to hold Document object contents for this subsection.
+				//
+				arrayOfAllTitles2[index][3] = new Array();
+
+				// The default view is that the sub-array is not visible.
+				//
+				arrayOfAllTitles2[index][4] = "closed";
+
+				// Do the following once for each child page in the subsection-content area.
+				//
+				for (var subsectionindex = 0; subsectionindex < listOfAllSubSections.length; subsectionindex++)
+				{
+					// Create a sub-array for each set of child-page information in this subsection.
+					//
+					arrayOfAllTitles2[index][3][subsectionindex] = new Array();
+
+					// Look at each child-page in turn.
+					//
+					var currentSubSectionFromList = listOfAllSubSections.item(subsectionindex);
+
+					// Give this page an id.
+					//
+					arrayOfAllTitles2[index][3][subsectionindex][0] = arrayCounter++;
+
+					// Store the page-name.
+					//
+					arrayOfAllTitles2[index][3][subsectionindex][1] = currentSubSectionFromList.childNodes[0].textContent;
+
+					// Store the page-location.
+					//
+					arrayOfAllTitles2[index][3][subsectionindex][2] = currentSubSectionFromList.childNodes[1].textContent;
+
+					// Examine the subsubsection
+					// for the current page, and see how many offspring it contains.
+					//
+					var listOfAllSubSubSections = currentSubSectionFromList.getElementsByTagName('grandchild_page_info');
+
+					// If there is at least one grandchild page under the current subsubsection page...
+					//
+					if (listOfAllSubSubSections.length > 0)
+					{
+						// Create an array to hold the subsubsection page information.
+						//
+						arrayOfAllTitles2[index][3][subsectionindex][3] = new Array();
+
+						// The default view is that the sub-array is not visible.
+						//
+						arrayOfAllTitles2[index][3][subsectionindex][4] = "closed";
+
+						// Do the following once for each grandchild page in the subsubsection-content area.
+						//
+						for (var subsubsectionindex = 0; subsubsectionindex < listOfAllSubSubSections.length; subsubsectionindex++)
+						{
+							// Create a sub-array for each set of grandchild-page information in this subsubsection.
+							//
+							arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex] = new Array();
+
+							// Look at each grandchild-page in turn.
+							//
+							var currentSubSubSectionFromList = listOfAllSubSubSections.item(subsubsectionindex);
+
+							// Give this page an id.
+							//
+							arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][0] = arrayCounter++;
+
+							// Store the page-name.
+							//7
+							arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][1] = currentSubSubSectionFromList.childNodes[0].textContent;
+
+							// Store the page-location.
+							//
+							arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][2] = currentSubSubSectionFromList.childNodes[1].textContent;
+
+							// There are no great-grandchild-pages: this is the lowest level.
+							// So, we now end. Our array is complete.
+							//
+						}
+					}
+				}
+			}
+			//alert(JSON.stringify(arrayOfAllTitles2));
+		}
+
+		//alert("completed: " + JSON.stringify(arrayOfAllTitles2));
+
+		// Change state, so that a re-rendering occurs.
+		//
+		this.setState( { arrayOfAllTitles: arrayOfAllTitles2 });
+	}
+
+	render ()
+	{
 
 		return (
 			<div
@@ -131,11 +296,13 @@ class FileSelectionInnerWindow extends React.Component
 				}}
 			>
 
+			<div>
+				<NavTree theServerSideArray={ this.getXMLFileFromServer("security_pages.xml") }/>
+			</div>
+
 				</div>
 		)};
 }
-
-
 
 // In order to transfer data from the (child) EditPane to the (parent) UpperAppli-
 // cationWindow, we use the currentValueOfEditPane global variable. This is kept
@@ -185,7 +352,7 @@ var canGetFile = true;
 
 var self = null;
 
-class Organisation extends React.Component
+class NavTree extends React.Component
 {
 	constructor(props, context)
 	{
@@ -209,18 +376,6 @@ class Organisation extends React.Component
 	//
 	toggleNodeToOpenOrClosed(newStatus, id, theArray)
 	{
-		//alert("Name is: " + theArray);
-		//if (theArray[3] != undefined)
-		//{
-		//	alert("When [1] is " + theArray[1] + ", the length of the subarray is " + theArray[3].length);
-		//}
-		//else {
-		//	alert("The item is " + theArray[1] + ", and there is no subarray");
-		//}
-		//alert("Current slice is: " + theArray);
-		//alert("Called toggleNodeToOpenOrClosed");
-		//ualert("newStatus is " + newStatus + ", childnode[0] is " + id + ", and theArray is " + theArray);
-
 		// Make sure we don't try to dig down below the third level, by
 		// keeping track of the level we are on.
 		//
@@ -271,12 +426,14 @@ class Organisation extends React.Component
 		//
 		self = this;
 
+		//alert("theServerSideArray is " + arrayOfAllTitles2);
+
     let nodes = arrayOfAllTitles2.map(function(person)
 		{
 			if (person[4] == "closed")
 			{
 	      return (
-	        <NodeIsEitherOpenOrClosed
+	        <NodeInNavTree
 								node={person}
 								paddingTop={10}
 								image={'plusSign.png'}
@@ -289,7 +446,7 @@ class Organisation extends React.Component
 			else
 			{
 				return (
-				 <NodeIsEitherOpenOrClosed
+				 <NodeInNavTree
 				 			 node={person}
 							 paddingTop={10}
 				 			 image={'minusSign.png'}
@@ -307,11 +464,11 @@ class Organisation extends React.Component
 				 listStyle: 'none',
 				 position: 'absolute',
 				 border: '0px solid black',
-				 width: 370,
-				 height: 670,
+				 width: 720,
+				 height: 1100,
 				 backgroundColor: 'white',
-				 top: 48,
-				 left: -530,
+				 top: -12,
+				 left: 0,
 				 zIndex: 99,
 				 fontSize: 28
 			 }}
@@ -326,7 +483,7 @@ class Organisation extends React.Component
 
 var currentNodeLocation = "";
 
-class NodeIsEitherOpenOrClosed extends React.Component
+class NodeInNavTree extends React.Component
 {
 	callGetFileFromServer(filename)
 	{
@@ -358,7 +515,7 @@ class NodeIsEitherOpenOrClosed extends React.Component
 				 theImage = "blank.png";
 
 	       return (
-					 <NodeIsEitherOpenOrClosed
+					 <NodeInNavTree
 					 			 node={childnode}
 								 paddingTop={10}
 					 			 image={theImage}
@@ -372,7 +529,7 @@ class NodeIsEitherOpenOrClosed extends React.Component
 				 if (childnode[3] != undefined && childnode[4] == "closed")
 				 {
 					 return (
-							<NodeIsEitherOpenOrClosed
+							<NodeInNavTree
 										node={childnode}
 										paddingTop={10}
 										image={'plusSign.png'}
@@ -387,7 +544,7 @@ class NodeIsEitherOpenOrClosed extends React.Component
 				   if (childnode[3] != undefined && childnode[4] == "open")
 
 					 return (
-							<NodeIsEitherOpenOrClosed
+							<NodeInNavTree
 										node={childnode}
 										paddingTop={10}
 										image={'minusSign.png'}
@@ -487,46 +644,14 @@ export default class UpperApplicationWindow extends React.Component
 				// prototype.
 				//
 				defaultfilename: './writes/default.md',
-				javafilename: 'java.md',
-				dotnetfilename: 'dotnet.md',
-				phpfilename: 'php.md',
-				pythonfilename: 'python.md',
-				cfilename: 'c.md',
-				gofilename: 'go.md',
-				nodejsfilename: 'nodejs.md',
 				nofilefilename: 'nofile.md',
 				xmlfilename: 'security_pages.xml',
-
 				spinnerdisplay: false,
-
-				javaImage: 'plusSign.png',
-	      javaContentDisplay: false,
-				dotNetImage: 'plusSign.png',
-				dotNetContentDisplay: false,
-				phpImage: 'plusSign.png',
-				phpContentDisplay: false,
-				pythonImage: 'plusSign.png',
-				pythonContentDisplay: false,
-
-				beneathJavaTopMeasurement: 76,
-				beneathDotNetTopMeasurement: 125,
-				beneathPhpTopMeasurement: 174,
-				beneathPythonTopMeasurement: 400,
-
-				javaContentStartingHeight: 54,
-				dotNetContentStartingHeight: 118,
-				phpContentStartingHeight: 164,
-				pythonContentStartingHeight: 210,
-
 				entrydisplaytitle: 'Javax',
 				parententryheight: 400,
 
 				titles: arrayOfAllTitles,
 				locations: arrayOfAllLocations,
-
-				navEntryIndentationZeroeth: 20,
-				navEntryIndentationFirst: 30,
-				navEntryIndentationSecond: 40,
 			};
 
 			this.saveCurrentEditsToServer
@@ -536,8 +661,6 @@ export default class UpperApplicationWindow extends React.Component
 					= this.getFileFromServer.bind(this);
     }
 
-		// FIX: currently adds "./writes" to "./writes" and so the save fails.
-		//
     saveCurrentEditsToServer()
     {
     	if (canSaveFile)
@@ -548,7 +671,7 @@ export default class UpperApplicationWindow extends React.Component
 					var nodeJsTargetURL = 'http://localhost:8083/'
 									+ '?'
 									+ "LocationForWrite="
-									+ sourceLocation + currentFileName;
+									+ currentFileName;
 
 					axios.post(nodeJsTargetURL, currentValueOfEditPane,
 												{headers: {'Content-Type': 'text/plain'}}
@@ -615,171 +738,6 @@ export default class UpperApplicationWindow extends React.Component
 					}
     }
 
-		getXMLFileFromServer(targetFilename)
-		{
-				if (!navInitializationComplete)
-				{
-					var nodeJsTargetURL = 'http://localhost:8083/' + '?'
-						+ "LocationForRead=" + sourceLocation + targetFilename;
-
-					axios.get(nodeJsTargetURL, {timeout: 6000},
-									{headers: {'Content-Type': 'text/plain'}}
-						).then(response => {
-							  xmlFileAvailable = true;
-								//alert(response.data);
-								this.DetermineNavContent(response.data);
-							});
-
-							navInitializationComplete = true;
-					}
-		}
-
-		// Clean up the string retrieved from the server that specifies the nav content.
-		// Transform it into a DOM object. Iterate through the object, and put each value
-		// into a standard JSON array. We will use this as data for a map iterator, which
-		// will render the nav content.
-		//
-		DetermineNavContent(dataFromFilesystem)
-		{
-			var originalString = JSON.stringify(dataFromFilesystem);
-
-			// Remove the tabs and line-breaks from the xml string.
-			//
-			var cleanedString = originalString.replace(/(\\t\\n|\\n|\\t)/gm, "");
-
-			//alert(cleanedString);
-
-			// Parse the string to a DOM object.
-			//
-			var DOMParser = require('xmldom').DOMParser;
-			var doc = new DOMParser().parseFromString(cleanedString);
-
-			var listOfAllSections = doc.getElementsByTagName('section_info');
-
-			var arrayCounter = 0;
-
-			// Go through each section of the document in turn.
-			//
-			for (var index = 0; index < listOfAllSections.length; index++)
-			{
-				// Look at one section at a time.
-				//
-				var currentSectionFromList = listOfAllSections.item(index);
-
-				// For each page, create an array to hold the information.
-				//
-				arrayOfAllTitles2[index] = new Array;
-
-				// Give this page an id.
-				//
-				arrayOfAllTitles2[index][0] = arrayCounter++;
-
-				// Store the page-name.
-				//
-				arrayOfAllTitles2[index][1] = currentSectionFromList.childNodes[0].textContent;
-
-				// Store the page-location.
-				//
-				arrayOfAllTitles2[index][2] = currentSectionFromList.childNodes[1].textContent;
-
-				// Examine the subsection for this section, and determine how many
-				// child-pages it contains.
-				//
-				var listOfAllSubSections = currentSectionFromList.getElementsByTagName('child_page_info');
-
-				// If there is at least one child page under the current section-page...
-				//
-				if (listOfAllSubSections.length > 0)
-				{
-					// Array to hold Document object contents for this subsection.
-					//
-					arrayOfAllTitles2[index][3] = new Array();
-
-					// The default view is that the sub-array is not visible.
-					//
-					arrayOfAllTitles2[index][4] = "closed";
-
-					// Do the following once for each child page in the subsection-content area.
-					//
-					for (var subsectionindex = 0; subsectionindex < listOfAllSubSections.length; subsectionindex++)
-					{
-						// Create a sub-array for each set of child-page information in this subsection.
-						//
-						arrayOfAllTitles2[index][3][subsectionindex] = new Array();
-
-						// Look at each child-page in turn.
-						//
-						var currentSubSectionFromList = listOfAllSubSections.item(subsectionindex);
-
-						// Give this page an id.
-						//
-						arrayOfAllTitles2[index][3][subsectionindex][0] = arrayCounter++;
-
-						// Store the page-name.
-						//
-						arrayOfAllTitles2[index][3][subsectionindex][1] = currentSubSectionFromList.childNodes[0].textContent;
-
-						// Store the page-location.
-						//
-						arrayOfAllTitles2[index][3][subsectionindex][2] = currentSubSectionFromList.childNodes[1].textContent;
-
-						// Examine the subsubsection
-						// for the current page, and see how many offspring it contains.
-						//
-						var listOfAllSubSubSections = currentSubSectionFromList.getElementsByTagName('grandchild_page_info');
-
-						// If there is at least one grandchild page under the current subsubsection page...
-						//
-						if (listOfAllSubSubSections.length > 0)
-						{
-							// Create an array to hold the subsubsection page information.
-							//
-							arrayOfAllTitles2[index][3][subsectionindex][3] = new Array();
-
-							// The default view is that the sub-array is not visible.
-							//
-							arrayOfAllTitles2[index][3][subsectionindex][4] = "closed";
-
-							// Do the following once for each grandchild page in the subsubsection-content area.
-							//
-							for (var subsubsectionindex = 0; subsubsectionindex < listOfAllSubSubSections.length; subsubsectionindex++)
-							{
-								// Create a sub-array for each set of grandchild-page information in this subsubsection.
-								//
-								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex] = new Array();
-
-								// Look at each grandchild-page in turn.
-								//
-								var currentSubSubSectionFromList = listOfAllSubSubSections.item(subsubsectionindex);
-
-								// Give this page an id.
-								//
-								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][0] = arrayCounter++;
-
-								// Store the page-name.
-								//7
-								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][1] = currentSubSubSectionFromList.childNodes[0].textContent;
-
-								// Store the page-location.
-								//
-								arrayOfAllTitles2[index][3][subsectionindex][3][subsubsectionindex][2] = currentSubSubSectionFromList.childNodes[1].textContent;
-
-								// There are no great-grandchild-pages: this is the lowest level.
-								// So, we now end. Our array is complete.
-								//
-							}
-						}
-					}
-				}
-				//alert(JSON.stringify(arrayOfAllTitles2));
-			}
-
-			//alert("completed: " + JSON.stringify(arrayOfAllTitles2));
-
-			// Change state, so that a re-rendering occurs.
-			//
-			this.setState( { arrayOfAllTitles: arrayOfAllTitles2 });
-		}
 
 	// The pane that shows the editable markdown. The value is the current
 	// textual content.
@@ -866,13 +824,7 @@ export default class UpperApplicationWindow extends React.Component
 								left: 60}} />
 				</span>
 
-
-
-
-
-				<GenButton onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
-
-
+				<GenerateNewFileButton onClick={() => this.getFileFromServer(this.state.defaultfilename) } />
 
 				<div>
 				 	{ this.RenderSpinner() }
@@ -886,13 +838,7 @@ export default class UpperApplicationWindow extends React.Component
 				 { this.RenderHtmlPane() }
 				</div>
 
-				<FileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
-
-
-
-				<div>
-					<Organisation theServerSideArray={ this.getXMLFileFromServer("security_pages.xml") }/>
-				</div>
+				<SaveCurrentFileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
 
 			</div>
 		);
@@ -940,10 +886,10 @@ class NoFileButton extends React.Component
 }
 
 {/*
-  The GenButton method returns the button for displaying the generic
+  The GenerateNewFileButton method returns the button for displaying the generic
   documentation source-file.
 */}
-class GenButton extends React.Component
+class GenerateNewFileButton extends React.Component
 {
 	render ()
 	{
@@ -952,8 +898,8 @@ class GenButton extends React.Component
 			<div>
 				<button
 					onClick = {this.props.onClick}
-					className='genButton'
-					id='genButton'
+					className='GenerateNewFileButton'
+					id='GenerateNewFileButton'
 					style={{
 						position: 'absolute',
 						border: '2px solid black',
@@ -965,7 +911,7 @@ class GenButton extends React.Component
 						left: 160,
 					}}
 				><img src={require('./images/newButton.png')}
-						   alt={require('./images/genButtonBasicAlt.png')}
+						   alt={require('./images/newButton.png')}
 						   style={{
 								padding: 3,
 								width:'52%',
@@ -1091,8 +1037,10 @@ class EditPane extends React.Component
 
 			if (canSaveFile)
 			{
-				var nodeJsTargetURL = 'http://localhost:8083/' + '?' + "LocationForWrite="
-									+ sourceLocation + currentFileName;
+				var nodeJsTargetURL = 'http://localhost:8083/' + '?'
+				+ "LocationForWrite="
+									//+ sourceLocation
+									+ currentFileName;
 
 				axios.post(nodeJsTargetURL, currentValueOfEditPane,
 								{headers: {'Content-Type': 'text/plain'}}
@@ -1201,18 +1149,18 @@ function RenderPane(props)
 }
 
 {/*
-  The FileButton method returns the button for choosing the
+  The SaveCurrentFileButton method returns the button for choosing the
   source-file to be edited.
 */}
-class FileButton extends React.Component
+class SaveCurrentFileButton extends React.Component
 {
 	render()
 	{
 		return (
 			<button
 				onClick = {this.props.onClick}
-				className='fileButton'
-				id='fileButton'
+				className='SaveCurrentFileButton'
+				id='SaveCurrentFileButton'
 				style={{
 					position: 'absolute',
 					border: '2px solid black',

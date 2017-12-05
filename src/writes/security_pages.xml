@@ -22,9 +22,7 @@
 					./writes/security/certificateBased.md
 				</child_page_location>
 				
-
 			</child_page_info>
-			
 			
 			<child_page_info>
 			
@@ -48,13 +46,12 @@
 					./writes/security/ldapBased.md
 				</child_page_location>
 			
-				
 				<sub_subsection_info>
 					
 					<grandchild_page_info>
 			
 						<grandchild_page_title>
-							Setting 
+							Setting Up saslauthd
 						</grandchild_page_title>
 				
 						<grandchild_page_location>
@@ -66,23 +63,11 @@
 					<grandchild_page_info>
 			
 						<grandchild_page_title>
-							Troubleshooting 
+							Troubleshooting LDAP Settings
 						</grandchild_page_title>
 				
 						<grandchild_page_location>
-							./writes/security/troubleshootingSettings.md
-						</grandchild_page_location>
-				
-					</grandchild_page_info>
-					
-					<grandchild_page_info>
-			
-						<grandchild_page_title>
-							Test Entry 
-						</grandchild_page_title>
-				
-						<grandchild_page_location>
-							./writes/security/testEntry.md
+							./writes/security/troubleshootingLDAPSettings.md
 						</grandchild_page_location>
 				
 					</grandchild_page_info>
@@ -110,11 +95,11 @@
 	<section_info>
 	
 		<parent_page_title>
-			.NET
+			Authorization
 		</parent_page_title>
 		
 		<parent_page_location>
-			./writes/dotNet.md
+			./writes/security/authorization.md
 		</parent_page_location>
 		
 		<subsection_info>
@@ -122,11 +107,11 @@
 			<child_page_info>
 			
 				<child_page_title>
-					.NET Basics
+					RBAC for Administrators
 				</child_page_title>
 				
 				<child_page_location>
-					./dotNetBasics.md
+					./writes/security/rbacForAdministrators.md
 				</child_page_location>
 				
 				<sub_subsection_info>
@@ -137,20 +122,229 @@
 			<child_page_info>
 			
 				<child_page_title>
-					Using .NET
+					RBAC for Applications
 				</child_page_title>
 				
 				<child_page_location>
-					./writes/dotNetUsing.md
+					./writes/security/rbacForApplications.md
 				</child_page_location>
 				
 				<sub_subsection_info>
+				
+				</sub_subsection_info>
+				
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					RBAC User Management
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/rbacUserManagement.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				
+					<grandchild_page_info>
+			
+						<grandchild_page_title>
+							Creating and Managing Users with the UI
+						</grandchild_page_title>
+				
+						<grandchild_page_location>
+							./writes/security/creatingAndManagingUsersWithTheUI.md
+						</grandchild_page_location>
+				
+					</grandchild_page_info>
+				
+				</sub_subsection_info>
+				
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					Resources under Access Control
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/resourcesUnderAccessControl.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				
+				</sub_subsection_info>
+				
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					Upgrading to RBAC
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/upgradingtoRBAC.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				
 				</sub_subsection_info>
 				
 			</child_page_info>
 			
 		</subsection_info>
 		
+	</section_info>
+	
+	<section_info>
+	
+		<parent_page_title>
+			Auditing
+		</parent_page_title>
+		
+		<parent_page_location>
+			./writes/security/auditing.md
+		</parent_page_location>
+		
+		<subsection_info>
+		
+			<child_page_info>
+			
+				<child_page_title>
+					Audit Events
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/auditEvents.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				
+				</sub_subsection_info>
+			
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					Audit Targets
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/auditTargets.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				
+					<grandchild_page_info>
+			
+						<grandchild_page_title>
+							Audit File Details
+						</grandchild_page_title>
+				
+						<grandchild_page_location>
+							./writes/security/auditFileDetails.md
+						</grandchild_page_location>
+				
+					</grandchild_page_info>
+				
+				</sub_subsection_info>
+			
+			</child_page_info>
+	
+	</section_info>
+
+	<section_info>
+	
+		<parent_page_title>
+			Encryption
+		</parent_page_title>
+		
+		<parent_page_location>
+			./writes/security/encryption.md
+		</parent_page_location>
+		
+		<subsection_info>
+		
+			<child_page_info>
+			
+				<child_page_title>
+					Encryption at Rest
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/encryptionAtRest.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				
+				</sub_subsection_info>
+			
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					Encryption on the Wire
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/encryptionOnTheWire.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				
+					<grandchild_page_info>
+			
+						<grandchild_page_title>
+							X.509 for TLS
+						</grandchild_page_title>
+				
+						<grandchild_page_location>
+							./writes/security/x509ForTLS.md
+						</grandchild_page_location>
+				
+					</grandchild_page_info>
+				
+				</sub_subsection_info>
+			
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					Encryption in Applications
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/encryptionInApplications.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				
+				</sub_subsection_info>
+			
+			</child_page_info>
+			
+			<child_page_info>
+			
+				<child_page_title>
+					Secret-Management
+				</child_page_title>
+				
+				<child_page_location>
+					./writes/security/secretManagement.md
+				</child_page_location>
+				
+				<sub_subsection_info>
+				
+				</sub_subsection_info>
+			
+			</child_page_info>
+	
 	</section_info>
 	
 </sections>
