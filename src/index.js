@@ -5,6 +5,7 @@ import axios from 'axios';
 import { RingLoader } from 'react-spinners';
 import xmldom from 'xmldom';
 import marked from 'marked';
+import {SplitPane} from 'react-split-pane';
 
 {/*
   This initial function is called by the main render method, at the bottom.
@@ -429,8 +430,6 @@ class NavTree extends React.Component
 		//
 		self = this;
 
-		//alert("theServerSideArray is " + arrayOfAllTitles2);
-
     let nodes = arrayOfAllTitles2.map(function(person)
 		{
 			if (person[4] == "closed")
@@ -483,8 +482,6 @@ class NavTree extends React.Component
     );
   }
 }
-
-var currentNodeLocation = "";
 
 class NodeInNavTree extends React.Component
 {
@@ -619,8 +616,6 @@ export default class UpperApplicationWindow extends React.Component
 				nofilefilename: 'nofile.md',
 				xmlfilename: 'security_pages.xml',
 				spinnerdisplay: false,
-				entrydisplaytitle: 'Javax',
-				parententryheight: 400,
 				currentContentForRenderPane: "theDefault",
 
 				titles: arrayOfAllTitles,
@@ -633,13 +628,6 @@ export default class UpperApplicationWindow extends React.Component
 				this.getFileFromServer
 					= this.getFileFromServer.bind(this);
     }
-
-		refreshRenderPane()
-		{
-			alert("called");
-			this.state.htmlPaneContent = currentValueOfRenderPane;
-			alert("htmlPaneContent is " + this.state.htmlPaneContent);
-		}
 
     saveCurrentEditsToServer()
     {
@@ -662,6 +650,8 @@ export default class UpperApplicationWindow extends React.Component
 															canGetFile = true;
 															canSaveFile = true;
 
+															alert("File saved.");
+
 														}).catch(error => {
 
 															alert(error);
@@ -676,6 +666,7 @@ export default class UpperApplicationWindow extends React.Component
 						//alert("Nothing to be Saved...");
 				}
     }
+
     getFileFromServer(targetFilename)
     {
         if(canGetFile)
@@ -719,7 +710,6 @@ export default class UpperApplicationWindow extends React.Component
 
 										canGetFile = true;
 										canSaveFile = true;
-
 			        		});
 					}
     }
@@ -729,21 +719,22 @@ export default class UpperApplicationWindow extends React.Component
 	//
 	RenderEditPane ()
 	{
+
 		return (
+
 			<EditPane
 				value={ this.state.value }
-			/>
+				/>
+
 		);
 	}
 
-	// The pane that shows the rendered version of the markdown that is being
+	  // The pane that shows the rendered version of the markdown that is being
     // edited.
     //
     RenderHtmlPane()
     {
-			//this.setState( { htmlPaneContent: currentValueOfEditPane});
-
-			//("The RenderHtmlPane is called, with value of ..." + currentValueOfRenderPane);
+			//alert("rendering");
     	return (
     		<RenderPane
     			htmlPaneContent={currentValueOfRenderPane}
@@ -764,18 +755,13 @@ export default class UpperApplicationWindow extends React.Component
     	);
     }
 
-	render () {
-
-		//alert("test");
-
-		//getFileGlobalAccess = this
-
+	render ()
+	{
 		// Globalize the "this" of the UpperApplicatioWindow. This will allow us to call
 		// its internal GetFileFroServer method from multiple points in the render-hierarchy
 		// (for example, from the Organization sub-hierarchy, which provides the nav pane).
 		//
 		upperApplicationWindowContext = this;
-
 
 		return (
 			<div
@@ -951,6 +937,82 @@ class Spinner extends React.Component
 	}
 }
 
+var RenderPaneContext = null;
+
+{/*
+  The RenderPane class returns the button for displaying the Node.js
+  filtered version of the source-file.
+*/}
+class RenderPane extends React.Component
+{
+	constructor(props)
+	{
+		super(props);
+
+		this.state = {
+					value: props.htmlPaneContent
+				};
+	}
+
+	componentWillReceiveProps(nextProps)
+	{
+		this.setState( { value: nextProps.htmlPaneContent } );
+	}
+
+	render ()
+	{
+		RenderPaneContext = this;
+
+		return (
+			<div
+				className='renderPane'
+				id='renderPane'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 490,
+					height: 892,
+					resize: 'horizontal',
+					maxWidth: 650,
+					overflow: 'auto',
+					direction: 'ltr',
+					backgroundColor: '#F5F5F5',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 110,
+					left: 540,
+				}}
+			>
+				<div style={{
+							zIndex: 98,
+							paddingLeft: 10,
+							position: 'absolute',
+							width: 470,
+							height: 2040,
+							top: 0,
+							left: 10}}>
+
+							<span>
+
+								<img src={require('./images/couchbaseLogoTrans3.png')}
+									 alt={require('./images/couchbaseLogoTransAlt.png')}
+									 style={{
+									 	zIndex: 10,
+										position: 'absolute',
+										width: 240,
+										height: 240,
+										top: 632,
+										left: 200}}
+								/>
+							</span>
+
+							<div dangerouslySetInnerHTML={{ __html: currentValueOfRenderPane }} />
+
+	       </div>
+			</div>
+		);
+	}
+}
+
 {/*
   The EditPane method returns the button for displaying the Node.js
   filtered version of the source-file.
@@ -967,7 +1029,6 @@ class EditPane extends React.Component
 
 		this.state = {
 						value: props.value,
-
 					};
     }
 
@@ -994,14 +1055,14 @@ class EditPane extends React.Component
 			});
     }
 
-    // For the text-pane content, update the EditPane's local state with the
-    // property value just given to it by the parent (this property value itself
-    // having been generated based on currentValueOfEditPane, which is updated
-    // on every change the user makes. Thus, we have a complete cycle, with all
-    // versions of the pane-content kept the same. Note the componentWillReceiveProps
-    // updates on each general rendering (unlike the constructor, which is fired only
-    // when the overall program commences).
-    //
+  // For the text-pane content, update the EditPane's local state with the
+  // property value just given to it by the parent (this property value itself
+  // having been generated based on currentValueOfEditPane, which is updated
+  // on every change the user makes. Thus, we have a complete cycle, with all
+  // versions of the pane-content kept the same. Note the componentWillReceiveProps
+  // updates on each general rendering (unlike the constructor, which is fired only
+  // when the overall program commences).
+  //
 	componentWillReceiveProps(nextProps)
 	{
 		this.setState( { value: nextProps.value } );
@@ -1032,32 +1093,13 @@ class EditPane extends React.Component
 		{
 			event.preventDefault();
 
-			if (canSaveFile)
-			{
-				var nodeJsTargetURL = 'http://localhost:8083/' + '?'
-				+ "LocationForWrite="
-									//+ sourceLocation
-									+ currentFileName;
-
-				axios.post(nodeJsTargetURL, currentValueOfEditPane,
-								{headers: {'Content-Type': 'text/plain'}}
-					).then(response => {
-
-					this.setState ( { value: response.data } );
-
-					currentValueOfEditPane = this.state.value;
-
-				});
-			}
-			else
-			{
-				alert("No File to be Saved");
-			}
+			upperApplicationWindowContext.saveCurrentEditsToServer();
 		}
 	}
 
     render ()
     {
+
 		return (
 
 		<div >
@@ -1078,11 +1120,14 @@ class EditPane extends React.Component
 						border: '2px solid black',
 						width: 470,
 						height: 872,
+						resize: 'horizontal',
+						maxWidth: 970,
+						minWidth: 470,
 						backgroundColor: 'white',
 						boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
 						top: 110,
 						left: 40,
-						zIndex: 89
+						zIndex: 99
 					}}
 				>
 
@@ -1093,79 +1138,7 @@ class EditPane extends React.Component
 	}
 }
 
-var RenderPaneContext = null;
 
-{/*
-  The RenderPane class returns the button for displaying the Node.js
-  filtered version of the source-file.
-*/}
-class RenderPane extends React.Component
-{
-	constructor(props)
-	{
-		super(props);
-
-		this.state = {
-					value: props.htmlPaneContent
-
-				};
-	}
-
-	componentWillReceiveProps(nextProps)
-	{
-		this.setState( { value: nextProps.htmlPaneContent } );
-	}
-
-	render ()
-	{
-		RenderPaneContext = this;
-
-		return (
-			<div
-				className='renderPane'
-				id='renderPane'
-				style={{
-					position: 'absolute',
-					border: '2px solid black',
-					width: 490,
-					height: 892,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 110,
-					left: 540,
-				}}
-			>
-				<div style={{
-							zIndex: 99,
-							paddingLeft: 10,
-							position: 'relative',
-							width: 470,
-							height: 2040,
-							top: 0,
-							left: 10}}>
-
-					<span>
-
-						<img src={require('./images/couchbaseLogoTrans2.png')}
-							 alt={require('./images/couchbaseLogoTransAlt.png')}
-							 style={{
-							 	zIndex: 10,
-								position: 'absolute',
-								width: 240,
-								height: 240,
-								top: 590,
-								left: 210}}
-						/>
-					</span>
-
-					<div dangerouslySetInnerHTML={{ __html: currentValueOfRenderPane }} />
-
-	            </div>
-
-			</div>
-		);
-	}
-}
 
 {/*
   The SaveCurrentFileButton method returns the button for choosing the

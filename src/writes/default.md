@@ -1,7 +1,8 @@
-%23Markdown Template - For Editing
+# Markdown Template - For Editing
 
-Use this template as appropriate, to get started with your new
-content.
+A demonstration! Again.....
+
+Use this template as appropriate, to get started with your new content.
 
 This is a regular paragraph, which starts describing a topic. It introduces a *numbered* list, as follows:
 
@@ -24,7 +25,7 @@ Now, a *mixed* list:
   * The third
 3. The third element in the initial, ordered list
 
-%23%23 The Second-Level Header
+## The Second-Level Header
 
 Now, some links:
 
