@@ -5,7 +5,6 @@ import axios from 'axios';
 import { RingLoader } from 'react-spinners';
 import xmldom from 'xmldom';
 import marked from 'marked';
-import {SplitPane} from 'react-split-pane';
 
 {/*
   This initial function is called by the main render method, at the bottom.
@@ -616,6 +615,7 @@ export default class UpperApplicationWindow extends React.Component
 				nofilefilename: 'nofile.md',
 				xmlfilename: 'security_pages.xml',
 				spinnerdisplay: false,
+				newfiletobesaveddisplay: false,
 				currentContentForRenderPane: "theDefault",
 
 				titles: arrayOfAllTitles,
@@ -628,6 +628,13 @@ export default class UpperApplicationWindow extends React.Component
 				this.getFileFromServer
 					= this.getFileFromServer.bind(this);
     }
+
+		defineDetailsOfNewFileToBeSaved()
+		{
+			this.state.newfiletobesaveddisplay = true;
+			alert(this.state.newfiletobesaveddisplay);
+			this.forceUpdate();
+		}
 
     saveCurrentEditsToServer()
     {
@@ -814,6 +821,10 @@ export default class UpperApplicationWindow extends React.Component
 
 				<SaveCurrentFileButton onClick={() => this.saveCurrentEditsToServer(this.state.currentfilename) }/>
 
+				<SaveAsButton onClick={() => this.defineDetailsOfNewFileToBeSaved() }/>
+
+				<NewFileDefinitionWindow display={ this.state.newfiletobesaveddisplay } />
+
 			</div>
 		);
 	}
@@ -859,44 +870,7 @@ class NoFileButton extends React.Component
 	}
 }
 
-{/*
-  The GenerateNewFileButton method returns the button for displaying the generic
-  documentation source-file.
-*/}
-class GenerateNewFileButton extends React.Component
-{
-	render ()
-	{
-		return (
 
-			<div>
-				<button
-					onClick = {this.props.onClick}
-					className='GenerateNewFileButton'
-					id='GenerateNewFileButton'
-					style={{
-						position: 'absolute',
-						border: '2px solid black',
-						width: 144,
-						height: 40,
-						backgroundColor: 'white',
-						boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-						top: 1020,
-						left: 160,
-					}}
-				><img src={require('./images/newButton.png')}
-						   alt={require('./images/newButton.png')}
-						   style={{
-								padding: 3,
-								width:'52%',
-								height: '74%'
-						   }}
-					/>
-				</button>
-			</div>
-		);
-	}
-}
 
 {/*
   The Spinner is visible while a markdown file is loading. Once the file
@@ -1138,7 +1112,44 @@ class EditPane extends React.Component
 	}
 }
 
+{/*
+  The GenerateNewFileButton method returns the button for displaying the generic
+  documentation source-file.
+*/}
+class GenerateNewFileButton extends React.Component
+{
+	render ()
+	{
+		return (
 
+			<div>
+				<button
+					onClick = {this.props.onClick}
+					className='GenerateNewFileButton'
+					id='GenerateNewFileButton'
+					style={{
+						position: 'absolute',
+						border: '2px solid black',
+						width: 144,
+						height: 40,
+						backgroundColor: 'white',
+						boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+						top: 1020,
+						left: 48,
+					}}
+				><img src={require('./images/newButton.png')}
+						   alt={require('./images/newButton.png')}
+						   style={{
+								padding: 3,
+								width:'52%',
+								height: '74%'
+						   }}
+					/>
+				</button>
+			</div>
+		);
+	}
+}
 
 {/*
   The SaveCurrentFileButton method returns the button for choosing the
@@ -1161,7 +1172,7 @@ class SaveCurrentFileButton extends React.Component
 					backgroundColor: 'white',
 					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
 					top: 1020,
-					left: 320,
+					left: 206,
 				}}
 			><img src={require('./images/saveButton.png')}
 					   alt={require('./images/nodeJsButtonBasicAlt.png')}
@@ -1169,6 +1180,85 @@ class SaveCurrentFileButton extends React.Component
 							padding: 3,
 							width:'58%',
 							height: '78%'
+					   }}
+						 />
+			</button>
+		);
+	}
+}
+
+class NewFileDefinitionWindow extends React.Component
+{
+	constructor(props)
+	{
+		super(props);
+
+		this.state =
+		{
+			display: props.display
+		};
+	}
+
+	render ()
+	{
+		alert("NewFileDefinitionWindow called with a display value of " + this.props.display);
+		return (
+			<button
+				className='SaveAsButton'
+				id='SaveAsButton'
+				style={{
+					position: 'absolute',
+					display: this.props.display ? 'inline' : 'none' ,
+					border: '2px solid black',
+					width: 164,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 1020,
+					left: 564,
+				}}
+			><img src={require('./images/saveButton.png')}
+						 alt={require('./images/nodeJsButtonBasicAlt.png')}
+						 style={{
+							padding: 1,
+							width:'78%',
+							height: '87%'
+						 }}
+						 />
+			</button>
+		);
+	}
+}
+
+{/*
+	The SaveAsButton methods returns the button for saving a newly-designed
+	file under a particular name and at a particular place within the page-hierarchy.
+*/}
+class SaveAsButton extends React.Component
+{
+	render()
+	{
+		return (
+			<button
+				onClick = {this.props.onClick}
+				className='SaveAsButton'
+				id='SaveAsButton'
+				style={{
+					position: 'absolute',
+					border: '2px solid black',
+					width: 164,
+					height: 40,
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 1020,
+					left: 364,
+				}}
+			><img src={require('./images/saveAsButton.png')}
+					   alt={require('./images/nodeJsButtonBasicAlt.png')}
+					   style={{
+							padding: 1,
+							width:'78%',
+							height: '87%'
 					   }}
 						 />
 			</button>
@@ -1187,6 +1277,7 @@ class XMLButton extends React.Component
 	//
 	render()
 	{
+		alert("called");
 		return (
 			<button
 				onClick = {this.props.onClick}
