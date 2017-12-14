@@ -632,46 +632,75 @@ export default class UpperApplicationWindow extends React.Component
 		defineDetailsOfNewFileToBeSaved()
 		{
 			this.state.newfiletobesaveddisplay = true;
-			alert(this.state.newfiletobesaveddisplay);
+			//alert(this.state.newfiletobesaveddisplay);
 			this.forceUpdate();
 		}
 
+		hideNewFileDefinitionWindow()
+		{
+			this.state.newfiletobesaveddisplay = false;
+			//alert(this.state.newfiletobesaveddisplay);
+			this.forceUpdate();
+		}
+
+		// Save edits made to the currently display file (within EditPane)
+		// to the server.
+		//
     saveCurrentEditsToServer()
     {
-    	if (canSaveFile)
+			// If the file is either the simple instruction default, which appears
+			// on intialization, or the template offered for modification-guidance,
+			// which appears after the New button has been pressed, bring up the
+			// dialog that invites the user to define a new filename and location
+			// within the page-hierarchy.
+			//
+			if (currentFileName == "./writes/default.md" ||
+						currentFileName == "default.md")
 			{
-					canGetFile = false;
-					canSaveFile = false;
+				this.defineDetailsOfNewFileToBeSaved();
+			}
 
-					var nodeJsTargetURL = 'http://localhost:8083/'
-									+ '?'
-									+ "LocationForWrite="
-									+ currentFileName;
+			// Otherwise, we are saving a file that already exists within the
+			// file-hierarchy, and has receved a modification. So, go ahead and
+			// re-save it.
+			//
+			else
+			{
+	    	if (canSaveFile)
+				{
+						canGetFile = false;
+						canSaveFile = false;
 
-					axios.post(nodeJsTargetURL, currentValueOfEditPane,
-												{headers: {'Content-Type': 'text/plain'}}
-														).then(response => {
+						var nodeJsTargetURL = 'http://localhost:8083/'
+										+ '?'
+										+ "LocationForWrite="
+										+ currentFileName;
 
-															this.setState ( { value: response.data } );
+						axios.post(nodeJsTargetURL, currentValueOfEditPane,
+													{headers: {'Content-Type': 'text/plain'}}
+															).then(response => {
 
-															canGetFile = true;
-															canSaveFile = true;
+																this.setState ( { value: response.data } );
 
-															alert("File saved.");
+																canGetFile = true;
+																canSaveFile = true;
 
-														}).catch(error => {
+																alert("File saved.");
 
-															alert(error);
+															}).catch(error => {
 
-															canGetFile = true;
-															canSaveFile = true;
+																alert(error);
 
-														});
+																canGetFile = true;
+																canSaveFile = true;
+
+															});
 				}
 				else
 				{
 						//alert("Nothing to be Saved...");
 				}
+			}
     }
 
     getFileFromServer(targetFilename)
@@ -823,7 +852,9 @@ export default class UpperApplicationWindow extends React.Component
 
 				<SaveAsButton onClick={() => this.defineDetailsOfNewFileToBeSaved() }/>
 
-				<NewFileDefinitionWindow display={ this.state.newfiletobesaveddisplay } />
+				<NewFileDefinitionWindow display={ this.state.newfiletobesaveddisplay }
+						onClick={() => this.hideNewFileDefinitionWindow() }
+				/>
 
 			</div>
 		);
@@ -1201,31 +1232,53 @@ class NewFileDefinitionWindow extends React.Component
 
 	render ()
 	{
-		alert("NewFileDefinitionWindow called with a display value of " + this.props.display);
+		//alert("NewFileDefinitionWindow called with a display value of " + this.props.display);
 		return (
-			<button
-				className='SaveAsButton'
-				id='SaveAsButton'
-				style={{
-					position: 'absolute',
-					display: this.props.display ? 'inline' : 'none' ,
-					border: '2px solid black',
-					width: 164,
-					height: 40,
-					backgroundColor: 'white',
-					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
-					top: 1020,
-					left: 564,
-				}}
-			><img src={require('./images/saveButton.png')}
-						 alt={require('./images/nodeJsButtonBasicAlt.png')}
-						 style={{
-							padding: 1,
-							width:'78%',
-							height: '87%'
-						 }}
-						 />
-			</button>
+			<div>
+				<div
+					className='fileDefinitionWindow'
+					className='fileDefinitionWindow'
+
+					style={{
+						position: 'absolute',
+						display: this.props.display ? 'inline' : 'none' ,
+						border: '2px solid black',
+						width: 1056,
+						height: 1057,
+						backgroundColor: 'white',
+						boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+						top: 6,
+						left: 6,
+						zIndex:99
+					}}
+				>
+
+					<button
+						onClick={this.props.onClick}
+						className='dismissFileDefinitionWindowButton'
+						id='dismissFileDefinitionWindowButton'
+						style={{
+							position: 'absolute',
+
+							border: '2px solid black',
+							width: 64,
+							height: 40,
+							backgroundColor: 'white',
+							boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+							top: 1006,
+							left: 982,
+						}}
+					><img src={require('./images/okButton.png')}
+								 alt={require('./images/nodeJsButtonBasicAlt.png')}
+								 style={{
+									padding: 2,
+									width:'62%',
+									height: '70%'
+								 }}
+								 />
+					</button>
+				</div>
+			</div>
 		);
 	}
 }
