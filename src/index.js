@@ -1253,30 +1253,56 @@ class NewFileDefinitionWindow extends React.Component
 					}}
 				>
 
+				<button
+					onClick={this.props.onClick}
+					className='cancelAndDismissFileDefinitionWindowButton'
+					id='cancelAndDismissFileDefinitionWindowButton'
+					style={{
+						position: 'absolute',
+
+						border: '2px solid black',
+						width: 144,
+						height: 40,
+						backgroundColor: 'white',
+						boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+						top: 1006,
+						left: 742,
+					}}
+				><img src={require('./images/cancelButton.png')}
+							 alt={require('./images/nodeJsButtonBasicAlt.png')}
+							 style={{
+								padding: 3,
+								width:'73%',
+								height: '69%'
+							 }}
+							 />
+				</button>
+
 					<button
 						onClick={this.props.onClick}
-						className='dismissFileDefinitionWindowButton'
-						id='dismissFileDefinitionWindowButton'
+						className='saveAndDismissFileDefinitionWindowButton'
+						id='saveAndDismissFileDefinitionWindowButton'
 						style={{
 							position: 'absolute',
 
 							border: '2px solid black',
-							width: 64,
+							width: 144,
 							height: 40,
 							backgroundColor: 'white',
 							boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
 							top: 1006,
-							left: 982,
+							left: 902,
 						}}
-					><img src={require('./images/okButton.png')}
+					><img src={require('./images/saveButton.png')}
 								 alt={require('./images/nodeJsButtonBasicAlt.png')}
 								 style={{
-									padding: 2,
-									width:'62%',
-									height: '70%'
+									padding: 3,
+									width:'58%',
+									height: '78%'
 								 }}
 								 />
 					</button>
+
 				</div>
 			</div>
 		);
