@@ -295,7 +295,10 @@ class FileSelectionInnerWindow extends React.Component
 			>
 
 			<div>
-				<NavTree theServerSideArray={ this.getXMLFileFromServer("security_pages.xml") }/>
+				<NavTree theServerSideArray={ this.getXMLFileFromServer("security_pages.xml") }
+
+
+				/>
 			</div>
 
 				</div>
@@ -363,6 +366,7 @@ class NavTree extends React.Component
 		this.state =
 		{
 			latestArray: props.theServerSideArray
+
 		};
 
 		this.toggleNodeToOpenOrClosed = this.toggleNodeToOpenOrClosed.bind(this);
@@ -448,6 +452,7 @@ class NavTree extends React.Component
 			{
 				return (
 				 <NodeInNavTree
+
 				 			 node={person}
 							 paddingTop={10}
 				 			 image={'minusSign.png'}
@@ -484,6 +489,16 @@ class NavTree extends React.Component
 
 class NodeInNavTree extends React.Component
 {
+	constructor(props)
+	{
+		super(props);
+
+		this.state =
+		{
+			role: props.role
+		};
+	}
+
 	callGetFileFromServer(filename)
 	{
 		upperApplicationWindowContext.getFileFromServer(filename);
@@ -550,6 +565,7 @@ class NodeInNavTree extends React.Component
      });
     }
 
+		//alert("In NodeInNavTree, this.props.role is " + this.props.role);
     return (
       <li style={{ paddingTop: this.props.paddingTop }}
 				  key={this.props.node[0]}>
@@ -568,6 +584,183 @@ class NodeInNavTree extends React.Component
 
 						<button
 							onClick={this.callGetFileFromServer.bind(this, this.props.node[2])}
+							style={{
+                position: 'relative',
+                fontFamily: 'Arial',
+                color: 'black',
+                fontSize: 30,
+                top: 2,
+                border: 'none'
+              }}>{this.props.node[1]}</button>
+
+					</div>
+
+        { childnodes ?
+          <ul style={ {listStyle: 'none'} }>{childnodes}</ul>
+        : null }
+      </li>
+    );
+  }
+}
+
+
+
+
+
+{/*
+	A second version of the nav tree, this time for selecting the name and hierarchy-position
+	of a new file that is being defined. The hierarchy is presented entirely open. The user
+	clicks on a name, to indicate the parent-document of the new page to be saved.
+  */}
+class NavTreeForDefinition extends React.Component
+{
+	constructor(props, context)
+	{
+		super(props, context);
+		this.state =
+		{
+			latestArray: props.theServerSideArray
+		};
+	}
+
+  render()
+	{
+		// To keep track of "this" during our descent into the map function,
+		// we need to bind the current "this" (which we use to call the function
+		// that opens the nav-parents to reveal children) to a local variable, "self".
+		// Note that this is used in the onClick definition, when we return the
+		// NodeClosed object.
+		//
+		var arrayOfAllTitles3 = arrayOfAllTitles2.slice();
+
+    let nodes = arrayOfAllTitles3.map(function(person)
+		{
+			if (person[4] == "closed")
+			{
+
+	      return (
+	        <NodeInNavTreeForDefinition
+								node={person}
+								paddingTop={10}
+								image={'minusSign.png'}
+								children={person[3]}
+								whetherOpen={person[4]}
+								/>
+	      );
+			}
+			else
+			{
+				return (
+				 <NodeInNavTreeForDefinition
+				 			 node={person}
+							 paddingTop={10}
+				 			 image={'minusSign.png'}
+							 children={person[3]}
+							 whetherOpen={person[4]}
+							 />
+			 );
+			}
+    });
+
+    return (
+      <div>
+        <ul style={{
+				 listStyle: 'none',
+				 position: 'absolute',
+				 border: '0px solid black',
+				 width: 720,
+				 height: 1100,
+				 backgroundColor: 'white',
+				 top: -12,
+				 left: 0,
+				 zIndex: 99,
+				 fontSize: 28
+			 }}
+
+				className="org">
+         {nodes}
+        </ul>
+      </div>
+    );
+  }
+}
+
+{/*
+	Nodes for the nav-tree used for file-definition.
+*/}
+class NodeInNavTreeForDefinition extends React.Component
+{
+	constructor(props)
+	{
+		super(props);
+	}
+
+	useSelectedName(filename)
+	{
+		alert("Selected filename is " + filename);
+	}
+
+  render()
+	{
+    let childnodes = null;
+		var theImage = null;
+
+		// Iterate over the child-elements for this array-item only if (a) they
+		// do exist, and (b) the current status of the parent is "open" (the default
+	  // is "closed", which means the child-items do not appear unless the parent
+	  // has been opened by user-click).
+		//
+    if (this.props.children)
+		{
+      childnodes = this.props.children.map(function(childnode)
+			{
+			 if (childnode[3] == undefined)
+			 {
+				 theImage = "blank.png";
+
+	       return (
+					 <NodeInNavTreeForDefinition
+					 			 node={childnode}
+								 paddingTop={10}
+					 			 image={theImage}
+								 children={childnode[3]}
+								 whetherOpen={childnode[4]}
+								 />
+	       );
+			 }
+			 else
+			 {
+				 return (
+						<NodeInNavTreeForDefinition
+									node={childnode}
+									paddingTop={10}
+									image={'minusSign.png'}
+									children={childnode[3]}
+									whetherOpen={childnode[4]}
+									/>
+					);
+			 }
+     });
+    }
+
+    return (
+      <li style={{ paddingTop: this.props.paddingTop }}
+				  key={this.props.node[0]}>
+
+					<div>
+
+						<img src={ require('./images/' + this.props.image) }
+						  onClick={this.props.onClick}
+							style={{
+								position: 'relative',
+								width: 30,
+								height: 30,
+								top: 4,
+								left: -10
+							}} />
+
+						<button
+							onClick={this.useSelectedName.bind(this, this.props.node[1])}
 							style={{
                 position: 'relative',
                 fontFamily: 'Arial',
@@ -1218,6 +1411,50 @@ class SaveCurrentFileButton extends React.Component
 	}
 }
 
+class FilePositionSelectorWindow extends React.Component
+{
+	constructor(props)
+	{
+		super(props);
+
+		this.state =
+		{
+			display: props.display
+		};
+	}
+
+	render ()
+	{
+
+		return (
+			<div
+				className='fileSelectionInnerWindow'
+				id='fileSelectionInnerWindow'
+				style={{
+					position: 'relative',
+					border: '2px solid black',
+					width: 500,
+					height: 972,
+					overflow: 'scroll',
+					backgroundColor: 'white',
+					boxShadow: '2px 8px 16px 0px rgba(0,0,0,0.2)',
+					top: 38,
+					left: 24,
+					zIndex: 99
+				}}
+			>
+
+			<div>
+				<NavTreeForDefinition theServerSideArray={ arrayOfAllTitles2 }
+					role = 'definition'
+
+				/>
+			</div>
+
+				</div>
+		)};
+}
+
 class NewFileDefinitionWindow extends React.Component
 {
 	constructor(props)
@@ -1252,6 +1489,22 @@ class NewFileDefinitionWindow extends React.Component
 						zIndex:99
 					}}
 				>
+
+				<span>
+
+					<img
+						src={require('./images/positionSelectorTitle.png')}
+						alt={require('./images/toolTitleAlt.png')}
+							style={{
+								position: 'relative',
+								width: 223,
+								height: 27,
+								top: 22,
+								left: 30}} />
+
+				</span>
+
+				<FilePositionSelectorWindow />
 
 				<button
 					onClick={this.props.onClick}
